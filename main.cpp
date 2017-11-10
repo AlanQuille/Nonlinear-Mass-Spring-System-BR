@@ -8,7 +8,8 @@
 //#include <CGAL/Delaunay_triangulation_2.h>
 #include "Delaunay.hpp" 
 #include <sstream>  
-#include <set>         
+#include <set>   
+#include <fstream>      
 using namespace std;
 
 //typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
@@ -51,8 +52,9 @@ class Springs
 		this->nodeb = nodeb;
 		this->wout = wout;
 		
-		//The initial x1 = l0
-		this->x1 = l0;
+		//The initial x1 = l0 - l0 =0, and initial spring velocity = 0
+		this->x1 = 0;
+		this->x2 = 0; 
 	};
 		
 	void ForceEq(double &Fsum)
@@ -63,6 +65,15 @@ class Springs
         q=d3*x2*x2*x2 + d1*x2;
         Fsum = -p-q;
 	};		
+	
+	void Change_Length_And_Velocity(double &l, double &dt)
+	{
+		x1 = l - l0;
+		double x2force = -(k3*x1*x1*x1 + k1*x1) - (d3*x2*x2*x2 + d1*x2);
+		cout << x2force << endl;
+		
+		x2 += dt*x2force;
+	}
 	
 	void Output()
 	{
@@ -95,6 +106,11 @@ class Nodes
 	//Cartestian coordinates
 	double x_position;
 	double y_position;
+	
+	//The velocity of the nodes initially it is zero.
+	double pxdot = 0;
+	double pydot = 0;
+	
 	int connections;
 
 	//spring constants, not approriate for spring constnats.
@@ -104,8 +120,8 @@ class Nodes
     bool input_node=0;
     //If it is an input node, than input force u in the x and y directions
     //For the calculations it's not relevant.
- //   double ux;
- //   double uy;
+    double ux;
+    double uy;
     //if it is an input node, than what is the input weight?
     double win;
     //L non crossing
@@ -114,33 +130,73 @@ class Nodes
     
     public:
      int test = 0;
-     declarepositionvariables(double x_position, double y_position)
+     Declare_Position_Variables(double x_position, double y_position)
 	{
 		this->x_position=x_position;
 	    this->y_position=y_position;
 	//	u = this->u;
 	}
 	
-	 inputnodes(bool input_node)
+	
+	
+	 void Input_Nodes(bool input_node, double ux, double uy, double win)
 	 {
 	 	this->input_node =input_node;
+	 	this->ux = ux;
+	 	this->uy =uy;
+	 	this->win = win;
 	 }
 	
 	
-	outputposition()
+	void Output_Position()
 	{
 		cout <<x_position << " " <<y_position <<" " << input_node;
 	}
 	
-	double xposition()
+	double X_Position()
 	{
 		return x_position;
 	}
 	
-	double yposition()
+	double Y_Position()
 	{
 		return y_position;
 	}
+	
+	//This is the function that incrementally changes the nodes position in the next timestep;
+	void Change_Position(double Fx, double  Fy, double  dt)
+	{
+		//double win = this->win;
+	//	double ux = this->ux;
+	//	double uy = this->uy;
+	    
+	    //declare acceleration;
+	    //declare velocity;
+	    
+	    double pxdotdot;
+	    double pydotdot;
+	    
+	    double pxdot;
+	    double pydot;
+		
+		pxdotdot= (Fx + win*ux)/m;
+        pydotdot= (Fy/m);
+        
+        //You want to calculate the velocity so that initial velocity is 0 and than calculate the corresponding change in position
+        pydot = EulerMethod(pydotdot, pydotdot, dt);
+        this->y_position = EulerMethod(y_position, pydot, dt);
+
+        pxdot = EulerMethod(pxdotdot, pxdotdot, dt);
+        this->x_position = EulerMethod(x_position, pxdot, dt);
+	}
+	
+	double EulerMethod(double x0, double f, double dt)
+	{
+		double xnew = x0 + dt*f;
+		return xnew;	
+	}
+	
+	
 	
     //whether node is connected to output or not;
     //bool output_node;
@@ -225,12 +281,12 @@ double lognormal(double mu, double sigma, double initialvalue, double finalvalue
 
 //double lognormal
 
-double findk1d1(double mu, double stdev, double initial, double final)
+double Spring_And_Damping_Coefficient_1(double mu, double stdev, double initial, double final)
 {
 	return lognormal(mu, stdev, initial, final);
 }
 
-double findk3d3(double initial, double final)
+double Spring_And_Damping_Coefficient_2(double initial, double final)
 {
 	return uniform(initial, final);
 }
@@ -309,7 +365,12 @@ int main(int argc, char** argv)
 //	initializeposition();
    //Step 1: The nodes were initialized according to an initial pattern and number of nodes N
    srand (time(NULL));
+   //Total number of mass points
    int N = 70;
+   // HOrizontal force
+   double ux = 1;
+   //Vertical force
+   double uy = 0;
    Nodes* n = new Nodes[N];
    cout << n[0].test;
    
@@ -322,14 +383,14 @@ int main(int argc, char** argv)
    
    for(int i=0; i<N; i++) 
    {
-   n[i].declarepositionvariables(uniform(0,1), uniform(0,1));
-   if(i < (int)totalinputnodes) n[i].inputnodes(1);
+   n[i].Declare_Position_Variables(uniform(0,1), uniform(0,1));
+   if(i < (int)totalinputnodes) n[i].Input_Nodes(1, ux, uy, uniform(-1, 1));
    }
    
    random_shuffle(&n[0], &n[N-1]);
    for(int i=0; i<N; i++)
    {
-   n[i].outputposition();
+   n[i].Output_Position();
    cout <<endl;
    }
    
@@ -547,24 +608,31 @@ int main(int argc, char** argv)
 	//for(int i=0; i<)
 	vector<Springs> s;
 	
+	//For uniform and log normal distribution
+	double initialvalue = 0;
+	double finalvalue = 1;
+	double mean = 0;
+	double stdev = 1;
+	
 	for(int i=0; i<EdgeList.size(); i++)
 	{
 		  arraysubscript1 = EdgeList[i].at(0) - 4;
 		  arraysubscript2 = EdgeList[i].at(1) - 4;
-		  x0 = n[arraysubscript1].xposition();
+		  x0 = n[arraysubscript1].X_Position();
 		  cout << endl << x0;
-		  x1 = n[arraysubscript2].xposition();
+		  x1 = n[arraysubscript2].X_Position();
 		  cout << endl << x1;
-		  y0 = n[arraysubscript1].yposition();
+		  y0 = n[arraysubscript1].Y_Position();
 		  cout << endl << y0;
-		  y1 = n[arraysubscript2].yposition();
+		  y1 = n[arraysubscript2].Y_Position();
 		  cout << endl << y1;
 		  cout <<endl;
 		  
-		  	k1 = findk1d1(0, 1, 0, 1);
-            d1 = findk1d1(0, 1, 0, 1);
-	        k3 = findk1d1(0,1, 0, 1);
-	        d3 = findk1d1(0, 1, 0, 1);
+		    //These damping and spring coefficients are not working properly, i will have to fix this somehow.
+		  	k1 = Spring_And_Damping_Coefficient_1(mean, stdev, initialvalue, finalvalue);
+            d1 = Spring_And_Damping_Coefficient_1(mean, stdev, initialvalue, finalvalue);
+	        k3 = Spring_And_Damping_Coefficient_2(initialvalue, finalvalue);
+	        d3 = Spring_And_Damping_Coefficient_2(initialvalue, finalvalue);
 	        
 	        cout <<"k1 is: " << k1 << endl;
 	        cout <<"d1 is: " << d1 << endl;
@@ -586,21 +654,39 @@ int main(int argc, char** argv)
  //  double wout;
    //So you want the connectivity of the nodes. So the output weights and lengths of the springs 
    
-   double tmax = 1000;
+   double tmax = 1;
+   double t0 = 0;
    //Execute this in time, 1000 time steps. First, each node is iterated through one time step according to each spring and node number."
    //First calculate the force on each node from each spring.
    double Fsum =0;
    double Fx =0;
    double Fy =0;
    double theta = 0;
+   double dt = 0.001;
+   double l = 0;
+   
+   ofstream ofs ("test.csv", ofstream::out);
+
+
+   
+   int maxtimesteps = (int)(tmax/dt);
    
    nodea =0;
    nodeb = 0;
    
+  // double usum = 1;
+   //double utheta = 
+   
 
-   for(int i=0; i<tmax; i++)
+   for(int i=0; i<maxtimesteps; i++)
    {
-   	   for(int j=0; j<EdgeList.size(); j++)
+   	  // cout <<"The position of the node at time " << i*dt <<  " is: " << n[nodea].xposition() << endl;
+   	 //  cout <<"The position of the node at time " << i*dt <<  " is: " << n[nodea].yposition() << endl;
+   	   
+   	
+		  
+		  
+		for(int j=0; j<EdgeList.size(); j++)
    	   {
    	   	s[j].ForceEq(Fsum);
    	   	//FindAngle
@@ -608,24 +694,46 @@ int main(int argc, char** argv)
    	   	nodea = s[j].Nodea();
    	    nodeb = s[j].Nodeb();
    	   	
-   	   	x0 = n[nodea].xposition();
-   	   	x1 = n[nodea].xposition();
-   	   	y0 = n[nodeb].yposition();
-   	   	y1 = n[nodeb].yposition();
+   	   	x0 = n[nodea].X_Position();
+   	   	x1 = n[nodeb].X_Position();
+   	   	y0 = n[nodea].Y_Position();
+   	   	y1 = n[nodeb].Y_Position();
    	   	
    	   	theta = Angle(x0, x1, y0, y1);
+   	  // 	cout << "Theta is" << atan((y1-y0)/(x1-x0)) << endl;
+   	   	cout <<"Theta is: "<< theta << endl;
    	   	Fx = X_com(Fsum, theta);
    	   	Fy = Y_com(Fsum, theta);
-   	   	
-   	   	n[nodea].
-   	   	
+   	   	  
+   	   n[nodea].Change_Position(Fx, Fy, dt);
+   	   n[nodeb].Change_Position(Fx, Fy, dt);  
+   	   
+   	   x0 = n[nodea].X_Position();
+   	   x1 = n[nodeb].X_Position();
+   	   
+   	   y0 = n[nodea].Y_Position();
+   	   y1 = n[nodeb].Y_Position();
+   	   
+   	   
+   	   
+   	   l = EuclDist(x0, x1, y0, y1);
+		  
+       s[j].Change_Length_And_Velocity(l, dt);	
+   	   
+   	   cout <<"The position of the node" <<nodea << " at time " << i*dt <<  " is: " << n[nodea].X_Position() << endl;
+   	   cout <<"The position of the node" <<nodeb << " at time " << i*dt <<  " is: " << n[nodea].Y_Position() << endl;
        }
-   	
+       
+       ofs << i*dt;
+   	   ofs <<",";
+   	   ofs << n[nodea].X_Position();
+   	   ofs <<endl;
+       
    	
    }
 
 
-
+   ofs.close();
 	
 
 	
