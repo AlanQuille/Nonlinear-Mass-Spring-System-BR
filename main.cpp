@@ -114,20 +114,20 @@ class Nodes
     
     public:
      int test = 0;
-     declarepositionvariables(double x_position, double y_position)
+     void declarepositionvariables(double x_position, double y_position)
 	{
 		this->x_position=x_position;
 	    this->y_position=y_position;
 	//	u = this->u;
 	}
 	
-	 inputnodes(bool input_node)
+	 void inputnodes(bool input_node)
 	 {
 	 	this->input_node =input_node;
 	 }
 	
 	
-	outputposition()
+	void outputposition()
 	{
 		cout <<x_position << " " <<y_position <<" " << input_node;
 	}
@@ -598,6 +598,7 @@ int main(int argc, char** argv)
    nodeb = 0;
    
 
+    
    for(int i=0; i<tmax; i++)
    {
    	   for(int j=0; j<EdgeList.size(); j++)
@@ -617,7 +618,7 @@ int main(int argc, char** argv)
    	   	Fx = X_com(Fsum, theta);
    	   	Fy = Y_com(Fsum, theta);
    	   	
-   	   	n[nodea].
+   	   	
    	   	
        }
    	
