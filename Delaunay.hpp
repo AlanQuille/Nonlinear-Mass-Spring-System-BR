@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <memory>
 #include <iostream>
+#include <array>
 
 class Point;
 class Triangle;

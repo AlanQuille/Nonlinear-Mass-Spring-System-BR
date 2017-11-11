@@ -15,7 +15,7 @@ using namespace std;
 //typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 //typedef CGAL::Delaunay_triangulation_2<K> Delaunay;
 //typedef K::Point_2 Point;
-
+// check if githubt works / HH
 
 class Springs
 {
@@ -130,16 +130,24 @@ class Nodes
     
     public:
      int test = 0;
+<<<<<<< HEAD
      Declare_Position_Variables(double x_position, double y_position)
+=======
+     void declarepositionvariables(double x_position, double y_position)
+>>>>>>> 277d93b1260dd06a0eb0e7043a8635a4fcb5df5d
 	{
 		this->x_position=x_position;
 	    this->y_position=y_position;
 	//	u = this->u;
 	}
 	
+<<<<<<< HEAD
 	
 	
 	 void Input_Nodes(bool input_node, double ux, double uy, double win)
+=======
+	 void inputnodes(bool input_node)
+>>>>>>> 277d93b1260dd06a0eb0e7043a8635a4fcb5df5d
 	 {
 	 	this->input_node =input_node;
 	 	this->ux = ux;
@@ -148,7 +156,11 @@ class Nodes
 	 }
 	
 	
+<<<<<<< HEAD
 	void Output_Position()
+=======
+	void outputposition()
+>>>>>>> 277d93b1260dd06a0eb0e7043a8635a4fcb5df5d
 	{
 		cout <<x_position << " " <<y_position <<" " << input_node;
 	}
@@ -678,7 +690,12 @@ int main(int argc, char** argv)
    //double utheta = 
    
 
+<<<<<<< HEAD
    for(int i=0; i<maxtimesteps; i++)
+=======
+    
+   for(int i=0; i<tmax; i++)
+>>>>>>> 277d93b1260dd06a0eb0e7043a8635a4fcb5df5d
    {
    	  // cout <<"The position of the node at time " << i*dt <<  " is: " << n[nodea].xposition() << endl;
    	 //  cout <<"The position of the node at time " << i*dt <<  " is: " << n[nodea].yposition() << endl;
@@ -704,6 +721,7 @@ int main(int argc, char** argv)
    	   	cout <<"Theta is: "<< theta << endl;
    	   	Fx = X_com(Fsum, theta);
    	   	Fy = Y_com(Fsum, theta);
+<<<<<<< HEAD
    	   	  
    	   n[nodea].Change_Position(Fx, Fy, dt);
    	   n[nodeb].Change_Position(Fx, Fy, dt);  
@@ -722,6 +740,11 @@ int main(int argc, char** argv)
    	   
    	   cout <<"The position of the node" <<nodea << " at time " << i*dt <<  " is: " << n[nodea].X_Position() << endl;
    	   cout <<"The position of the node" <<nodeb << " at time " << i*dt <<  " is: " << n[nodea].Y_Position() << endl;
+=======
+   	   	
+   	   	
+   	   	
+>>>>>>> 277d93b1260dd06a0eb0e7043a8635a4fcb5df5d
        }
        
        ofs << i*dt;
