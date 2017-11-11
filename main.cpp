@@ -130,37 +130,29 @@ class Nodes
     
     public:
      int test = 0;
-<<<<<<< HEAD
-     Declare_Position_Variables(double x_position, double y_position)
-=======
      void declarepositionvariables(double x_position, double y_position)
->>>>>>> 277d93b1260dd06a0eb0e7043a8635a4fcb5df5d
 	{
 		this->x_position=x_position;
 	    this->y_position=y_position;
 	//	u = this->u;
 	}
 	
-<<<<<<< HEAD
+
 	
 	
-	 void Input_Nodes(bool input_node, double ux, double uy, double win)
-=======
-	 void inputnodes(bool input_node)
->>>>>>> 277d93b1260dd06a0eb0e7043a8635a4fcb5df5d
+    void Input_Nodes(bool input_node, double ux, double uy, double win)
+
+	 //void inputnodes(bool input_node)
 	 {
-	 	this->input_node =input_node;
+	 	this->input_node = input_node;
 	 	this->ux = ux;
-	 	this->uy =uy;
+	 	this->uy = uy;
 	 	this->win = win;
 	 }
 	
 	
-<<<<<<< HEAD
+
 	void Output_Position()
-=======
-	void outputposition()
->>>>>>> 277d93b1260dd06a0eb0e7043a8635a4fcb5df5d
 	{
 		cout <<x_position << " " <<y_position <<" " << input_node;
 	}
@@ -395,7 +387,7 @@ int main(int argc, char** argv)
    
    for(int i=0; i<N; i++) 
    {
-   n[i].Declare_Position_Variables(uniform(0,1), uniform(0,1));
+       n[i].declarepositionvariables(uniform(0,1), uniform(0,1));
    if(i < (int)totalinputnodes) n[i].Input_Nodes(1, ux, uy, uniform(-1, 1));
    }
    
@@ -690,12 +682,9 @@ int main(int argc, char** argv)
    //double utheta = 
    
 
-<<<<<<< HEAD
+
    for(int i=0; i<maxtimesteps; i++)
-=======
-    
-   for(int i=0; i<tmax; i++)
->>>>>>> 277d93b1260dd06a0eb0e7043a8635a4fcb5df5d
+
    {
    	  // cout <<"The position of the node at time " << i*dt <<  " is: " << n[nodea].xposition() << endl;
    	 //  cout <<"The position of the node at time " << i*dt <<  " is: " << n[nodea].yposition() << endl;
@@ -721,7 +710,7 @@ int main(int argc, char** argv)
    	   	cout <<"Theta is: "<< theta << endl;
    	   	Fx = X_com(Fsum, theta);
    	   	Fy = Y_com(Fsum, theta);
-<<<<<<< HEAD
+
    	   	  
    	   n[nodea].Change_Position(Fx, Fy, dt);
    	   n[nodeb].Change_Position(Fx, Fy, dt);  
@@ -740,11 +729,6 @@ int main(int argc, char** argv)
    	   
    	   cout <<"The position of the node" <<nodea << " at time " << i*dt <<  " is: " << n[nodea].X_Position() << endl;
    	   cout <<"The position of the node" <<nodeb << " at time " << i*dt <<  " is: " << n[nodea].Y_Position() << endl;
-=======
-   	   	
-   	   	
-   	   	
->>>>>>> 277d93b1260dd06a0eb0e7043a8635a4fcb5df5d
        }
        
        ofs << i*dt;
