@@ -30,12 +30,15 @@ private:
   double final_log_uniform;
   double initial_uniform;
   double final_uniform;
+  double t0;
+  double tmax;
+  double dt;
 
 
 public:
 
   //Default constructor
-  Simulation(double N, double ux, double uy, double input_conectivity, bool input_node, double w_in_initial, double w_in_final, double w_out_initial, double w_out_final, double range0x, double range1x, double range0y, double range1y, double initial_log_uniform, double final_log_uniform, double initial_uniform, double final_uniform)
+  Simulation(double N, double ux, double uy, double input_connectivity, bool input_node, double w_in_initial, double w_in_final, double w_out_initial, double w_out_final, double range0x, double range1x, double range0y, double range1y, double initial_log_uniform, double final_log_uniform, double initial_uniform, double final_uniform, double t0, double tmax, double dt)
   {
     srand (time(NULL));
     //Total number of mass points and the horizontal and vertical force
@@ -49,6 +52,9 @@ public:
     this->final_log_uniform = initial_log_uniform;
     this->initial_uniform = initial_log_uniform;
     this->final_uniform = initial_log_uniform;
+    this->t0 = t0;
+    this->tmax = tmax;
+    this->dt = dt;
 
     //This does the Delaunay triangulation with the width (range1x - range0x) and the heigh (range1y - range0y)
     DelaunayTriangulation DT(abs(range1x-range0x), abs(range1y-range0y));
@@ -230,8 +236,64 @@ public:
      }
   }
 
-  void WorkitOUt
+  //This changes position of springs and nodes dynamically in time.
+  void Execute_In_Time()
+  {
+    double Fsum =0;
+    double Fx =0;
+    double Fy =0;
+    double theta = 0;
+    double l = 0;
 
+    ofstream ofs ("test.csv", ofstream::out);
+
+    int maxtimesteps = (int)(tmax/dt);
+
+    nodea =0;
+    nodeb = 0;
+
+    for(int i=0; i<maxtimesteps; i++)
+    {
+
+ 		for(int j=0; j<EdgeList.size(); j++)
+    	{
+
+    	   s[j].ForceEq(Fsum);
+
+    	   nodea = s[j].Nodea();
+    	   nodeb = s[j].Nodeb();
+
+    	   x0 = n[nodea].X_Position();
+    	   x1 = n[nodeb].X_Position();
+    	   y0 = n[nodea].Y_Position();
+    	   y1 = n[nodeb].Y_Position();
+
+    	   theta = Angle(x0, x1, y0, y1);
+    	   Fx = X_Comp(Fsum, theta);
+    	   Fy = Y_Comp(Fsum, theta);
+
+    	   n[nodea].Change_Position(Fx, Fy, dt);
+    	   n[nodeb].Change_Position(Fx, Fy, dt);
+
+    	   x0 = n[nodea].X_Position();
+    	   x1 = n[nodeb].X_Position();
+
+    	   y0 = n[nodea].Y_Position();
+    	   y1 = n[nodeb].Y_Position();
+
+    	   l = Eucl_Dist(x0, x1, y0, y1);
+
+        s[j].Change_Length_And_Velocity(l, dt);
+
+     }
+        //Outputs to fstream, first node as a small test
+        ofs << i*dt;
+    	  ofs <<",";
+    	  ofs << n[nodea].X_Position();
+    	  ofs <<endl;
+   }
+   ofs.close();
+  }
 
   int Random_Input_Nodes(int N)
   {
@@ -324,4 +386,4 @@ public:
   	 }
   }
 
-}
+};
