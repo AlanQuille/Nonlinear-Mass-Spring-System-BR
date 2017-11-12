@@ -4,7 +4,7 @@ using namespace std;
 class Nodes
 {
 	//the node has mass M=1
-	private:
+private:
 	double m =1;
 	//Cartestian coordinates
 	double x_position;
@@ -31,23 +31,25 @@ class Nodes
     //Each node has a certain number of springs attached to it. Each spring acts as a force on the node, which changes its position, and hence the position of the spring.
 	int noofconnectedsprings;
 
-    public:
-     int test = 0;
-     void declarepositionvariables(double x_position, double y_position)
-	{
-		this->x_position=x_position;
-	    this->y_position=y_position;
-	//	u = this->u;
-	}
-    void Input_Nodes(bool input_node, double ux, double uy, double win)
+  public:
 
-	 //void inputnodes(bool input_node)
+  int test = 0;
+
+	Nodes(double x_position, double y_position, double ux, double uy)
 	 {
-	 	this->input_node = input_node;
-	 	this->ux = ux;
-	 	this->uy = uy;
-	 	this->win = win;
-	 }
+		this->x_position=x_position;
+	  this->y_position=y_position;
+
+   }
+
+ //If this function is activated than the node is input node
+	void Input_node(double ux, double uy, double win)
+	{
+		this->ux = ux;
+		this->uy = uy;
+		this->input_node = 1;
+		this->win = win;
+	}
 
 	void Output_Position()
 	{
@@ -68,12 +70,6 @@ class Nodes
 	void Change_Position(double Fx, double  Fy, double  dt)
 	{
 
-  //double win = this->win;
-	//	double ux = this->ux;
-	//	double uy = this->uy;
-
-	    //declare acceleration;
-	    //declare velocity;
 
 	    double pxdotdot;
 	    double pydotdot;
@@ -81,15 +77,15 @@ class Nodes
 	    double pxdot;
 	    double pydot;
 
-		pxdotdot= (Fx + win*ux)/m;
-        pydotdot= (Fy/m);
+		  pxdotdot= (Fx + win*ux)/m;
+      pydotdot= (Fy/m);
 
         //You want to calculate the velocity so that initial velocity is 0 and than calculate the corresponding change in position
-        pydot = EulerMethod(pydotdot, pydotdot, dt);
-        this->y_position = EulerMethod(y_position, pydot, dt);
+      pydot = EulerMethod(pydotdot, pydotdot, dt);
+      this->y_position = EulerMethod(y_position, pydot, dt);
 
-        pxdot = EulerMethod(pxdotdot, pxdotdot, dt);
-        this->x_position = EulerMethod(x_position, pxdot, dt);
+      pxdot = EulerMethod(pxdotdot, pxdotdot, dt);
+      this->x_position = EulerMethod(x_position, pxdot, dt);
 	}
 
 	double EulerMethod(double x0, double f, double dt)

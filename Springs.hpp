@@ -6,7 +6,8 @@ class Springs
 {
 
   //natural length of each spring, i.e., distance between mass nodes as time 0. This might not be necessary to include.
-    private:
+  private:
+
 	double l0;
 	double l;
 	//l is the current length.
@@ -27,11 +28,12 @@ class Springs
 	double wout;
 
 	public:
+    
 	Springs(double k1, double d1, double k3, double d3, double l0, double nodea, double nodeb, double wout)
 	{
 		this->l0=l0;
 		this->k1=k1;
-	    this->k3=k3;
+	  this->k3=k3;
 		this->d1=d1;
 		this->d3=d3;
 		this->nodea = nodea;

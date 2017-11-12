@@ -13,57 +13,35 @@
 using namespace std;
 
 
-int randominputnodes(int N)
+int Random_Input_Nodes(int N)
 {
 	return N*((int) rand() / (RAND_MAX));
 }
 
-double uniform(double M, double N)
+double Uniform(double M, double N)
 {
 
 	return M + (rand() / ( RAND_MAX / (N-M) ) ) ;
 }
 
-//This code was forked from wikipedia
-double lognormal(double mu, double sigma, double initialvalue, double finalvalue)
+
+double Log_Uniform(double initial, double final)
 {
-	static const double epsilon = std::numeric_limits<double>::min();
-	static const double two_pi = 2.0*3.14159265358979323846;
+	return exp(Uniform(initial, final));
 
-	thread_local double z1;
-	thread_local bool generate;
-	generate = !generate;
-
-	if (!generate)
-	   return z1 * sigma + mu;
-
-	double u1, u2;
-	do
-	 {
-	   u1 = uniform(initialvalue, finalvalue);
-	   u2 = uniform(initialvalue, finalvalue);
-	 }
-	while ( u1 <= epsilon );
-
-	double z0;
-	z0 = sqrt(-2.0 * log(u1)) * cos(two_pi * u2);
-	z1 = sqrt(-2.0 * log(u1)) * sin(two_pi * u2);
-	return exp(z0 * sigma + mu);
 }
 
-//double lognormal
-
-double Spring_And_Damping_Coefficient_1(double mu, double stdev, double initial, double final)
+double Spring_And_Damping_Coefficient_1(double initial, double final)
 {
-	return lognormal(mu, stdev, initial, final);
+	return Log_Uniform(initial, final);
 }
 
 double Spring_And_Damping_Coefficient_2(double initial, double final)
 {
-	return uniform(initial, final);
+	return Uniform(initial, final);
 }
 
-double EuclDist(double x1, double y1, double x2, double y2)
+double Eucl_Dist(double x1, double y1, double x2, double y2)
 {
 	return sqrt((y2-y1)*(y2-y1) + (x2-x1)*(x2-x1));
 }
@@ -73,12 +51,12 @@ double Angle(double x1, double x2, double y1, double y2)
 	return atan((y2-y1)/(x2-x1));
 }
 
-double X_com(double vectorsum, double theta)
+double X_Comp(double vectorsum, double theta)
 {
 	return vectorsum*cos(theta);
 }
 
-double Y_com(double sum, double theta)
+double Y_Comp(double sum, double theta)
 {
 	return sum*sin(theta);
 }
@@ -144,18 +122,18 @@ int main(int argc, char** argv)
    Nodes* n = new Nodes[N];
    cout << n[0].test;
 
-   cout <<randominputnodes(0.2) <<endl;
+   cout <<Random_Input_Nodes(0.2) <<endl;
 
    //Step 2: The positions of the nodes were initialized and 20% of the nodes are connected to the input.
    double input_connectivity = 0.2;
-   double totalinputnodes = input_connectivity * ((double)N);
+   double total_input_nodes = input_connectivity * ((double)N);
  //  addinputnodes(&n, N, input_connectivity);
 
    //First x% of the nodes are given input status tahn shuffled.
    for(int i=0; i<N; i++)
    {
-       n[i].declarepositionvariables(uniform(0,1), uniform(0,1));
-   if(i < (int)totalinputnodes) n[i].Input_Nodes(1, ux, uy, uniform(-1, 1));
+   n[i].Declare_Position_Variables(Uniform(0,1), Uniform(0,1));
+   if(i < (int)total_input_nodes) n[i].Input_Nodes(1, ux, uy, Uniform(-1, 1));
    }
 
    random_shuffle(&n[0], &n[N-1]);
@@ -176,6 +154,10 @@ int main(int argc, char** argv)
     DT.AddPoint(Point(0.125, 0.38));
     */
     cout << "Reporting" << endl;
+
+		DT.print();
+
+		cout << endl;
 
 
 	char i;
@@ -290,6 +272,8 @@ int main(int argc, char** argv)
 
 	sort (EdgeList.begin(), EdgeList.end());
 	RemoveDuplicates(EdgeList);
+
+	cout <<"The number of edges for: " <<N << "Mass points is: " << EdgeList.size() << endl;
 	//cout <<"The number of unduplicated edges should be " << EdgeList.size() << endl;
   //Spring and damping coefficients
 	double k1 = 0;
@@ -319,42 +303,27 @@ int main(int argc, char** argv)
 
 	for(int i=0; i<EdgeList.size(); i++)
 	{
+		  //These take the arraysubscripts and disregard the first four points
 		  arraysubscript1 = EdgeList[i].at(0) - 4;
 		  arraysubscript2 = EdgeList[i].at(1) - 4;
+
 		  x0 = n[arraysubscript1].X_Position();
-	//	  cout << endl << x0;
 		  x1 = n[arraysubscript2].X_Position();
-		//  cout << endl << x1;
 		  y0 = n[arraysubscript1].Y_Position();
-		//  cout << endl << y0;
 		  y1 = n[arraysubscript2].Y_Position();
-		//  cout << endl << y1;
-		//  cout <<endl;
 
-		    //These damping and spring coefficients are not working properly, i will have to fix this somehow.
-		  	k1 = Spring_And_Damping_Coefficient_1(mean, stdev, initialvalue, finalvalue);
-        d1 = Spring_And_Damping_Coefficient_1(mean, stdev, initialvalue, finalvalue);
-	      k3 = Spring_And_Damping_Coefficient_2(initialvalue, finalvalue);
-	      d3 = Spring_And_Damping_Coefficient_2(initialvalue, finalvalue);
+		  //These damping and spring coefficients are not working properly, i will have to fix this somehow.
+		  k1 = Spring_And_Damping_Coefficient_1(initialvalue, finalvalue);
+      d1 = Spring_And_Damping_Coefficient_1(initialvalue, finalvalue);
+	    k3 = Spring_And_Damping_Coefficient_2(initialvalue, finalvalue);
+	    d3 = Spring_And_Damping_Coefficient_2(initialvalue, finalvalue);
 
-	      //  cout <<"k1 is: " << k1 << endl;
-	     //   cout <<"d1 is: " << d1 << endl;
-	     //   cout <<"k3 is: " << k3 << endl;
-	     //   cout <<"d3 is: " << d3 << endl;
+		  l0 = Eucl_Dist(x0, y0, x1, y1);
+		  wout = Uniform(-1, 1);
 
-
-		  l0 = EuclDist(x0, y0, x1, y1);
-		  wout = uniform(-1, 1);
-		//  cout <<"output weight" << wout;
-		//  cout <<endl;
-		  //cout <<"Output length: " << l0 << endl;
-	      s.push_back(Springs(k1, d1, k3, d3, l0, arraysubscript1, arraysubscript2, wout));
-	      s[i].Output();
-	//    springs.push_back(s);
-	 //   cout <<endl;
+	    s.push_back(Springs(k1, d1, k3, d3, l0, arraysubscript1, arraysubscript2, wout));
+	    s[i].Output();
    }
-
-
 
    double tmax = 1;
    double t0 = 0;
@@ -367,36 +336,30 @@ int main(int argc, char** argv)
 
    ofstream ofs ("test.csv", ofstream::out);
 
-
-
    int maxtimesteps = (int)(tmax/dt);
 
    nodea =0;
    nodeb = 0;
 
    for(int i=0; i<maxtimesteps; i++)
-
    {
 
 		for(int j=0; j<EdgeList.size(); j++)
-   	   {
-   	   	s[j].ForceEq(Fsum);
-   	   	//FindAngle
+   	{
 
-   	   	nodea = s[j].Nodea();
-   	    nodeb = s[j].Nodeb();
+   	   s[j].ForceEq(Fsum);
 
-   	   	x0 = n[nodea].X_Position();
-   	   	x1 = n[nodeb].X_Position();
-   	   	y0 = n[nodea].Y_Position();
-   	   	y1 = n[nodeb].Y_Position();
+   	   nodea = s[j].Nodea();
+   	   nodeb = s[j].Nodeb();
 
-   	   	theta = Angle(x0, x1, y0, y1);
-   	  // 	cout << "Theta is" << atan((y1-y0)/(x1-x0)) << endl;
-   	 //  	cout <<"Theta is: "<< theta << endl;
-   	   	Fx = X_com(Fsum, theta);
-   	   	Fy = Y_com(Fsum, theta);
+   	   x0 = n[nodea].X_Position();
+   	   x1 = n[nodeb].X_Position();
+   	   y0 = n[nodea].Y_Position();
+   	   y1 = n[nodeb].Y_Position();
 
+   	   theta = Angle(x0, x1, y0, y1);
+   	   Fx = X_Comp(Fsum, theta);
+   	   Fy = Y_Comp(Fsum, theta);
 
    	   n[nodea].Change_Position(Fx, Fy, dt);
    	   n[nodeb].Change_Position(Fx, Fy, dt);
@@ -407,19 +370,17 @@ int main(int argc, char** argv)
    	   y0 = n[nodea].Y_Position();
    	   y1 = n[nodeb].Y_Position();
 
-   	   l = EuclDist(x0, x1, y0, y1);
+   	   l = Eucl_Dist(x0, x1, y0, y1);
 
        s[j].Change_Length_And_Velocity(l, dt);
 
-   	  // cout <<"The position of the node" <<nodea << " at time " << i*dt <<  " is: " << n[nodea].X_Position() << endl;
-   	//   cout <<"The position of the node" <<nodeb << " at time " << i*dt <<  " is: " << n[nodea].Y_Position() << endl;
-       }
+    }
 
        ofs << i*dt;
    	   ofs <<",";
    	   ofs << n[nodea].X_Position();
    	   ofs <<endl;
-   }
+  }
 
    ofs.close();
 	 return 0;
