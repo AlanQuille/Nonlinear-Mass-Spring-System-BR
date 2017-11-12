@@ -136,7 +136,7 @@ int main(int argc, char** argv)
    //Step 1: The nodes were initialized according to an initial pattern and number of nodes N
    srand (time(NULL));
    //Total number of mass points
-   int N = 70;
+   int N = 3;
    // HOrizontal force
    double ux = 1;
    //Vertical force
@@ -159,17 +159,22 @@ int main(int argc, char** argv)
    }
 
    random_shuffle(&n[0], &n[N-1]);
+   //Do Delaunay Triangulation
+   DelaunayTriangulation DT(1, 1);
    for(int i=0; i<N; i++)
    {
    n[i].Output_Position();
    cout <<endl;
+   DT.AddPoint(Point(n[i].X_Position(), n[i].Y_Position()));
    }
 
     //Delaunay Triangulation
+    /*
     DelaunayTriangulation DT(1, 1);
     DT.AddPoint(Point(0.1, 0.41));
     DT.AddPoint(Point(0.15, 0.41));
     DT.AddPoint(Point(0.125, 0.38));
+    */
     cout << "Reporting" << endl;
 
 
@@ -202,7 +207,7 @@ int main(int argc, char** argv)
 	vector<vector<double>> EdgeList;
 	vector<double> NodeList;
 
-//	This takes the nodes of each triangle and once the code is completed will
+//	This takes the nodes of each triangle and parses them so only the relevant nodes a
 	for(auto e: DT.triangles)
 	{
 		//cout <<"Node1:" <<get<0>(e) <<" " << "Node2:"<<" " <<get<1>(e)<< endl;
@@ -216,13 +221,13 @@ int main(int argc, char** argv)
         istringstream iss(tri.at(k));
 
         iss >> node1;
-        cout <<"node1: " <<node1 <<endl;
+      //  cout <<"node1: " <<node1 <<endl;
         iss >>sep;
         iss >>node2;
-        cout <<"node2: "<<node2 << endl;
+      //  cout <<"node2: "<<node2 << endl;
         iss >>sep;
         iss >>node3;
-        cout <<"node3: " << node3 << endl;
+    //    cout <<"node3: " << node3 << endl;
         iss >>sep;
 
         if(node1!=0 && node1!=1 && node1!=2 && node1!=3) vertices++;
@@ -231,7 +236,7 @@ int main(int argc, char** argv)
 
         if(vertices ==2)
         {
-	//	noofconnectingedges++;
+		noofconnectingedges++;
 	//	cout << "Connect two nodes!: " <<node1 <<" " <<node2 <<" "<< node3 <<" ";
 		Sort(node1, node2, node3);
 		if(node1!=0 && node1!=1 && node1!=2 && node1!=3)
@@ -256,7 +261,7 @@ int main(int argc, char** argv)
 	    if(vertices ==3)
         {
 		noofconnectingedges+=2;
-		cout << "Connect all nodes: " <<node1 <<" " <<node2 <<" "<< node3 <<" ";
+		//cout << "Connect all nodes: " <<node1 <<" " <<node2 <<" "<< node3 <<" ";
 		Sort(node1, node2, node3);
 		if(node1!=0 && node1!=1 && node1!=2 && node1!=3)
 		{
@@ -283,23 +288,9 @@ int main(int argc, char** argv)
 
 	//I have each node number. I need to take the ones that connect up to each node. Neglect points 0, 1, 2 and 3.
 
-	cout <<"The number of edges should be: " << EdgeList.size() << endl;
 	sort (EdgeList.begin(), EdgeList.end());
-		for(int i =0; i<EdgeList.size(); i++)
-	{
-		cout <<EdgeList[i].at(0) <<" " << EdgeList[i].at(1);
-		cout <<endl;
-	}
 	RemoveDuplicates(EdgeList);
-	cout <<"The number of unduplicated edges should be " << EdgeList.size() << endl;
-
-		for(int i =0; i<EdgeList.size(); i++)
-	{
-		cout <<EdgeList[i].at(0) <<" " << EdgeList[i].at(1);
-		cout <<endl;
-
-	}
-
+	//cout <<"The number of unduplicated edges should be " << EdgeList.size() << endl;
   //Spring and damping coefficients
 	double k1 = 0;
 	double d1 = 0;
@@ -331,14 +322,14 @@ int main(int argc, char** argv)
 		  arraysubscript1 = EdgeList[i].at(0) - 4;
 		  arraysubscript2 = EdgeList[i].at(1) - 4;
 		  x0 = n[arraysubscript1].X_Position();
-		  cout << endl << x0;
+	//	  cout << endl << x0;
 		  x1 = n[arraysubscript2].X_Position();
-		  cout << endl << x1;
+		//  cout << endl << x1;
 		  y0 = n[arraysubscript1].Y_Position();
-		  cout << endl << y0;
+		//  cout << endl << y0;
 		  y1 = n[arraysubscript2].Y_Position();
-		  cout << endl << y1;
-		  cout <<endl;
+		//  cout << endl << y1;
+		//  cout <<endl;
 
 		    //These damping and spring coefficients are not working properly, i will have to fix this somehow.
 		  	k1 = Spring_And_Damping_Coefficient_1(mean, stdev, initialvalue, finalvalue);
@@ -346,16 +337,16 @@ int main(int argc, char** argv)
 	      k3 = Spring_And_Damping_Coefficient_2(initialvalue, finalvalue);
 	      d3 = Spring_And_Damping_Coefficient_2(initialvalue, finalvalue);
 
-	        cout <<"k1 is: " << k1 << endl;
-	        cout <<"d1 is: " << d1 << endl;
-	        cout <<"k3 is: " << k3 << endl;
-	        cout <<"d3 is: " << d3 << endl;
+	      //  cout <<"k1 is: " << k1 << endl;
+	     //   cout <<"d1 is: " << d1 << endl;
+	     //   cout <<"k3 is: " << k3 << endl;
+	     //   cout <<"d3 is: " << d3 << endl;
 
 
 		  l0 = EuclDist(x0, y0, x1, y1);
 		  wout = uniform(-1, 1);
-		  cout <<"output weight" << wout;
-		  cout <<endl;
+		//  cout <<"output weight" << wout;
+		//  cout <<endl;
 		  //cout <<"Output length: " << l0 << endl;
 	      s.push_back(Springs(k1, d1, k3, d3, l0, arraysubscript1, arraysubscript2, wout));
 	      s[i].Output();
@@ -402,7 +393,7 @@ int main(int argc, char** argv)
 
    	   	theta = Angle(x0, x1, y0, y1);
    	  // 	cout << "Theta is" << atan((y1-y0)/(x1-x0)) << endl;
-   	   	cout <<"Theta is: "<< theta << endl;
+   	 //  	cout <<"Theta is: "<< theta << endl;
    	   	Fx = X_com(Fsum, theta);
    	   	Fy = Y_com(Fsum, theta);
 
@@ -420,8 +411,8 @@ int main(int argc, char** argv)
 
        s[j].Change_Length_And_Velocity(l, dt);
 
-   	   cout <<"The position of the node" <<nodea << " at time " << i*dt <<  " is: " << n[nodea].X_Position() << endl;
-   	   cout <<"The position of the node" <<nodeb << " at time " << i*dt <<  " is: " << n[nodea].Y_Position() << endl;
+   	  // cout <<"The position of the node" <<nodea << " at time " << i*dt <<  " is: " << n[nodea].X_Position() << endl;
+   	//   cout <<"The position of the node" <<nodeb << " at time " << i*dt <<  " is: " << n[nodea].Y_Position() << endl;
        }
 
        ofs << i*dt;
