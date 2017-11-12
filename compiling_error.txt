@@ -1,8 +1,0 @@
-C:\Users\Alan\Desktop\GithubProjects\Nonlinear-Mass-Spring-System\Simulation.hpp:147:2: error: expected ';' after class definition
- }
-  ^
-  ;
-C:\Users\Alan\Desktop\GithubProjects\Nonlinear-Mass-Spring-System\Simulation.hpp: In constructor 'Simulation::Simulation(double, double, double, double)':
-C:\Users\Alan\Desktop\GithubProjects\Nonlinear-Mass-Spring-System\Simulation.hpp:38:9: error: no match for call to '(std::vector<Nodes>) (int)'
-     n(20);
-         ^
