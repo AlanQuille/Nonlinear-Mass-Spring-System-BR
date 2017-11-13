@@ -11,6 +11,31 @@
 #include <fstream>
 
 
+struct InitialDataValues
+{
+	double N;
+	double ux;
+	double uy;
+	double input_connectivity;
+	double w_in_initial;
+	double w_in_final;
+	double w_out_initial;
+	double w_out_final;
+	double range0x;
+	double range1x;
+	double range0y;
+	double range1y;
+	double initial_log_uniform;
+	double final_log_uniform;
+	double initial_uniform;
+	double final_uniform;
+  double t0;
+	double tmax;
+	double dt;
+};
+
+
+
 class Simulation
 {
 
@@ -26,6 +51,8 @@ private:
   vector<double> NodeList;
   double w_out_initial;
   double w_out_final;
+  double w_in_initial;
+  double w_in_final;
   double initial_log_uniform;
   double final_log_uniform;
   double initial_uniform;
@@ -34,36 +61,48 @@ private:
   double tmax;
   double dt;
 
+  bool input_node;
+
+//Ranges for the delaunay triangulation
+  double range0x;
+  double range0y;
+  double range1x;
+  double range1y;
+
+
 
 public:
 
   //Default constructor
-  Simulation(double N, double ux, double uy, double input_connectivity, bool input_node, double w_in_initial, double w_in_final, double w_out_initial, double w_out_final, double range0x, double range1x, double range0y, double range1y, double initial_log_uniform, double final_log_uniform, double initial_uniform, double final_uniform, double t0, double tmax, double dt)
+  Simulation(struct InitialDataValues* data)
   {
     srand (time(NULL));
     //Total number of mass points and the horizontal and vertical force
-    this->N = N;
+    this->N = data->N;
     //Step 2: The positions of the nodes were initialized and 20% of the nodes are connected to the input.
-    this->input_connectivity = input_connectivity;
-    this->total_input_nodes = input_connectivity * ((double)N);
-    this->w_out_initial = w_out_initial;
-    this->w_out_final = w_out_final;
-    this->initial_log_uniform = initial_log_uniform;
-    this->final_log_uniform = initial_log_uniform;
-    this->initial_uniform = initial_log_uniform;
-    this->final_uniform = initial_log_uniform;
-    this->t0 = t0;
-    this->tmax = tmax;
-    this->dt = dt;
+    this->input_connectivity = data->input_connectivity;
+    this->total_input_nodes = data->input_connectivity * ((double)N);
+    this->w_out_initial = data->w_out_initial;
+    this->w_out_final = data->w_out_final;
+    this->initial_log_uniform= data->initial_log_uniform;
+    this->final_log_uniform = data->initial_log_uniform;
+    this->initial_uniform = data->initial_log_uniform;
+    this->final_uniform = data->initial_log_uniform;
+    this->t0 = data->t0;
+    this->tmax = data->tmax;
+    this->dt = data->dt;
+
+    double ux = data->ux;
+    double uy = data->uy;
 
     //This does the Delaunay triangulation with the width (range1x - range0x) and the heigh (range1y - range0y)
     DelaunayTriangulation DT(abs(range1x-range0x), abs(range1y-range0y));
     //Does node initialization and adds points for delaunay triangulation
     for(int i=0; i<N; i++)
     {
-      Initialize_Nodes(range0x, range1x, range0y, range1y, input_node, w_in_initial, w_in_final);
-      if(i < (int)total_input_nodes) n[i].Input_Nodes(ux, uy, Uniform(w_in_initial, w_in_final));
-      DT.AddPoint(Point(n[i]).X_Position(), n[i].Y_Position());
+      Initialize_Nodes(range0x, range1x, range0y, range1y);
+      if(i < (int)total_input_nodes) n[i].Input_Node(ux, uy, Uniform(w_in_initial, w_in_final));
+      DT.AddPoint(Point(n[i].X_Position()), Point(n[i].Y_Position()));
     }
     //Shuffles it after
     random_shuffle(&n[0], &n[N-1]);
@@ -80,6 +119,8 @@ public:
      //The first input_connectivity percent of the nodes are marked as input nodes, and the
      n.push_back(p);
   }
+
+
 
   void Delaunay_Triangulation()
   {

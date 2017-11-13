@@ -39,11 +39,10 @@ private:
 	 {
 		this->x_position=x_position;
 	  this->y_position=y_position;
-
    }
 
  //If this function is activated than the node is input node
-	void Input_node(double ux, double uy, double win)
+	void Input_Node(double ux, double uy, double win)
 	{
 		this->ux = ux;
 		this->uy = uy;
