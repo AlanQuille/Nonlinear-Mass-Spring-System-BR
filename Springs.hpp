@@ -28,7 +28,7 @@ class Springs
 	double wout;
 
 	public:
-    
+
 	Springs(double k1, double d1, double k3, double d3, double l0, double nodea, double nodeb, double wout)
 	{
 		this->l0=l0;

@@ -27,6 +27,7 @@ int main(int argc, char** argv)
 	data.tmax = 0.1;
 	data.dt = 0.001;
 
-  Simulation s = new Simulation(data);
+  Simulation sim(data);
+
   return 0;
 }

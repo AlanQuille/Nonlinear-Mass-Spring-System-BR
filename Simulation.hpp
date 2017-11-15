@@ -49,6 +49,7 @@ private:
   vector<Springs> s;
   vector<vector<double>> EdgeList;
   vector<double> NodeList;
+	vector<double> EdgeNodeList;
   double w_out_initial;
   double w_out_final;
   double w_in_initial;
@@ -69,70 +70,118 @@ private:
   double range1x;
   double range1y;
 
+  //These are constant horizontal forces on the input nodes. If this changes so each input node receives a unique force we will have to modify the code
+	double ux;
+	double uy;
+
 
 
 public:
 
   //Default constructor
-  Simulation(struct InitialDataValues* data)
+  Simulation(InitialDataValues &data)
   {
     srand (time(NULL));
     //Total number of mass points and the horizontal and vertical force
-    this->N = data->N;
+    this->N = data.N;
     //Step 2: The positions of the nodes were initialized and 20% of the nodes are connected to the input.
-    this->input_connectivity = data->input_connectivity;
-    this->total_input_nodes = data->input_connectivity * ((double)N);
-    this->w_out_initial = data->w_out_initial;
-    this->w_out_final = data->w_out_final;
-    this->initial_log_uniform= data->initial_log_uniform;
-    this->final_log_uniform = data->initial_log_uniform;
-    this->initial_uniform = data->initial_log_uniform;
-    this->final_uniform = data->initial_log_uniform;
-    this->t0 = data->t0;
-    this->tmax = data->tmax;
-    this->dt = data->dt;
+    this->input_connectivity = data.input_connectivity;
+    this->total_input_nodes = data.input_connectivity * ((double)N);
+    this->w_out_initial = data.w_out_initial;
+    this->w_out_final = data.w_out_final;
+    this->initial_log_uniform= data.initial_log_uniform;
+    this->final_log_uniform = data.initial_log_uniform;
+    this->initial_uniform = data.initial_log_uniform;
+    this->final_uniform = data.initial_log_uniform;
+    this->t0 = data.t0;
+    this->tmax = data.tmax;
+    this->dt = data.dt;
 
-    double ux = data->ux;
-    double uy = data->uy;
+		this->range0x = data.range0x;
+		this->range0y = data.range0y;
+		this->range1x = data.range1x;
+		this->range1y = data.range1y;
 
-    //This does the Delaunay triangulation with the width (range1x - range0x) and the heigh (range1y - range0y)
-    DelaunayTriangulation DT(abs(range1x-range0x), abs(range1y-range0y));
-    //Does node initialization and adds points for delaunay triangulation
-    for(int i=0; i<N; i++)
-    {
-      Initialize_Nodes(range0x, range1x, range0y, range1y);
-      if(i < (int)total_input_nodes) n[i].Input_Node(ux, uy, Uniform(w_in_initial, w_in_final));
-      DT.AddPoint(Point(n[i].X_Position()), Point(n[i].Y_Position()));
-    }
-    //Shuffles it after
-    random_shuffle(&n[0], &n[N-1]);
-    DT.print();
-    //This executes the triangulation after the frame has been made and the points inputted
-    Delaunay_Triangulation();
-    Initialize_Springs();
+    this->ux = data.ux;
+    this->uy = data.uy;
+
+		Initialize_Nodes(range0x, range1x, range0y, range1y);
+    Delaunay_Triangulation_and_Spring_Creation();
+
+		if(EdgeList.size() < N)
+		{
+			cout <<"Delaunay Triangulation needs to be done again, there are unconnected nodes.";
+		}
+
   }
+
+	void Delaunay_Triangulation_and_Spring_Creation()
+	{
+			DelaunayTriangulation DT(abs(range1x-range0x), abs(range1y-range0y));
+
+			//Does node initialization and adds points for delaunay triangulation
+			for(int i=0; i<N; i++)
+			{
+				if(i < (int)total_input_nodes) n[i].Input_Node(ux, uy, Uniform(w_in_initial, w_in_final));
+				DT.AddPoint(Point(n[i].X_Position(),n[i].Y_Position()));
+			//  DT.AddPoint(Point(n[i].X_Position(), Point(n[i].Y_Position());
+			}
+
+			random_shuffle(&n[0], &n[N-1]);
+			DT.print();
+
+			Get_Triangles(DT);
+			Initialize_Springs();
+	}
+
+	void Create_EdgeNodeList()
+	{
+		for(int i=0; i<EdgeList.size(); i++)
+		{
+			EdgeNodeList.push_back(s[i].Nodea());
+			EdgeNodeList.push_back(s[i].Nodeb());
+		}
+
+		sort( EdgeNodeList.begin(), EdgeNodeList.end() );
+		EdgeNodeList.erase( unique( EdgeNodeList.begin(), EdgeNodeList.end() ), EdgeNodeList.end() );
+
+	}
+
+	double Output_No_of_Edges()
+	{
+		return EdgeList.size();
+	}
+
+	void Output_Spring_And_Node_Positions()
+	{
+		for (int i =0; i<s.size(); i++)
+		{
+			s[i].Output();
+			cout << endl;
+			cout << "The position of Node a of spring " <<i << " " << n[s[i].Nodea()].X_Position() <<"," <<n[s[i].Nodea()].Y_Position();
+			cout << endl;
+			cout << "The position of Node b of spring " <<i << " " << n[s[i].Nodeb()].X_Position() <<"," <<n[s[i].Nodeb()].Y_Position();
+			cout << endl;
+		}
+	}
 
  //This initializes the nodes and puts in appropriate values for the ranges and the weights
   void Initialize_Nodes(double range0x, double range1x, double range0y, double range1y)
   {
-     Nodes p(Uniform(range0x, range1x), Uniform(range0y,range1y));
+     for(int i=0; i<N; i++)
+		 {
+		 Nodes p(Uniform(range0x, range1x), Uniform(range0y,range1y));
      //The first input_connectivity percent of the nodes are marked as input nodes, and the
      n.push_back(p);
+	   }
   }
 
 
 
-  void Delaunay_Triangulation()
+  void Get_Triangles(DelaunayTriangulation &Delaunay)
   {
-    char i;
-    int j;
     stringstream s1;
 
-    int iter=0;
-    int total = 0;
-    int nodea = 0;
-    int nodeb = 0;
-    //vector<Springs> s;
     vector<string> tri;
     string es;
     int k =0;
@@ -142,15 +191,12 @@ public:
     int node3;
     char sep=',';
 
-    int noofconnectingedges = 0;
-    int vertices = 0;
+		double vertices = 0;
+		double noofconnectingedges = 0;
 
-    bool oneortwo;
-    bool twoorthree;
-    bool oneorthree;
 
     //	This takes the nodes of each triangle and parses them so only the relevant nodes a
-    	for(auto e: DT.triangles)
+    	for(auto e: Delaunay.triangles)
     	{
     		//cout <<"Node1:" <<get<0>(e) <<" " << "Node2:"<<" " <<get<1>(e)<< endl;
     		s1 << e;
@@ -226,13 +272,14 @@ public:
             vertices = 0;
     		k++;
      }
-     sort (EdgeList.begin(), EdgeList.end());
-     RemoveDuplicates(EdgeList);
+
+		 		RemoveDuplicates(EdgeList);
+   //Remove Duplicates from EdgeNodeList
   }
 
   void Initialize_Springs()
   {
-    cout <<"The number of edges for: " <<N << "Mass points is: " << EdgeList.size() << endl;
+    cout <<"The number of edges for: " <<N << " mass points is: " << EdgeList.size() << endl;
   	//cout <<"The number of unduplicated edges should be " << EdgeList.size() << endl;
     //Spring and damping coefficients
   	double k1 = 0;
@@ -249,8 +296,6 @@ public:
 
   	int arraysubscript1=0;
   	int arraysubscript2=0;;
-  	double initialvalue = 0;
-  	double finalvalue = 1;
 
   	for(int i=0; i<EdgeList.size(); i++)
   	{
@@ -290,8 +335,13 @@ public:
 
     int maxtimesteps = (int)(tmax/dt);
 
-    nodea =0;
-    nodeb = 0;
+    double nodea =0;
+    double nodeb = 0;
+
+		double x0 = 0;
+		double x1 = 0;
+		double y0 = 0;
+		double y1 = 0;
 
     for(int i=0; i<maxtimesteps; i++)
     {
@@ -414,7 +464,7 @@ public:
 
   void RemoveDuplicates(vector<vector<double>> &x)
   {
-  	// sort (x.begin(), x.end());
+  	 sort (x.begin(), x.end());
   	 int i=1;
   	 while(i<x.size())
   	 {
@@ -422,7 +472,7 @@ public:
   	 	{
   		  x.erase(x.begin()+(i-1));
   		  i-=1;
-      	}
+      }
         i++;
   	 }
   }

@@ -15,7 +15,7 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
     */
-    
+
 #include <algorithm>
 #include <memory>
 #include <iostream>
@@ -100,7 +100,7 @@ class Triangle
         }
       }
     }
-    
+
     std::array<int, 3> vertexreturn()
     {
     	return v;
@@ -121,7 +121,7 @@ class DelaunayTriangulation
     std::vector< Point > points;
     std::vector< Tptr >  triangles;
     std::vector< Edge > edges;
-    
+
     //DelaunayTriangulation(int width, int height)
     DelaunayTriangulation(int width, int height)
     {
@@ -129,14 +129,14 @@ class DelaunayTriangulation
       points.push_back( Point(width, 0) );
       points.push_back( Point(width, height) );
       points.push_back( Point(0,     height) );
-      
+
       // Form the frame
       auto T1 = std::make_shared<Triangle>(0, 3, 1);
       auto T2 = std::make_shared<Triangle>(2, 1, 3);
 
       T1->n[0] = T2;
       T2->n[0] = T1;
-      
+
       triangles.push_back(T1);
       triangles.push_back(T2);
     }
@@ -153,7 +153,7 @@ class DelaunayTriangulation
       for (auto t : triangles)
         cout << t << endl;
     }
-    
+
 
     void AddPoint(Point p)
     {
@@ -187,7 +187,7 @@ class DelaunayTriangulation
         auto T = std::make_shared<Triangle>(pi, a, b);
 
         T->n[0] = std::get<2>(edge);  // To neighbour
-        
+
         if (std::get<2>(edge))
           T->n[0]->SetEdge(Edge(b, a, nullptr), T);  // From neighbour
 
@@ -234,7 +234,7 @@ class DelaunayTriangulation
       std::vector<Edge> boundary;
 
       while (true)
-      {   
+      {
         if (boundary.size() > 1)
           if (boundary.front() == boundary.back())
             break;
@@ -250,7 +250,7 @@ class DelaunayTriangulation
           edge = (pos + 1) % 3;
         }
 
-        else // Found an edge that is on the boundary 
+        else // Found an edge that is on the boundary
         {
           // Add to list
 
@@ -260,14 +260,11 @@ class DelaunayTriangulation
           edge = (edge + 1) % 3;
         }
       }
-      
-      
-      
+
+
+
       boundary.pop_back();
       edges.pop_back();
       return boundary;
     }
 };
-  
-
-    

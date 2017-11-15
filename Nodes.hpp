@@ -35,7 +35,7 @@ private:
 
   int test = 0;
 
-	Nodes(double x_position, double y_position, double ux, double uy)
+	Nodes(double x_position, double y_position)
 	 {
 		this->x_position=x_position;
 	  this->y_position=y_position;
