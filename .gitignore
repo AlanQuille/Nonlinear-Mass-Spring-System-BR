@@ -2,3 +2,10 @@ a.exe
 .atom-gdb.json
 main.exe
 compiling_error.txt
+Delaunay.hpp.gch
+Simulation.hpp.gch
+Nodes.hpp.gch
+Springs.hpp.gch
+
+
+
