@@ -31,14 +31,14 @@ int main(int argc, char** argv)
 
   Simulation sim(data);
 
+  cout << endl;
+
   for(int i =0; i<sim.Spring_List(); i++)
   {
     cout <<"Weight for spring" <<" " << sim.Spring_Return(i).Output_Weight() << endl;
   }
 
 //  sim.Springs
-
-
 
   double test = 0;
 
@@ -72,9 +72,6 @@ int main(int argc, char** argv)
  cout << m << endl;
  m = m.completeOrthogonalDecomposition().pseudoInverse();
  cout << m << endl;
-
-
-
 
   return 0;
 }
