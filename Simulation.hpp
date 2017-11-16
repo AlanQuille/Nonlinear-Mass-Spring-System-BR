@@ -396,14 +396,14 @@ public:
   	return M + (rand() / ( RAND_MAX / (N-M) ) ) ;
   }
 
-  double Log_Uniform(double initial, double final)
-  {
-  	return exp(Uniform(initial, final));
-  }
+	double Log_10_Uniform(double initial, double final)
+	{
+		return exp(Uniform(initial, final)/(2.302585093));
+	}
 
   double Spring_And_Damping_Coefficient_1(double initial, double final)
   {
-  	return Log_Uniform(initial, final);
+  	return Log_10_Uniform(initial, final);
   }
 
   double Spring_And_Damping_Coefficient_2(double initial, double final)
@@ -476,5 +476,20 @@ public:
         i++;
   	 }
   }
+
+	Springs Spring_Return(int i)
+	{
+		return s[i];
+	}
+
+	Nodes NodeReturn(int i)
+	{
+		return n[i];
+	}
+
+	double Spring_List()
+	{
+		return EdgeList.size();
+	}
 
 };

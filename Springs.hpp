@@ -81,6 +81,11 @@ class Springs
 		return nodeb;
 	}
 
+  double Output_Weight()
+  {
+    return wout;
+  }
+
 //	void InputNextX1()
 //	{
 //		x1
