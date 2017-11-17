@@ -7,8 +7,11 @@
 #include "Delaunay.hpp"
 #include "Springs.hpp"
 #include "Nodes.hpp"
+#include "Eigen/QR"
 #include <sstream>
 #include <fstream>
+using namespace Eigen;
+
 
 
 struct InitialDataValues
@@ -47,6 +50,7 @@ private:
   double total_input_nodes;
   vector<Nodes> n;
   vector<Springs> s;
+	vector<vector<double>> L;
   vector<vector<double>> EdgeList;
   vector<double> NodeList;
 	vector<double> EdgeNodeList;
@@ -73,6 +77,9 @@ private:
   //These are constant horizontal forces on the input nodes. If this changes so each input node receives a unique force we will have to modify the code
 	double ux;
 	double uy;
+
+	//Learning weight vector after decomposition.
+
 
 
 
@@ -132,6 +139,7 @@ public:
 
 			Get_Triangles(DT);
 			Initialize_Springs();
+			//Execute_In_Time();
 	}
 
 	void Create_EdgeNodeList()
@@ -322,6 +330,34 @@ public:
      }
   }
 
+	void Moore_Penrose_Pseudoinverse()
+	{
+		int maxtimesteps = (int)((tmax-t0)/dt));
+		//L is the matrix to be inverted
+		MatrixXd L(maxtimesteps,EdgeList.size());
+    //pinv is the inverted matrix
+
+		for(int i=0; i<maxtimesteps; i++)
+		{
+			for(int j=0; j<EdgeList.size(); j++)
+			{
+				L(i,j) = L[i,j];
+			}
+		}
+
+		MatrixXd pinv = L.completeOrthogonalDecomposition().pseudoInverse();
+
+		for(int i=0; i<maxtimesteps; i++)
+		{
+			for(int j=0; j<EdgeList.size(); j++)
+			{
+				L[i,j] =
+			}
+		}
+
+	}
+
+
   //This changes position of springs and nodes dynamically in time.
   void Execute_In_Time()
   {
@@ -331,9 +367,8 @@ public:
     double theta = 0;
     double l = 0;
 
-    ofstream ofs ("test.csv", ofstream::out);
-
-    int maxtimesteps = (int)(tmax/dt);
+  //  ofstream ofs ("test.csv", ofstream::out);
+	//Not interested in outputting at this stage.
 
     double nodea =0;
     double nodeb = 0;
@@ -343,13 +378,18 @@ public:
 		double y0 = 0;
 		double y1 = 0;
 
-    for(int i=0; i<maxtimesteps; i++)
-    {
+		//This loop does not include the initial timestep i=0
+		//Everything is set initially.
+    int maxtimesteps = (int)((tmax-t0)/dt);
+		MatrixXd L(maxtimesteps,EdgeList.size());
 
+		for(int i=0; i<maxtimesteps; i++)
+		{
  		for(int j=0; j<EdgeList.size(); j++)
     	{
+         L[i].push_back(s[j].Return_Current_Length())= s[j].Return_Current_Length();
 
-    	   s[j].ForceEq(Fsum);
+				 s[j].ForceEq(Fsum);
 
     	   nodea = s[j].Nodea();
     	   nodeb = s[j].Nodeb();
@@ -373,17 +413,9 @@ public:
     	   y1 = n[nodeb].Y_Position();
 
     	   l = Eucl_Dist(x0, x1, y0, y1);
-
-        s[j].Change_Length_And_Velocity(l, dt);
-
+         s[j].Change_Length_And_Velocity(l, dt);
      }
-        //Outputs to fstream, first node as a small test
-        ofs << i*dt;
-    	  ofs <<",";
-    	  ofs << n[nodea].X_Position();
-    	  ofs <<endl;
-   }
-   ofs.close();
+	 }
   }
 
   int Random_Input_Nodes(int N)
@@ -486,6 +518,7 @@ public:
 	{
 		return n[i];
 	}
+
 
 	double Spring_List()
 	{

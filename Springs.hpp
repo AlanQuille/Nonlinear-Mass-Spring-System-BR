@@ -61,7 +61,13 @@ class Springs
 		cout << x2force << endl;
 
 		x2 += dt*x2force;
+    this->l = l;
 	}
+
+  double Return_Current_Length()
+  {
+    return l;
+  }
 
 
 	void Output()
