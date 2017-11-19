@@ -7,9 +7,10 @@
 #include "Delaunay.hpp"
 #include "Springs.hpp"
 #include "Nodes.hpp"
-#include "Eigen/QR"
+#include "Eigen/Dense"
 #include <sstream>
 #include <fstream>
+using namespace std;
 using namespace Eigen;
 
 
@@ -50,10 +51,11 @@ private:
   double total_input_nodes;
   vector<Nodes> n;
   vector<Springs> s;
-	vector<vector<double>> L;
+	vector<vector<double>> Loutput;
   vector<vector<double>> EdgeList;
   vector<double> NodeList;
 	vector<double> EdgeNodeList;
+	vector<double> Learning_Weights;
   double w_out_initial;
   double w_out_final;
   double w_in_initial;
@@ -139,7 +141,7 @@ public:
 
 			Get_Triangles(DT);
 			Initialize_Springs();
-			//Execute_In_Time();
+			Execute_In_Time();
 	}
 
 	void Create_EdgeNodeList()
@@ -330,31 +332,33 @@ public:
      }
   }
 
-	void Moore_Penrose_Pseudoinverse()
+	void Moore_Penrose_Pseudoinverse(Eigen::MatrixXd& L, int maxtimesteps)
 	{
-		int maxtimesteps = (int)((tmax-t0)/dt));
-		//L is the matrix to be inverted
-		MatrixXd L(maxtimesteps,EdgeList.size());
-    //pinv is the inverted matrix
-
-		for(int i=0; i<maxtimesteps; i++)
-		{
-			for(int j=0; j<EdgeList.size(); j++)
-			{
-				L(i,j) = L[i,j];
-			}
-		}
-
 		MatrixXd pinv = L.completeOrthogonalDecomposition().pseudoInverse();
+	}
 
-		for(int i=0; i<maxtimesteps; i++)
-		{
-			for(int j=0; j<EdgeList.size(); j++)
-			{
-				L[i,j] =
-			}
-		}
+	void MatrixMultiply(MatrixXd& A, MatrixXd& B, MatrixXd& Output)
+	{
+		 int maxtimesteps = (int)((tmax-t0)/dt);
+		 for(int i=0; i<maxtimesteps; i++)
+		 {
+			 for(int j=0; j<EdgeList.size(); j++)
+			 {
+				 cout <<"At time: " <<i*dt <<" The " <<j <<"th " <<"spring has length: " <<A(i,j);
+				 cout <<endl;
+			 }
+		 }
+	}
 
+	void Populate_Learning_Weights(MatrixXd& L, MatrixXd& T, MatrixXd& Output, int maxtimesteps)
+	{
+		Moore_Penrose_Pseudoinverse(L, maxtimesteps);
+		MatrixMultiply(L, T, Output);
+	}
+
+	double SineWave(double currenttime)
+	{
+		return sin(currenttime);
 	}
 
 
@@ -368,7 +372,7 @@ public:
     double l = 0;
 
   //  ofstream ofs ("test.csv", ofstream::out);
-	//Not interested in outputting at this stage.
+	//Not interested in outputting at this stage
 
     double nodea =0;
     double nodeb = 0;
@@ -382,13 +386,21 @@ public:
 		//Everything is set initially.
     int maxtimesteps = (int)((tmax-t0)/dt);
 		MatrixXd L(maxtimesteps,EdgeList.size());
+		MatrixXd T(maxtimesteps, EdgeList.size());
+		MatrixXd Output(maxtimesteps, EdgeList.size());
 
-		for(int i=0; i<maxtimesteps; i++)
+		double currentlength = 0;
+
+		for(int j=0; j<EdgeList.size(); j++)
+		{
+			L(0,j)=s[j].Return_Original_Length();
+			T(0,j)=SineWave(0);
+		}
+
+		for(int i=1; i<maxtimesteps; i++)
 		{
  		for(int j=0; j<EdgeList.size(); j++)
     	{
-         L[i].push_back(s[j].Return_Current_Length())= s[j].Return_Current_Length();
-
 				 s[j].ForceEq(Fsum);
 
     	   nodea = s[j].Nodea();
@@ -413,9 +425,17 @@ public:
     	   y1 = n[nodeb].Y_Position();
 
     	   l = Eucl_Dist(x0, x1, y0, y1);
-         s[j].Change_Length_And_Velocity(l, dt);
+				 currentlength = l;
+
+				 L(i,j) = currentlength;
+				 T(i,j) = SineWave(i*dt);
+
+         s[j].Change_Length_And_Velocity(dt, l);
      }
 	 }
+
+	 Populate_Learning_Weights(L, T, Output, maxtimesteps);
+
   }
 
   int Random_Input_Nodes(int N)

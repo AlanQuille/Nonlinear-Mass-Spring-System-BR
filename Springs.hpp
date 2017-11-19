@@ -33,7 +33,7 @@ class Springs
     {
         this->l0=l0;
         this->k1=k1;
-      this->k3=k3;
+        this->k3=k3;
         this->d1=d1;
         this->d3=d3;
         this->nodea = nodea;
@@ -54,25 +54,17 @@ class Springs
         Fsum = -p-q;
     };
 
-    void Change_Length_And_Velocity(double &l, double &dt)
+    void Change_Length_And_Velocity(double &dt, double &l)
     {
         x1 = l - l0;
         double x2force = -(k3*x1*x1*x1 + k1*x1) - (d3*x2*x2*x2 + d1*x2);
-        cout << x2force << endl;
+		    x2 += dt*x2force;
+	  };
 
-<<<<<<< HEAD
-		x2 += dt*x2force;
-    this->l = l;
-	}
-=======
-        x2 += dt*x2force;
-    }
->>>>>>> 7d2c868f768e99200648418b178a10912b619d6f
-
-  double Return_Current_Length()
-  {
-    return l;
-  }
+    double Return_Original_Length()
+    {
+        return l0;
+    };
 
 
     void Output()
