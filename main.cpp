@@ -7,11 +7,18 @@ using namespace std;
 
 
 
+unsigned long long rdtsc()
+{
+    unsigned int lo,hi;
+    __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
+    return ((unsigned long long)hi << 32) | lo;
+}
+
 int main(int argc, char** argv)
 {
 
   InitialDataValues data;
-  srand(time(NULL));
+  srand(rdtsc());
 
   data.N =2;
   data.ux=1;
@@ -22,11 +29,11 @@ int main(int argc, char** argv)
   data.w_out_initial = -1;
   data.w_out_final = 1;
   data.range0x = 0;
-  data.range1x = 1;
+  data.range1x = 10;
   data.range0y = 0;
-  data.range1y = 1;
+  data.range1y = 10;
   data.initial_log_uniform = 1;
-  data.final_log_uniform = 100;
+  data.final_log_uniform = 10;
   data.initial_uniform = 100;
   data.final_uniform = 200;
   data.t0 = 0;

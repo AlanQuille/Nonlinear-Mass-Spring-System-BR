@@ -99,9 +99,9 @@ public:
     this->w_out_initial = data.w_out_initial;
     this->w_out_final = data.w_out_final;
     this->initial_log_uniform= data.initial_log_uniform;
-    this->final_log_uniform = data.initial_log_uniform;
-    this->initial_uniform = data.initial_log_uniform;
-    this->final_uniform = data.initial_log_uniform;
+    this->final_log_uniform = data.final_log_uniform;
+    this->initial_uniform = data.initial_uniform;
+    this->final_uniform = data.final_uniform;
     this->t0 = data.t0;
     this->tmax = data.tmax;
     this->dt = data.dt;
@@ -141,6 +141,11 @@ public:
 
 			Get_Triangles(DT);
 			Initialize_Springs();
+
+      cout <<"Test of pseudorandom generator." << Uniform(1,100) << endl;
+			cout <<"Test of pseudorandom generator." << Uniform(1,100) << endl;
+			cout <<"Test of pseudorandom generator." << Uniform(1,100) << endl;
+
 			Execute_In_Time();
 	}
 
@@ -313,11 +318,15 @@ public:
 		ofstream ofs5("k3output.csv");
 		ofstream ofs6("d3output.csv");
 
-    rand(); rand(); rand();
 
   	for(int i=0; i<EdgeList.size(); i++)
   	{
   		  //These take the arraysubscripts and disregard the first four points
+        cout <<"Why isn't uniform working?" << Uniform(initial_uniform, final_uniform) << endl;
+				cout <<initial_log_uniform << endl;
+				cout <<final_log_uniform << endl;
+				cout<< final_log_uniform << endl;
+
   		  arraysubscript1 = EdgeList[i].at(0) - 4;
   		  arraysubscript2 = EdgeList[i].at(1) - 4;
 
@@ -327,8 +336,8 @@ public:
   		  y1 = n[arraysubscript2].Y_Position();
 
   		  //These spring and damping coefficients are not giving different values
-  		  k1 = exp(Uniform(initial_log_uniform, final_log_uniform)/log(10));
-        d1 = exp(Uniform(initial_log_uniform, final_log_uniform)/log(10));
+  		  k1 = log10(Uniform(initial_log_uniform, final_log_uniform));
+        d1 = log10(Uniform(initial_log_uniform, final_log_uniform));
   	    k3 = Uniform(initial_uniform, final_uniform);
   	    d3 = Uniform(initial_uniform, final_uniform);
 
