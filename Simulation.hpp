@@ -345,21 +345,15 @@ public:
      }
   }
 
-	void Moore_Penrose_Pseudoinverse(Eigen::MatrixXd& L)
+	void Moore_Penrose_Pseudoinverse(MatrixXd& L)
 	{
-		MatrixXd pinv = L.completeOrthogonalDecomposition().pseudoInverse();
+		L = L.completeOrthogonalDecomposition().pseudoInverse();
 	}
 
 	void Populate_Learning_Weights(MatrixXd& L)
 	{
 		Moore_Penrose_Pseudoinverse(L);
-		MatrixMultiply(L);
-	}
-
-	void MatrixMultiply(MatrixXd &A)
-	{
-		cout << A;
-		cout << endl;
+	//	MatrixMultiply(L, T, Output);
 	}
 
 	double SineWave(double currenttime)
@@ -450,7 +444,7 @@ public:
          s[j].Change_Length_And_Velocity(dt, l);
      }
 	 }
-	      Populate_Learning_Weights(LearningMatrix);
+	      //Populate_Learning_Weights(LearningMatrix);
   }
 
   int Random_Input_Nodes(int N)

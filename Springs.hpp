@@ -59,8 +59,6 @@ class Springs
         x1 = l - l0;
         double x2force = -(k3*x1*x1*x1 + k1*x1) - (d3*x2*x2*x2 + d1*x2);
 		    x2 += dt*x2force;
-        cout <<"x2 is: " << x2;
-        cout << endl;
 	  };
 
     double Return_Original_Length()
