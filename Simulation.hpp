@@ -407,11 +407,13 @@ public:
 		for(int j=0; j<EdgeList.size(); j++)
 		{
 			LearningMatrix(0,j)=s[j].Return_Original_Length();
-			TargetSignal(0, j)= SineWave(0);
+			TargetSignal(0,j) = SineWave(0);
 		}
+
 
 		for(int i=1; i<maxtimesteps; i++)
 		{
+
  		for(int j=0; j<EdgeList.size(); j++)
     	{
 				 s[j].ForceEq(Fsum);
@@ -453,7 +455,12 @@ public:
          s[j].Change_Length_And_Velocity(dt, l);
      }
 	 }
-	      //Populate_Learning_Weights(LearningMatrix);
+	      cout << LearningMatrix << endl;
+	      Populate_Learning_Weights(LearningMatrix);
+				LearningMatrix= LearningMatrix * TargetSignal;
+				cout <<"This is the Learning Weight Matrix. These weights will be input into each spring." << endl;
+				cout << LearningMatrix;
+				cout << endl;
   }
 
   int Random_Input_Nodes(int N)

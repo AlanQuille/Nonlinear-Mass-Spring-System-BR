@@ -20,7 +20,7 @@ int main(int argc, char** argv)
   InitialDataValues data;
   srand(rdtsc());
 
-  data.N =2;
+  data.N =3;
   data.ux=1;
   data.uy= 0;
   data.input_connectivity = 0.2;
