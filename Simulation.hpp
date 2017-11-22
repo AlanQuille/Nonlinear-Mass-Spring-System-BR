@@ -55,7 +55,6 @@ private:
   vector<vector<double>> EdgeList;
   vector<double> NodeList;
 	vector<double> EdgeNodeList;
-	vector<double> Learning_Weights;
   double w_out_initial;
   double w_out_final;
   double w_in_initial;
@@ -80,7 +79,15 @@ private:
 	double ux;
 	double uy;
 
-	//Learning weight vector after decomposition.
+  //This is for the first phase of reservoir computing
+	bool learning_phase_over = 0;
+
+	//This is the final function which SHOULD be like the target signal.
+	vector<double> Output_Signal;
+
+  //This is the learning_weights vector
+	vector<double> Learning_Weights;
+
 
 
 
@@ -322,10 +329,6 @@ public:
   	for(int i=0; i<EdgeList.size(); i++)
   	{
   		  //These take the arraysubscripts and disregard the first four points
-        cout <<"Why isn't uniform working?" << Uniform(initial_uniform, final_uniform) << endl;
-				cout <<initial_log_uniform << endl;
-				cout <<final_log_uniform << endl;
-				cout<< final_log_uniform << endl;
 
   		  arraysubscript1 = EdgeList[i].at(0) - 4;
   		  arraysubscript2 = EdgeList[i].at(1) - 4;
@@ -359,11 +362,6 @@ public:
 		L = L.completeOrthogonalDecomposition().pseudoInverse();
 	}
 
-	void Populate_Learning_Weights(MatrixXd& L)
-	{
-		Moore_Penrose_Pseudoinverse(L);
-	//	MatrixMultiply(L, T, Output);
-	}
 
 	double SineWave(double currenttime)
 	{
@@ -393,6 +391,7 @@ public:
 
 		ofstream ofs("Node1.csv");
 		ofstream ofs2("Node2.csv");
+		ofstream ofs3("SampleForce.csv");
 
 		double currentlength = 0;
 
@@ -410,13 +409,15 @@ public:
 			TargetSignal(0,j) = SineWave(0);
 		}
 
-
+    if(learning_phase_over == 0)
+		{
 		for(int i=1; i<maxtimesteps; i++)
 		{
 
  		for(int j=0; j<EdgeList.size(); j++)
     	{
 				 s[j].ForceEq(Fsum);
+				 ofs3 << i*dt<<"," <<Fsum << endl;
 
     	   nodea = s[j].Nodea();
     	   nodeb = s[j].Nodeb();
@@ -453,15 +454,70 @@ public:
 				 TargetSignal(i,j) = SineWave(dt*i);
 
          s[j].Change_Length_And_Velocity(dt, l);
+
+        }
+	    }
+			learning_phase_over = 1;
      }
-	 }
-	      cout << LearningMatrix << endl;
-	      Populate_Learning_Weights(LearningMatrix);
+		 else
+		 {
+			 for(int i=1; i<maxtimesteps; i++)
+			 {
+
+				 for(int j=0; j<EdgeList.size(); j++)
+				 {
+						s[j].ForceEq(Fsum);
+
+						nodea = s[j].Nodea();
+						nodeb = s[j].Nodeb();
+
+						x0 = n[nodea].X_Position();
+						x1 = n[nodeb].X_Position();
+						y0 = n[nodea].Y_Position();
+						y1 = n[nodeb].Y_Position();
+
+						//Change position of first node
+						theta = Angle(x0, x1, y0, y1);
+						Fx = X_Comp(Fsum, theta);
+						Fy = Y_Comp(Fsum, theta);
+
+						n[nodea].Change_Position(Fx, Fy, dt);
+						n[nodeb].Change_Position(Fx, Fy, dt);
+
+						x0 = n[nodea].X_Position();
+						x1 = n[nodeb].X_Position();
+
+						ofs <<dt*i <<","<< x0;
+						ofs2 <<dt*i <<"," << x1;
+
+						y0 = n[nodea].Y_Position();
+						y1 = n[nodeb].Y_Position();
+
+						ofs <<"," << y0 << endl;
+						ofs2 <<"," << y1 << endl;
+
+						l = Eucl_Dist(x0, x1, y0, y1);
+						currentlength = l;
+						s[j].Change_Length_And_Velocity(dt, l);
+						}
+				 }
+		 }
+
+
+	      Moore_Penrose_Pseudoinverse(LearningMatrix);
 				LearningMatrix= LearningMatrix * TargetSignal;
-				cout <<"This is the Learning Weight Matrix. These weights will be input into each spring." << endl;
-				cout << LearningMatrix;
-				cout << endl;
+				Populate_Learning_Weights(LearningMatrix);
   }
+
+	Populate_Learning_Weights(MatrixXd& L)
+	{
+		for(int j=0; j<EdgeList.size(); j++)
+		{
+			Learning_Weights.push_back(L(j,0));
+			cout <<"Learning weight for spring: " <<j <<" is "<<Learning_Weights[j];
+			cout << endl;
+		}
+	}
 
   int Random_Input_Nodes(int N)
   {

@@ -89,6 +89,7 @@ class Springs
     return wout;
   }
 
+
 //    void InputNextX1()
 //    {
 //        x1

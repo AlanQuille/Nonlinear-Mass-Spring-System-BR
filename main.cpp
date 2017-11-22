@@ -1,12 +1,13 @@
 #include <iostream>
 #include <cstdlib>
+#include <ctime>
 
 #include "Simulation.hpp"
 
 using namespace std;
 
 
-
+//This takes the pseudo-cycles from the processor for srand()
 unsigned long long rdtsc()
 {
     unsigned int lo,hi;
@@ -14,10 +15,15 @@ unsigned long long rdtsc()
     return ((unsigned long long)hi << 32) | lo;
 }
 
+
+
 int main(int argc, char** argv)
 {
+  clock_t start_time,stop_time;
+  start_time = clock();
 
   InitialDataValues data;
+  //send from processor
   srand(rdtsc());
 
   data.N =3;
@@ -41,6 +47,12 @@ int main(int argc, char** argv)
   data.dt = 0.001;
 
   Simulation sim(data);
+
+  stop_time = clock();
+  double difference = (1000)*(stop_time - start_time)/CLOCKS_PER_SEC;
+
+  cout << "The time it took for the programme to run in total in milliseconds: ";
+  cout << difference << endl;
 
 
   return 0;
