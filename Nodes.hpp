@@ -31,6 +31,9 @@ private:
     //Each node has a certain number of springs attached to it. Each spring acts as a force on the node, which changes its position, and hence the position of the spring.
 	int noofconnectedsprings;
 
+	//Two nodes must be fixed. Is this one of them?
+	bool fixednode = 0;
+
   public:
 
   int test = 0;
@@ -48,6 +51,11 @@ private:
 		this->uy = uy;
 		this->input_node = 1;
 		this->win = win;
+	}
+
+	void FixedNode()
+	{
+		fixednode = 1;
 	}
 
 	void Output_Position()
@@ -68,8 +76,8 @@ private:
 	//This is the function that incrementally changes the nodes position in the next timestep;
 	void Change_Position(double Fx, double  Fy, double  dt)
 	{
-
-
+		  if(fixednode ==0)
+			{
 	    double pxdotdot;
 	    double pydotdot;
 
@@ -85,6 +93,7 @@ private:
 
       pxdot = EulerMethod(pxdotdot, pxdotdot, dt);
       this->x_position = EulerMethod(x_position, pxdot, dt);
+	  	}
 	}
 
 	double EulerMethod(double x0, double f, double dt)

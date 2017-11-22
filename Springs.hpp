@@ -57,7 +57,9 @@ class Springs
     void Change_Length_And_Velocity(double &dt, double &l)
     {
         x1 = l - l0;
-        double x2force = -(k3*x1*x1*x1 + k1*x1) - (d3*x2*x2*x2 + d1*x2);
+        double p = k3*x1*x1*x1 + k1*x1;
+        double q = d3*x2*x2*x2 + d1*x2;
+        double x2force = -p-q;
 		    x2 += dt*x2force;
 	  };
 
@@ -87,6 +89,23 @@ class Springs
   double Output_Weight()
   {
     return wout;
+  }
+
+  double Outputk1()
+  {
+    return k1;
+  }
+  double Outputk3()
+  {
+    return k3;
+  }
+  double Outputd1()
+  {
+    return d1;
+  }
+  double Outputd3()
+  {
+    return d3;
   }
 
 

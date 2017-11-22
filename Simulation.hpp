@@ -69,6 +69,7 @@ private:
 
   bool input_node;
 
+
 //Ranges for the delaunay triangulation
   double range0x;
   double range0y;
@@ -121,19 +122,23 @@ public:
     this->ux = data.ux;
     this->uy = data.uy;
 
+
 		Initialize_Nodes(range0x, range1x, range0y, range1y);
     Delaunay_Triangulation_and_Spring_Creation();
 
+/*
 		if(EdgeList.size() < N)
 		{
 			cout <<"Delaunay Triangulation needs to be done again, there are unconnected nodes.";
 		}
+		*/
 
   }
 
 	void Delaunay_Triangulation_and_Spring_Creation()
 	{
 			DelaunayTriangulation DT(abs(range1x-range0x), abs(range1y-range0y));
+			bool breaktheloop =0;
 
 			//Does node initialization and adds points for delaunay triangulation
 			for(int i=0; i<N; i++)
@@ -146,14 +151,11 @@ public:
 			random_shuffle(&n[0], &n[N-1]);
 			DT.print();
 
+
 			Get_Triangles(DT);
 			Initialize_Springs();
-
-      cout <<"Test of pseudorandom generator." << Uniform(1,100) << endl;
-			cout <<"Test of pseudorandom generator." << Uniform(1,100) << endl;
-			cout <<"Test of pseudorandom generator." << Uniform(1,100) << endl;
-
 			Execute_In_Time();
+
 	}
 
 	void Create_EdgeNodeList()
@@ -190,12 +192,37 @@ public:
  //This initializes the nodes and puts in appropriate values for the ranges and the weights
   void Initialize_Nodes(double range0x, double range1x, double range0y, double range1y)
   {
+		double x;
+		double y;
+
+		double x0 =range0x;
+		double x1 =range1x;
+
+    //for fixed nodes.
+		int j=0;
+		int k=0;
+
      for(int i=0; i<N; i++)
 		 {
-		 Nodes p(Uniform(range0x, range1x), Uniform(range0y,range1y));
+			 x=Uniform(range0x, range1x);
+			 y=Uniform(range0y, range1y);
+		   Nodes p(x, y);
      //The first input_connectivity percent of the nodes are marked as input nodes, and the
-     n.push_back(p);
+       n.push_back(p);
+			 if(x0>x)
+			 {
+			 x0 =x;
+			 j++;
+		   }
+			 if(x1<x)
+			 {
+			 x1 = x;
+			 k++;
+		   }
 	   }
+		 //Fixed the leftmost and rightmost nodes.
+		 n[j].FixedNode();
+		 n[k].FixedNode();
   }
 
 
@@ -370,7 +397,7 @@ public:
 
 
   //This changes position of springs and nodes dynamically in time.
-  void Execute_In_Time()
+  bool Execute_In_Time()
   {
     double Fsum =0;
     double Fx =0;
@@ -392,16 +419,21 @@ public:
 		ofstream ofs("Node1.csv");
 		ofstream ofs2("Node2.csv");
 		ofstream ofs3("SampleForce.csv");
+		ofstream bad("Badcoefficients.csv");
 
 		double currentlength = 0;
 
 		//This loop does not include the initial timestep i=0
 		//Everything is set initially.
 
+	//This is to ensure to inf or nan values;
+	  bool breaktheloop=0;
+
 
     int maxtimesteps = (int)((tmax-t0)/dt);
 		MatrixXd LearningMatrix(maxtimesteps,EdgeList.size());
 		MatrixXd TargetSignal(maxtimesteps, EdgeList.size());
+
 
 		for(int j=0; j<EdgeList.size(); j++)
 		{
@@ -411,14 +443,23 @@ public:
 
     if(learning_phase_over == 0)
 		{
-		for(int i=1; i<maxtimesteps; i++)
+		for(int i=1; !breaktheloop && i<maxtimesteps; i++)
 		{
 
- 		for(int j=0; j<EdgeList.size(); j++)
+ 		for(int j=0; !breaktheloop && j<EdgeList.size(); j++)
     	{
 				 s[j].ForceEq(Fsum);
-				 ofs3 << i*dt<<"," <<Fsum << endl;
+				 if(isinf(Fsum) || isnan(Fsum))
+				 {
 
+				 bad << s[j].Outputk1() <<endl;
+				 bad << s[j].Outputk3() <<endl;
+				 bad << s[j].Outputd1() <<endl;
+				 bad << s[j].Outputd3() <<endl;
+				// breaktheloop = 1;
+		  	 }
+
+				 ofs3 << i*dt<<"," <<Fsum << endl;
     	   nodea = s[j].Nodea();
     	   nodeb = s[j].Nodeb();
 
@@ -454,7 +495,6 @@ public:
 				 TargetSignal(i,j) = SineWave(dt*i);
 
          s[j].Change_Length_And_Velocity(dt, l);
-
         }
 	    }
 			learning_phase_over = 1;
@@ -502,12 +542,24 @@ public:
 						}
 				 }
 		 }
+		    //If you get an inf value, the loop is broken but the code runs again.
 
-
+        if(!breaktheloop)
+				{
 	      Moore_Penrose_Pseudoinverse(LearningMatrix);
 				LearningMatrix= LearningMatrix * TargetSignal;
 				Populate_Learning_Weights(LearningMatrix);
+		  	}
+
+				return breaktheloop;
+        //Next step, get output signal.
   }
+/*
+	Output_Signal_And_MSE()
+	{
+		for(int i=0; i<maxtimestep; i++)
+	}
+	*/
 
 	Populate_Learning_Weights(MatrixXd& L)
 	{
