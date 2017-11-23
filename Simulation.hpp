@@ -137,8 +137,9 @@ public:
 
 	void Delaunay_Triangulation_and_Spring_Creation()
 	{
+
 			DelaunayTriangulation DT(abs(range1x-range0x), abs(range1y-range0y));
-			bool breaktheloop =0;
+		//	DelaunayTriangulation DT(-range1x, -range1y);
 
 			//Does node initialization and adds points for delaunay triangulation
 			for(int i=0; i<N; i++)
@@ -150,7 +151,6 @@ public:
 
 			random_shuffle(&n[0], &n[N-1]);
 			DT.print();
-
 
 			Get_Triangles(DT);
 			Initialize_Springs();
@@ -192,11 +192,13 @@ public:
  //This initializes the nodes and puts in appropriate values for the ranges and the weights
   void Initialize_Nodes(double range0x, double range1x, double range0y, double range1y)
   {
+    ofstream fixed("fixednode.txt");
+
 		double x;
 		double y;
 
-		double x0 =range0x;
-		double x1 =range1x;
+		double x1 =range0x;
+		double x0 =range1x;
 
     //for fixed nodes.
 		int j=0;
@@ -204,25 +206,30 @@ public:
 
      for(int i=0; i<N; i++)
 		 {
+
 			 x=Uniform(range0x, range1x);
+			 if(x1<x)
+			 {
+			  x1=x;
+				j=i;
+			}
 			 y=Uniform(range0y, range1y);
+			 if(x0>x)
+			 {
+				 x0=x;
+				 k=i;
+			 }
 		   Nodes p(x, y);
      //The first input_connectivity percent of the nodes are marked as input nodes, and the
        n.push_back(p);
-			 if(x0>x)
-			 {
-			 x0 =x;
-			 j++;
-		   }
-			 if(x1<x)
-			 {
-			 x1 = x;
-			 k++;
-		   }
 	   }
-		 //Fixed the leftmost and rightmost nodes.
+
+		 fixed <<j << endl;
+		 fixed <<k << endl;
+
 		 n[j].FixedNode();
 		 n[k].FixedNode();
+		 //Fixed the leftmost and rightmost nodes.
   }
 
 
@@ -449,17 +456,14 @@ public:
  		for(int j=0; !breaktheloop && j<EdgeList.size(); j++)
     	{
 				 s[j].ForceEq(Fsum);
-				 if(isinf(Fsum) || isnan(Fsum))
-				 {
-
-				 bad << s[j].Outputk1() <<endl;
-				 bad << s[j].Outputk3() <<endl;
-				 bad << s[j].Outputd1() <<endl;
-				 bad << s[j].Outputd3() <<endl;
+				// if(isnan(Fsum) || isinf(Fsum)) cout <<j << endl;
+				 //If there are bad springs, just remove the spring.
 				// breaktheloop = 1;
-		  	 }
 
 				 ofs3 << i*dt<<"," <<Fsum << endl;
+
+				 cout <<"Fsum is: "<<Fsum << endl;
+
     	   nodea = s[j].Nodea();
     	   nodeb = s[j].Nodeb();
 
@@ -473,6 +477,7 @@ public:
     	   Fx = X_Comp(Fsum, theta);
     	   Fy = Y_Comp(Fsum, theta);
 
+
          n[nodea].Change_Position(Fx, Fy, dt);
     	   n[nodeb].Change_Position(Fx, Fy, dt);
 
@@ -481,6 +486,12 @@ public:
 
 				 ofs <<dt*i <<","<< x0;
 				 ofs2 <<dt*i <<"," << x1;
+
+				 cout << "x0 is: "<< x0;
+			   cout << endl;
+
+				 cout << "y0 is: "<< y0;
+				 cout << endl;
 
     	   y0 = n[nodea].Y_Position();
     	   y1 = n[nodeb].Y_Position();
@@ -495,6 +506,7 @@ public:
 				 TargetSignal(i,j) = SineWave(dt*i);
 
          s[j].Change_Length_And_Velocity(dt, l);
+				 Fsum = 0;
         }
 	    }
 			learning_phase_over = 1;
@@ -503,7 +515,6 @@ public:
 		 {
 			 for(int i=1; i<maxtimesteps; i++)
 			 {
-
 				 for(int j=0; j<EdgeList.size(); j++)
 				 {
 						s[j].ForceEq(Fsum);
@@ -601,9 +612,9 @@ public:
   	return sqrt((y2-y1)*(y2-y1) + (x2-x1)*(x2-x1));
   }
 
-  double Angle(double x1, double x2, double y1, double y2)
+  double Angle(double x0, double x1, double y0, double y1)
   {
-  	return atan((y2-y1)/(x2-x1));
+  	return atan((y1-y0)/(x1-x0));
   }
 
   double X_Comp(double vectorsum, double theta)
@@ -661,7 +672,22 @@ public:
         i++;
   	 }
   }
-
+/*
+	boo CheckRepeats(vector<vector<double>> &x)
+	{
+		 sort (x.begin(), x.end());
+		 int i=1;
+		 while(i<x.size())
+		 {
+			if(x[i][1] ==x[i-1][1] || x[i][0] ==x[i-1][0])
+			{
+				x.erase(x.begin()+(i-1));
+				i-=1;
+			}
+				i++;
+		 }
+	}
+*/
 	Springs Spring_Return(int i)
 	{
 		return s[i];

@@ -27,7 +27,7 @@ int main(int argc, char** argv)
   srand(rdtsc());
 
 
-  data.N =78;
+  data.N =3;
   data.ux=1;
   data.uy= 0;
   data.input_connectivity = 0.2;
@@ -41,16 +41,22 @@ int main(int argc, char** argv)
   data.range1y = 10;
   data.initial_log_uniform = 1;
   data.final_log_uniform = 10;
-  data.initial_uniform = 100;
-  data.final_uniform = 200;
+  data.initial_uniform = 10;
+  data.final_uniform = 20;
   data.t0 = 0;
   data.tmax = 10;
   data.dt = 0.001;
 
+  //run same simulation x timeb_s
+  int x=1;
+
+  for(int i=0; i<x; i++)
+  {
   Simulation sim(data);
+  }
 
   stop_time = clock();
-  double difference = (1000)*(stop_time - start_time)/CLOCKS_PER_SEC;
+  double difference = (1000)*((stop_time - start_time)/CLOCKS_PER_SEC);
 
   cout << "The time it took for the programme to run in total in milliseconds: ";
   cout << difference << endl;

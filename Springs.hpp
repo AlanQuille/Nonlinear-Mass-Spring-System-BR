@@ -13,7 +13,8 @@ class Springs
     //l is the current length.
     double x1;
     //l-l0 is the x1 at time(t)
-    double x2;
+    //This is the velocity of the spring relative to l0.
+    double x2 = 0;
     //spring constants, not approriate for spring constnats.
     double k1;
     double d1;
@@ -26,6 +27,11 @@ class Springs
 
     //the weight on each spring.
     double wout;
+
+    //Total force on spring
+    double x2force =0;
+    double p;
+    double q;
 
     public:
 
@@ -57,9 +63,9 @@ class Springs
     void Change_Length_And_Velocity(double &dt, double &l)
     {
         x1 = l - l0;
-        double p = k3*x1*x1*x1 + k1*x1;
-        double q = d3*x2*x2*x2 + d1*x2;
-        double x2force = -p-q;
+        p = k3*x1*x1*x1 + k1*x1;
+        q = d3*x2*x2*x2 + d1*x2;
+        x2force = -p-q;
 		    x2 += dt*x2force;
 	  };
 
