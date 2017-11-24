@@ -155,7 +155,7 @@ public:
 
 			Get_Triangles(DT);
 			Initialize_Springs();
-			Execute_In_Time();
+			//Execute_In_Time();
 			Output_For_Plot();
 
 	}
@@ -408,17 +408,17 @@ public:
 	{
 		int maxtimesteps = (int)((tmax-t0)/dt);
 		ofstream nodes("nodes.csv");
-		string str = string("nodes.csv");
-		for(int i=0; i<maxtimesteps; i++)
-	 {
+		//string str = string("nodes.csv");
+		//for(int i=0; i<maxtimesteps; i++)
+//	 {
 		for(int j=0; j<EdgeList.size(); j++)
 		{
-			string current = string(to_string(j));
-			str.insert(4, current);
-			ofstream nodes(str);
+			//string current = string(to_string(j));
+		//	str.insert(4, current);
+		//	ofstream nodes(str);
 			nodes << n[s[j].Nodea()].X_Position() <<","<<n[s[j].Nodea()].Y_Position()<< "," <<n[s[j].Nodeb()].X_Position()<<"," << n[s[j].Nodeb()].Y_Position();
 		}
-	 }
+	// }
 
   }
 

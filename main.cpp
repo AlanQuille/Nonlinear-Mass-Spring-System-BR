@@ -27,7 +27,7 @@ int main(int argc, char** argv)
   srand(rdtsc());
 
 
-  data.N =3;
+  data.N =4;
   data.ux=1;
   data.uy= 0;
   data.input_connectivity = 0.2;
