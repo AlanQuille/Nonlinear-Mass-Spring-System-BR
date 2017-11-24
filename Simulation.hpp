@@ -10,6 +10,7 @@
 #include "Eigen/Dense"
 #include <sstream>
 #include <fstream>
+#include <string>
 using namespace std;
 using namespace Eigen;
 
@@ -155,6 +156,7 @@ public:
 			Get_Triangles(DT);
 			Initialize_Springs();
 			Execute_In_Time();
+			Output_For_Plot();
 
 	}
 
@@ -402,6 +404,24 @@ public:
 		return sin(currenttime);
 	}
 
+	void Output_For_Plot()
+	{
+		int maxtimesteps = (int)((tmax-t0)/dt);
+		ofstream nodes("nodes.csv");
+		string str = string("nodes.csv");
+		for(int i=0; i<maxtimesteps; i++)
+	 {
+		for(int j=0; j<EdgeList.size(); j++)
+		{
+			string current = string(to_string(j));
+			str.insert(4, current);
+			ofstream nodes(str);
+			nodes << n[s[j].Nodea()].X_Position() <<","<<n[s[j].Nodea()].Y_Position()<< "," <<n[s[j].Nodeb()].X_Position()<<"," << n[s[j].Nodeb()].Y_Position();
+		}
+	 }
+
+  }
+
 
   //This changes position of springs and nodes dynamically in time.
   bool Execute_In_Time()
@@ -554,13 +574,14 @@ public:
 				 }
 		 }
 		    //If you get an inf value, the loop is broken but the code runs again.
-
+        /*
         if(!breaktheloop)
 				{
 	      Moore_Penrose_Pseudoinverse(LearningMatrix);
 				LearningMatrix= LearningMatrix * TargetSignal;
 				Populate_Learning_Weights(LearningMatrix);
 		  	}
+				*/
 
 				return breaktheloop;
         //Next step, get output signal.

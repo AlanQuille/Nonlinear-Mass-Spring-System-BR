@@ -11,3 +11,4 @@ Springs.hpp.gch
 .~lock.Node2.csv#
 .~lock.d1output.csv#
 Badcoefficients.csv
+*.csv

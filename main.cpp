@@ -41,10 +41,10 @@ int main(int argc, char** argv)
   data.range1y = 10;
   data.initial_log_uniform = 1;
   data.final_log_uniform = 10;
-  data.initial_uniform = 10;
-  data.final_uniform = 20;
+  data.initial_uniform = 100;
+  data.final_uniform = 200;
   data.t0 = 0;
-  data.tmax = 10;
+  data.tmax = 50;
   data.dt = 0.001;
 
   //run same simulation x timeb_s
