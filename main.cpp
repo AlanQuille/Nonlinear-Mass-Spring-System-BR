@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include <fstream>
 
 #include "Simulation.hpp"
 
@@ -36,16 +37,17 @@ int main(int argc, char** argv)
   data.w_in_final = 1;
   data.w_out_initial = -1;
   data.w_out_final = 1;
+  //range-doubled, was fooling around with something, didn't change  back. Will change later.
   data.range0x = 0;
-  data.range1x = 10;
+  data.range1x = 5;
   data.range0y = 0;
-  data.range1y = 10;
+  data.range1y = 5;
   data.initial_log_uniform = 1;
   data.final_log_uniform = 10;
   data.initial_uniform = 100;
   data.final_uniform = 200;
   data.t0 = 0;
-  data.tmax = 1;
+  data.tmax = 2*M_PI;
   data.dt = 0.001;
 
   //run same simulation x timeb_s
@@ -56,21 +58,27 @@ int main(int argc, char** argv)
   MatrixXd LM;
   Simulation sim(data);
   LW = sim.Return_Learning_Weights();
-  Simulation sim2(data);
-  LM = sim2.Return_Learning_Matrix();
+//  Simulation sim2(data);
+  LM = sim.Return_Learning_Matrix();
+
+  ofstream output("outputsignal.csv");
+
   int maxtimesteps = ((data.tmax - data.t0)/(data.dt));
   double outputsignal = 0;
+  double currenttime = 0;
   for(int i=0; i<maxtimesteps; i++)
   {
   for(int j=0; j<LM.cols(); j++)
   {
     outputsignal += LW.at(j) * LM(i, j);
-    cout << endl;
   }
   Output_Signal.push_back(outputsignal);
-  cout <<"The output signal is "<<Output_Signal[i];
+  cout <<"The output signal is "<<Output_Signal[i] << endl;
+  currenttime = data.t0 + i*data.dt;
+  output << currenttime<<"," << Output_Signal[i] << endl;
   outputsignal = 0;
   }
+
 
 
   cout << LW[0];
