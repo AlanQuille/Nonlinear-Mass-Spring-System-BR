@@ -155,7 +155,7 @@ public:
 
 			Get_Triangles(DT);
 			Initialize_Springs();
-			//Execute_In_Time();
+			Execute_In_Time();
 			Output_For_Plot();
 
 	}
@@ -417,6 +417,7 @@ public:
 		//	str.insert(4, current);
 		//	ofstream nodes(str);
 			nodes << n[s[j].Nodea()].X_Position() <<","<<n[s[j].Nodea()].Y_Position()<< "," <<n[s[j].Nodeb()].X_Position()<<"," << n[s[j].Nodeb()].Y_Position();
+			nodes << endl;
 		}
 	// }
 
@@ -519,7 +520,8 @@ public:
 				 ofs <<"," << y0 << endl;
 				 ofs2 <<"," << y1 << endl;
 
-    	   l = Eucl_Dist(x0, x1, y0, y1);
+         //Be very careful with the lengths here.
+    	   l = Eucl_Dist(x0, y0, x1, y1);
 				 currentlength = l;
 
 				 LearningMatrix(i,j) = currentlength;
@@ -567,7 +569,7 @@ public:
 						ofs <<"," << y0 << endl;
 						ofs2 <<"," << y1 << endl;
 
-						l = Eucl_Dist(x0, x1, y0, y1);
+						l = Eucl_Dist(x0, y0, x1, y1);
 						currentlength = l;
 						s[j].Change_Length_And_Velocity(dt, l);
 						}

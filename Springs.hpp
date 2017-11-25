@@ -62,8 +62,28 @@ class Springs
     void Change_Length_And_Velocity(double &dt, double &l)
     {
         x1 = l - l0;
-		    x2 += dt*x2force;
+		    RungeKutta2ndOrder(dt, x2);
+        cout <<"The relative position of the spring is: " << x1 << endl;
+        cout <<"The velocity of the spring is " << x2 << endl;
 	  };
+
+
+    //There is no explicit time dependence here.
+    void RungeKutta2ndOrder(double &dt, double &yn)
+    {
+      double kay1 = dt*Force(yn);
+      double kay2 = dt*Force(yn + (0.5*kay1));
+      yn = yn + kay2;
+
+    }
+
+    double Force(double xtwo)
+    {
+      p = k3*x1*x1*x1 + k1*x1;
+      q = d3*xtwo*xtwo*xtwo + d1*xtwo;
+      return -(p+q);
+
+    }
 
     double Return_Original_Length()
     {
