@@ -49,7 +49,7 @@ private:
   //No of mass points
   int N;
   double input_connectivity;
-  double total_input_nodes;
+  int total_input_nodes;
   vector<Nodes> n;
   vector<Springs> s;
 	vector<vector<double>> Loutput;
@@ -104,7 +104,7 @@ public:
     this->N = data.N;
     //Step 2: The positions of the nodes were initialized and 20% of the nodes are connected to the input.
     this->input_connectivity = data.input_connectivity;
-    this->total_input_nodes = data.input_connectivity * ((double)N);
+    this->total_input_nodes = (data.input_connectivity)*N;
     this->w_out_initial = data.w_out_initial;
     this->w_out_final = data.w_out_final;
     this->initial_log_uniform= data.initial_log_uniform;
@@ -140,12 +140,17 @@ public:
 	{
 
 			DelaunayTriangulation DT(abs(range1x-range0x), abs(range1y-range0y));
+			double win;
 		//	DelaunayTriangulation DT(-range1x, -range1y);
 
 			//Does node initialization and adds points for delaunay triangulation
 			for(int i=0; i<N; i++)
 			{
-				if(i < (int)total_input_nodes) n[i].Input_Node(ux, uy, Uniform(w_in_initial, w_in_final));
+				//win = Uniform(w_in_initial, w_in_final);
+				win = Uniform(0,2);
+				win -= 1;
+				cout << win << endl;
+				if(i < (int)total_input_nodes) n[i].Input_Node(ux, uy, win);
 				DT.AddPoint(Point(n[i].X_Position(),n[i].Y_Position()));
 			//  DT.AddPoint(Point(n[i].X_Position(), Point(n[i].Y_Position());
 			}
@@ -195,6 +200,8 @@ public:
   void Initialize_Nodes(double range0x, double range1x, double range0y, double range1y)
   {
     ofstream fixed("fixednode.txt");
+		ofstream Initialnodes("initial.txt");
+
 
 		double x;
 		double y;
@@ -222,6 +229,7 @@ public:
 				 k=i;
 			 }
 		   Nodes p(x, y);
+			 Initialnodes <<x <<"," <<y << endl;
      //The first input_connectivity percent of the nodes are marked as input nodes, and the
        n.push_back(p);
 	   }
@@ -230,7 +238,8 @@ public:
 		 fixed <<k << endl;
 
 		 n[j].FixedNode();
-		 n[k].FixedNode();
+		// n[k].FixedNode();
+		//Just one node for test;
 		 //Fixed the leftmost and rightmost nodes.
   }
 
@@ -404,22 +413,27 @@ public:
 		return sin(currenttime);
 	}
 
+
 	void Output_For_Plot()
 	{
 		int maxtimesteps = (int)((tmax-t0)/dt);
-		ofstream nodes("nodes.csv");
-		//string str = string("nodes.csv");
-		//for(int i=0; i<maxtimesteps; i++)
-//	 {
+//		ofstream nodes("nodes.csv");
+		string str;
+
+		for(int i=0; i<maxtimesteps; i++)
+	 {
+		 str = to_string(i*dt);
+		// if(i%10 == 0) str.erase(str.length()-4);
+		 str.erase(str.length()-3);
+		 str.append(".csv");
+		 ofstream nodes(str);
+
 		for(int j=0; j<EdgeList.size(); j++)
 		{
-			//string current = string(to_string(j));
-		//	str.insert(4, current);
-		//	ofstream nodes(str);
 			nodes << n[s[j].Nodea()].X_Position() <<","<<n[s[j].Nodea()].Y_Position()<< "," <<n[s[j].Nodeb()].X_Position()<<"," << n[s[j].Nodeb()].Y_Position();
 			nodes << endl;
 		}
-	// }
+	 }
 
   }
 
@@ -495,8 +509,14 @@ public:
 
 				 //Change position of first node
     	   theta = Angle(x0, x1, y0, y1);
+				 cout <<"Theta is: " << theta;
     	   Fx = X_Comp(Fsum, theta);
     	   Fy = Y_Comp(Fsum, theta);
+
+
+         cout << endl;
+				 cout << "Fx is: " << Fx << endl;
+				 cout << "Fy is: " << Fy << endl;
 
 
          n[nodea].Change_Position(Fx, Fy, dt);
@@ -532,7 +552,12 @@ public:
         }
 	    }
 			learning_phase_over = 1;
+			Moore_Penrose_Pseudoinverse(LearningMatrix);
+			LearningMatrix= LearningMatrix * TargetSignal;
+			Populate_Learning_Weights(LearningMatrix);
      }
+
+/*
 		 else
 		 {
 			 for(int i=1; i<maxtimesteps; i++)
@@ -540,6 +565,7 @@ public:
 				 for(int j=0; j<EdgeList.size(); j++)
 				 {
 						s[j].ForceEq(Fsum);
+						cout <<"Fsum is: " << Fsum << endl;
 
 						nodea = s[j].Nodea();
 						nodeb = s[j].Nodeb();
@@ -569,6 +595,10 @@ public:
 						ofs <<"," << y0 << endl;
 						ofs2 <<"," << y1 << endl;
 
+						n[nodea].Output_Position();
+						cout << endl;
+						n[nodeb].Output_Position();
+
 						l = Eucl_Dist(x0, y0, x1, y1);
 						currentlength = l;
 						s[j].Change_Length_And_Velocity(dt, l);
@@ -576,18 +606,15 @@ public:
 				 }
 		 }
 		    //If you get an inf value, the loop is broken but the code runs again.
-        /*
-        if(!breaktheloop)
-				{
-	      Moore_Penrose_Pseudoinverse(LearningMatrix);
-				LearningMatrix= LearningMatrix * TargetSignal;
-				Populate_Learning_Weights(LearningMatrix);
-		  	}
-				*/
+*/
+
+
 
 				return breaktheloop;
         //Next step, get output signal.
   }
+
+
 /*
 	Output_Signal_And_MSE()
 	{
@@ -645,9 +672,9 @@ public:
   	return vectorsum*cos(theta);
   }
 
-  double Y_Comp(double sum, double theta)
+  double Y_Comp(double vectorsum, double theta)
   {
-  	return sum*sin(theta);
+  	return vectorsum*sin(theta);
   }
 
   void Sort(int &a, int &b, int &c){

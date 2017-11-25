@@ -11,8 +11,6 @@ private:
 	double y_position;
 
 	//The velocity of the nodes initially it is zero.
-	double pxdot = 0;
-	double pydot = 0;
 
 	int connections;
 
@@ -23,16 +21,23 @@ private:
     bool input_node=0;
     //If it is an input node, than input force u in the x and y directions
     //For the calculations it's not relevant.
-    double ux;
-    double uy;
-    //if it is an input node, than what is the input weight?
-    double win;
+    double ux =0;
+    double uy = 0;
+    //if it is an input node, than what is the input weight? It's default is 0.
+    double win = 0;
     //L non crossing
     //Each node has a certain number of springs attached to it. Each spring acts as a force on the node, which changes its position, and hence the position of the spring.
 	int noofconnectedsprings;
 
 	//Two nodes must be fixed. Is this one of them?
 	bool fixednode = 0;
+
+  //Acceleration and velocity of node.
+	double pxdotdot = 0;
+	double pydotdot = 0;
+
+	double pxdot = 0;
+	double pydot = 0;
 
   public:
 
@@ -60,7 +65,7 @@ private:
 
 	void Output_Position()
 	{
-		cout <<x_position << " " <<y_position <<" " << input_node;
+		cout <<"X_position" << x_position << " " <<"Y_Position" << y_position <<" " << input_node;
 	}
 
 	double X_Position()
@@ -78,30 +83,40 @@ private:
 	{
 		  if(fixednode ==0)
 			{
-	    double pxdotdot;
-	    double pydotdot;
+      cout<<"The force Fx is: " << Fx << endl;
+			cout<<"The force Fy is: " << Fy << endl;
+			cout <<"The input weight win is " <<win << endl;
+			cout <<"The force ux is: " <<ux << endl;
 
-	    double pxdot;
-	    double pydot;
-
-		  pxdotdot= (Fx + win*ux)/m;
+		  pxdotdot= (Fx + (win*ux))/m;
       pydotdot= (Fy/m);
 
+			cout <<"The acceleration in x is: " << pxdotdot << endl;
+			cout <<"The acceleration in y is: " << pydotdot << endl;
+
         //You want to calculate the velocity so that initial velocity is 0 and than calculate the corresponding change in position
-      pydot = EulerMethod(pydotdot, pydotdot, dt);
-      this->y_position = EulerMethod(y_position, pydot, dt);
+      pydot += dt*pydotdot;
 
-      pxdot = EulerMethod(pxdotdot, pxdotdot, dt);
-      this->x_position = EulerMethod(x_position, pxdot, dt);
+      cout <<"The velocity in y is: " << pydot << endl;
+
+
+      y_position += dt*pydot;
+
+			cout <<"The position at y is: "<< y_position << endl;
+
+      pxdot += dt*pxdotdot;
+
+			cout <<"The velocity in x is: " << pxdot << endl;
+			x_position += dt*pxdot;
+
+			cout <<"The position at x is: "<< x_position << endl;
 	  	}
+			else
+			{
+				pxdotdot =0;
+				pxdot = 0;
+			}
 	}
-
-	double EulerMethod(double x0, double f, double dt)
-	{
-		double xnew = x0 + dt*f;
-		return xnew;
-	}
-
 
 
     //whether node is connected to output or not;

@@ -38,6 +38,7 @@ class Springs
     Springs(double k1, double d1, double k3, double d3, double l0, double nodea, double nodeb, double wout)
     {
         this->l0=l0;
+        this->x1 = 0;
         this->k1=k1;
         this->k3=k3;
         this->d1=d1;
@@ -47,8 +48,6 @@ class Springs
         this->wout = wout;
 
         //The initial x1 = l0 - l0 =0, and initial spring velocity = 0
-        this->x1 = 0;
-        this->x2 = 0;
     };
 
     void ForceEq(double &Fsum)
@@ -57,33 +56,25 @@ class Springs
         q=d3*x2*x2*x2 + d1*x2;
         x2force = -p-q;
         Fsum = x2force;
+        cout <<"Fsum at spring is: " << -p-q << endl;
     };
 
     void Change_Length_And_Velocity(double &dt, double &l)
     {
-        x1 = l - l0;
-		    RungeKutta2ndOrder(dt, x2);
+        double x1new = l-l0;
+        x2 = ((x1new - x1)/dt);
+        this->x1 = x1new;
+		    //RungeKutta2ndOrder(dt, x2);
         cout <<"The relative position of the spring is: " << x1 << endl;
         cout <<"The velocity of the spring is " << x2 << endl;
 	  };
 
 
     //There is no explicit time dependence here.
-    void RungeKutta2ndOrder(double &dt, double &yn)
+    void InverseEuler(double &x1old, double &x2, double &x1new, double &dt)
     {
-      double kay1 = dt*Force(yn);
-      double kay2 = dt*Force(yn + (0.5*kay1));
-      yn = yn + kay2;
-
     }
 
-    double Force(double xtwo)
-    {
-      p = k3*x1*x1*x1 + k1*x1;
-      q = d3*xtwo*xtwo*xtwo + d1*xtwo;
-      return -(p+q);
-
-    }
 
     double Return_Original_Length()
     {
