@@ -27,19 +27,19 @@ int main(int argc, char** argv)
   srand(rdtsc());
 
 
-  data.N =2;
+  data.N =10;
   data.ux=1;
   data.uy= 0;
-  data.input_connectivity = 1;
+  data.input_connectivity = 0.2;
   //data.w_in_initial = -1;
   data.w_in_initial = -1;
   data.w_in_final = 1;
   data.w_out_initial = -1;
   data.w_out_final = 1;
   data.range0x = 0;
-  data.range1x = 1;
+  data.range1x = 10;
   data.range0y = 0;
-  data.range1y = 1;
+  data.range1y = 10;
   data.initial_log_uniform = 1;
   data.final_log_uniform = 10;
   data.initial_uniform = 100;
@@ -49,12 +49,33 @@ int main(int argc, char** argv)
   data.dt = 0.001;
 
   //run same simulation x timeb_s
-  int x=20;
 
-  for(int i=0; i<x; i++)
-  {
+   //Do the simulation, get learning weights and than use it to get learning matrix.
+  vector<double> LW;
+  vector<double> Output_Signal;
+  MatrixXd LM;
   Simulation sim(data);
+  LW = sim.Return_Learning_Weights();
+  Simulation sim2(data);
+  LM = sim2.Return_Learning_Matrix();
+  int maxtimesteps = ((data.tmax - data.t0)/(data.dt));
+  double outputsignal = 0;
+  for(int i=0; i<maxtimesteps; i++)
+  {
+  for(int j=0; j<LM.cols(); j++)
+  {
+    outputsignal += LW.at(j) * LM(i, j);
+    cout << endl;
   }
+  Output_Signal.push_back(outputsignal);
+  cout <<"The output signal is "<<Output_Signal[i];
+  outputsignal = 0;
+  }
+
+
+  cout << LW[0];
+  cout <<  endl;
+
 
   stop_time = clock();
   double difference = (1000)*((stop_time - start_time)/CLOCKS_PER_SEC);

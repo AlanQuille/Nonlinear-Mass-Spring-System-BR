@@ -90,6 +90,9 @@ private:
   //This is the learning_weights vector
 	vector<double> Learning_Weights;
 
+	//LearningMatrix for learning weight multiplication
+	MatrixXd LM;
+
 
 
 
@@ -123,9 +126,12 @@ public:
     this->ux = data.ux;
     this->uy = data.uy;
 
-
+    bool learning_phase = 0;
+    //Learning phase
 		Initialize_Nodes(range0x, range1x, range0y, range1y);
     Delaunay_Triangulation_and_Spring_Creation();
+
+		//Part two
 
 /*
 		if(EdgeList.size() < N)
@@ -147,6 +153,7 @@ public:
 			for(int i=0; i<N; i++)
 			{
 				//win = Uniform(w_in_initial, w_in_final);
+				//This has to be done, cannot do minus numbers for some reason
 				win = Uniform(0,2);
 				win -= 1;
 				cout << win << endl;
@@ -238,7 +245,7 @@ public:
 		 fixed <<k << endl;
 
 		 n[j].FixedNode();
-		// n[k].FixedNode();
+		 n[k].FixedNode();
 		//Just one node for test;
 		 //Fixed the leftmost and rightmost nodes.
   }
@@ -439,7 +446,7 @@ public:
 
 
   //This changes position of springs and nodes dynamically in time.
-  bool Execute_In_Time()
+  void Execute_In_Time()
   {
     double Fsum =0;
     double Fx_nodea =0;
@@ -449,8 +456,10 @@ public:
     double theta = 0;
     double l = 0;
 
+
   //  ofstream ofs ("test.csv", ofstream::out);
 	//Not interested in outputting at this stage
+
 
     double nodea =0;
     double nodeb = 0;
@@ -471,7 +480,6 @@ public:
 		//Everything is set initially.
 
 	//This is to ensure to inf or nan values;
-	  bool breaktheloop=0;
 
 
     int maxtimesteps = (int)((tmax-t0)/dt);
@@ -479,24 +487,27 @@ public:
 		MatrixXd TargetSignal(maxtimesteps, EdgeList.size());
 
 
+
+    double outputsignal = 0;
 		for(int j=0; j<EdgeList.size(); j++)
 		{
+
 			LearningMatrix(0,j)=s[j].Return_Original_Length();
 			TargetSignal(0,j) = SineWave(0);
 		}
 
-    if(learning_phase_over == 0)
-		{
-		for(int i=1; !breaktheloop && i<maxtimesteps; i++)
+		outputsignal = 0;
+
+		for(int i=1; i<maxtimesteps; i++)
 		{
 
- 		for(int j=0; !breaktheloop && j<EdgeList.size(); j++)
+ 		for(int j=0;  j<EdgeList.size(); j++)
     	{
+				//All of this is done for the learning matrices
 				 s[j].ForceEq(Fsum);
 				// if(isnan(Fsum) || isinf(Fsum)) cout <<j << endl;
 				 //If there are bad springs, just remove the spring.
-				// breaktheloop = 1;
-
+				// breaktheloop = 1
 				 ofs3 << i*dt<<"," <<Fsum << endl;
 
 				 cout <<"Fsum is: "<<Fsum << endl;
@@ -573,85 +584,54 @@ public:
     	   l = Eucl_Dist(x0, y0, x1, y1);
 				 currentlength = l;
 
+        // cout <<"Is this running?" << endl;
 				 LearningMatrix(i,j) = currentlength;
 				 TargetSignal(i,j) = SineWave(dt*i);
+
 
          s[j].Change_Length_And_Velocity(dt, l);
 				 Fsum = 0;
         }
+				outputsignal = 0;
 	    }
-			learning_phase_over = 1;
+
+      LM = LearningMatrix;
 			Moore_Penrose_Pseudoinverse(LearningMatrix);
 			LearningMatrix= LearningMatrix * TargetSignal;
 			Populate_Learning_Weights(LearningMatrix);
-     }
-
-/*
-		 else
-		 {
-			 for(int i=1; i<maxtimesteps; i++)
-			 {
-				 for(int j=0; j<EdgeList.size(); j++)
-				 {
-						s[j].ForceEq(Fsum);
-						cout <<"Fsum is: " << Fsum << endl;
-
-						nodea = s[j].Nodea();
-						nodeb = s[j].Nodeb();
-
-						x0 = n[nodea].X_Position();
-						x1 = n[nodeb].X_Position();
-						y0 = n[nodea].Y_Position();
-						y1 = n[nodeb].Y_Position();
-
-						//Change position of first node
-						theta = Angle(x0, x1, y0, y1);
-						Fx = X_Comp(Fsum, theta);
-						Fy = Y_Comp(Fsum, theta);
-
-						n[nodea].Change_Position(Fx, Fy, dt);
-						n[nodeb].Change_Position(Fx, Fy, dt);
-
-						x0 = n[nodea].X_Position();
-						x1 = n[nodeb].X_Position();
-
-						ofs <<dt*i <<","<< x0;
-						ofs2 <<dt*i <<"," << x1;
-
-						y0 = n[nodea].Y_Position();
-						y1 = n[nodeb].Y_Position();
-
-						ofs <<"," << y0 << endl;
-						ofs2 <<"," << y1 << endl;
-
-						n[nodea].Output_Position();
-						cout << endl;
-						n[nodeb].Output_Position();
-
-						l = Eucl_Dist(x0, y0, x1, y1);
-						currentlength = l;
-						s[j].Change_Length_And_Velocity(dt, l);
-						}
-				 }
-		 }
 		    //If you get an inf value, the loop is broken but the code runs again.
-*/
 
-
-
-				return breaktheloop;
         //Next step, get output signal.
+
+				cout <<"Is this running? " << endl;
+
+
   }
 
-
-/*
-	Output_Signal_And_MSE()
+	MatrixXd& Return_Learning_Matrix()
 	{
-		for(int i=0; i<maxtimestep; i++)
-	}
-	*/
+		return LM;
 
-	Populate_Learning_Weights(MatrixXd& L)
+	}
+
+
+
+	void Output_Signal_And_MSE()
+	{
+		double maxtimesteps = ((t0-tmax)/dt);
+		for(int i=0; i<maxtimesteps; i++)
+		{
+			cout<< "The output signal at last is: " << Output_Signal[i];
+			cout << endl;
+		}
+	}
+
+	vector<double>& Return_Learning_Weights()
+	{
+		return Learning_Weights;
+	}
+
+	void Populate_Learning_Weights(MatrixXd& L)
 	{
 		for(int j=0; j<EdgeList.size(); j++)
 		{
@@ -660,6 +640,7 @@ public:
 			cout << endl;
 		}
 	}
+
 
   int Random_Input_Nodes(int N)
   {
