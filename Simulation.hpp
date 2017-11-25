@@ -442,8 +442,10 @@ public:
   bool Execute_In_Time()
   {
     double Fsum =0;
-    double Fx =0;
-    double Fy =0;
+    double Fx_nodea =0;
+    double Fy_nodea =0;
+		double Fx_nodeb =0;
+		double Fy_nodeb =0;
     double theta = 0;
     double l = 0;
 
@@ -508,19 +510,42 @@ public:
     	   y1 = n[nodeb].Y_Position();
 
 				 //Change position of first node
-    	   theta = Angle(x0, x1, y0, y1);
+    	   theta = abs(Angle(x0, x1, y0, y1));
 				 cout <<"Theta is: " << theta;
-    	   Fx = X_Comp(Fsum, theta);
-    	   Fy = Y_Comp(Fsum, theta);
+
+    	   if(x1>x0)
+         {
+				 Fx_nodeb = X_Comp(Fsum, theta);
+				 Fx_nodea = -X_Comp(Fsum, theta);
+			   }
+    	   if(y1>y0)
+				 {
+				 Fy_nodeb = Y_Comp(Fsum, theta);
+         Fy_nodea = -Y_Comp(Fsum, theta);
+			   }
+
+				 if(x0>x1)
+				 {
+				 Fx_nodeb = -X_Comp(Fsum, theta);
+				 Fx_nodea = X_Comp(Fsum, theta);
+				 }
+				 if(y0>y1)
+				 {
+				 Fy_nodeb = -Y_Comp(Fsum, theta);
+				 Fy_nodea = Y_Comp(Fsum, theta);
+				 }
 
 
          cout << endl;
-				 cout << "Fx is: " << Fx << endl;
-				 cout << "Fy is: " << Fy << endl;
+				 cout << "Fx_nodeb is: " << Fx_nodeb << endl;
+				 cout << "Fy_nodeb is: " << Fy_nodeb << endl;
+
+				 cout << "Fx_nodea is: " << Fx_nodea << endl;
+				 cout << "Fy_nodea is: " << Fy_nodea << endl;
 
 
-         n[nodea].Change_Position(Fx, Fy, dt);
-    	   n[nodeb].Change_Position(Fx, Fy, dt);
+         n[nodea].Change_Position(Fx_nodea, Fy_nodea, dt);
+    	   n[nodeb].Change_Position(Fx_nodeb, Fy_nodeb, dt);
 
     	   x0 = n[nodea].X_Position();
     	   x1 = n[nodeb].X_Position();
@@ -529,9 +554,13 @@ public:
 				 ofs2 <<dt*i <<"," << x1;
 
 				 cout << "x0 is: "<< x0;
+				 cout << endl;
+				 cout << "x1 is: " << x1;
 			   cout << endl;
 
 				 cout << "y0 is: "<< y0;
+				 cout << endl;
+				 cout << "x1 is: " << y1;
 				 cout << endl;
 
     	   y0 = n[nodea].Y_Position();

@@ -49,7 +49,7 @@ int main(int argc, char** argv)
   data.dt = 0.001;
 
   //run same simulation x timeb_s
-  int x=1;
+  int x=20;
 
   for(int i=0; i<x; i++)
   {
