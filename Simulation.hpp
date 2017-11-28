@@ -150,19 +150,19 @@ public:
 		//	DelaunayTriangulation DT(-range1x, -range1y);
 
 			//Does node initialization and adds points for delaunay triangulation
+			double BeforeRand = 0;
 			for(int i=0; i<N; i++)
 			{
 				//win = Uniform(w_in_initial, w_in_final);
 				//This has to be done, cannot do minus numbers for some reason
 				win = Uniform(0,2);
 				win -= 1;
+				BeforeRand = Uniform(0,1);
 				cout << win << endl;
-				if(i < (int)total_input_nodes) n[i].Input_Node(ux, uy, win);
-				DT.AddPoint(Point(n[i].X_Position(),n[i].Y_Position()));
+				if(BeforeRand<=input_connectivity) n[i].Input_Node(ux, uy, win);
+				DT.AddPoint(Point(n[i].X_Position(),n[i].Y_Position(),0));
 			//  DT.AddPoint(Point(n[i].X_Position(), Point(n[i].Y_Position());
 			}
-
-			random_shuffle(&n[0], &n[N-1]);
 			DT.print();
 
 			Get_Triangles(DT);
@@ -180,7 +180,7 @@ public:
 			EdgeNodeList.push_back(s[i].Nodeb());
 		}
 
-		sort( EdgeNodeList.begin(), EdgeNodeList.end() );
+	//	sort( EdgeNodeList.begin(), EdgeNodeList.end() );
 		EdgeNodeList.erase( unique( EdgeNodeList.begin(), EdgeNodeList.end() ), EdgeNodeList.end() );
 
 	}
@@ -426,20 +426,49 @@ public:
 		int maxtimesteps = (int)((tmax-t0)/dt);
 //		ofstream nodes("nodes.csv");
 		string str;
+		str = "s.csv";
+	 // if(i%10 == 0) str.erase(str.length()-4);
+		ofstream EdgesS(str);
+		string str2;
+		str2 = "t.csv";
+		ofstream EdgesT(str2);
+		vector<int>::iterator NodeNums;
+
+		//In Matlab, it does not accept indices of 0 for node graphs.
+		for(int j=0; j<EdgeList.size()-1; j++)
+		{
+			EdgesS <<s[j].Nodea()+1 <<",";
+			EdgesT <<s[j].Nodeb()+1 <<",";
+	  }
+
+		EdgesS <<s[EdgeList.size()-1].Nodea()+1;
+		EdgesT <<s[EdgeList.size()-1].Nodeb()+1;
+
 
 		for(int i=0; i<maxtimesteps; i++)
 	 {
 		 str = to_string(i*dt);
 		// if(i%10 == 0) str.erase(str.length()-4);
 		 str.erase(str.length()-3);
-		 str.append(".csv");
-		 ofstream nodes(str);
+		 str.append("X.csv");
+		 ofstream nodesX(str);
 
-		for(int j=0; j<EdgeList.size(); j++)
+		 str2 = to_string(i*dt);
+		// if(i%10 == 0) str.erase(str.length()-4);
+		 str2.erase(str.length()-5);
+		 str2.append("Y.csv");
+		 ofstream nodesY(str2);
+
+    int j=0;
+		while(j<n.size())
 		{
-			nodes << n[s[j].Nodea()].X_Position() <<","<<n[s[j].Nodea()].Y_Position()<< "," <<n[s[j].Nodeb()].X_Position()<<"," << n[s[j].Nodeb()].Y_Position();
-			nodes << endl;
+			nodesX << n[j].X_Position();
+			if(j<n.size()-1) nodesX<<",";
+			nodesY << n[j].Y_Position();
+			if(j<n.size()-1) nodesY<<",";
+			j++;
 		}
+
 	 }
 
   }

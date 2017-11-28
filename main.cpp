@@ -28,7 +28,7 @@ int main(int argc, char** argv)
   srand(rdtsc());
 
 
-  data.N =10;
+  data.N =30;
   data.ux=1;
   data.uy= 0;
   data.input_connectivity = 0.2;
@@ -39,15 +39,16 @@ int main(int argc, char** argv)
   data.w_out_final = 1;
   //range-doubled, was fooling around with something, didn't change  back. Will change later.
   data.range0x = 0;
-  data.range1x = 5;
+  data.range1x = 10;
   data.range0y = 0;
-  data.range1y = 5;
+  data.range1y = 10;
   data.initial_log_uniform = 1;
   data.final_log_uniform = 10;
   data.initial_uniform = 100;
   data.final_uniform = 200;
   data.t0 = 0;
-  data.tmax = 2*M_PI;
+//  data.tmax = 2*M_PI;
+  data.tmax = 0.001;
   data.dt = 0.001;
 
   //run same simulation x timeb_s
