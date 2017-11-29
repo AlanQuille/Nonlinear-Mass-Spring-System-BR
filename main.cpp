@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -28,7 +29,7 @@ int main(int argc, char** argv)
   srand(rdtsc());
 
 
-  data.N =30;
+  data.N =70;
   data.ux=1;
   data.uy= 0;
   data.input_connectivity = 0.2;
@@ -48,12 +49,13 @@ int main(int argc, char** argv)
   data.final_uniform = 200;
   data.t0 = 0;
 //  data.tmax = 2*M_PI;
-  data.tmax = 0.001;
+  data.tmax = M_PI;
   data.dt = 0.001;
 
   //run same simulation x timeb_s
 
    //Do the simulation, get learning weights and than use it to get learning matrix.
+   /*
   vector<double> LW;
   vector<double> Output_Signal;
   MatrixXd LM;
@@ -72,6 +74,42 @@ int main(int argc, char** argv)
   for(int j=0; j<LM.cols(); j++)
   {
     outputsignal += LW.at(j) * LM(i, j);
+  }
+  Output_Signal.push_back(outputsignal);
+  cout <<"The output signal is "<<Output_Signal[i] << endl;
+  currenttime = data.t0 + i*data.dt;
+  output << currenttime<<"," << Output_Signal[i] << endl;
+  outputsignal = 0;
+  }
+  */
+
+  int rounds =3;
+  double radius =1.0;
+  int no_of_points_per_round = 8;
+
+  vector<double> LW;
+  vector<double> Output_Signal;
+  MatrixXd LM;
+  Simulation sim(radius, rounds, no_of_points_per_round, data);
+
+  LW = sim.Return_Learning_Weights();
+//  Simulation sim2(data);
+  LM = sim.Return_Learning_Matrix();
+  cout <<LM << endl;
+
+  ofstream output("outputsignal.csv");
+
+  int maxtimesteps = ((data.tmax - data.t0)/(data.dt));
+  cout <<"Maxtimesteps" << maxtimesteps << endl;
+  double outputsignal = 0;
+  double currenttime = 0;
+  for(int i=0; i<maxtimesteps; i++)
+  {
+    cout<<"Is it working at timestep: " <<i*data.dt<<endl;
+  for(int j=0; j<LM.cols(); j++)
+  {
+    outputsignal += LW.at(j) * LM(i, j);
+    cout <<outputsignal << endl;
   }
   Output_Signal.push_back(outputsignal);
   cout <<"The output signal is "<<Output_Signal[i] << endl;

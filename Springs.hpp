@@ -35,7 +35,7 @@ class Springs
 
     public:
 
-    Springs(double k1, double d1, double k3, double d3, double l0, double nodea, double nodeb, double wout)
+    Springs(double k1, double d1, double k3, double d3, double l0, int nodea, int nodeb, double wout)
     {
         this->l0=l0;
         this->x1 = 0;
@@ -46,6 +46,9 @@ class Springs
         this->nodea = nodea;
         this->nodeb = nodeb;
         this->wout = wout;
+
+        cout <<nodea << endl;
+        cout <<nodeb << endl;
 
         //The initial x1 = l0 - l0 =0, and initial spring velocity = 0
     };

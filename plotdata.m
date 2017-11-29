@@ -1,9 +1,6 @@
-figure(1);
-axis([0 10 0 10])
+
 for i=1:1
-%s = num2str(i*0.001);
-s ="0.000x"
-s2 ="0.000y"
+s = num2str(i*0.001);
 if(length(s)==4)
     s =strcat(s, "0");
 end
@@ -11,13 +8,13 @@ end
 if(length(s)==3)
     s = strcat(s, "00");
 end
-s = strcat(s, ".csv");
+s1 = strcat(s, "X.csv");
+s2 = strcat(s, "Y.csv");
 disp(s)
-test = csvread("0.000X.csv");
-test2 = csvread("0.000Y.csv");
+test = csvread(s1);
+test2 = csvread(s2);
 x = test;
 y = test2;
-z =  sin(i*0.001);
 
 
 %x = [5,3,1];
@@ -25,8 +22,6 @@ z =  sin(i*0.001);
 %plot(x,y,'-o','MarkerSize',10, 'MarkerEdgeColor','red');
 %plot(x,y,'Layout','force')
 
-node1 = [1, 1]
-node2 = [2, 3]
 
 %x=[x_pos(nodea), x_pos(nodeb), x_pos(nodea), x_pos(nodeb)]
 %y=[y_pos(nodea), y_pos(nodeb), y_pos(nodea)]
@@ -35,15 +30,16 @@ node2 = [2, 3]
 s = csvread("s.csv")
 t = csvread("t.csv")
 G = graph(s,t);
-G =addnode(G,1);
+while(numnodes(G)<length(x)) G =addnode(G, 1);
+end
+
+
 %x = [test(1,1) test(1,3) test(2,1)];
 %y = [test(1,2) test(1,4) test(2,2)];
 
-
-
 %test(:,1)
 plot(G,'XData',x,'YData',y);
-
-
+pause(0.1);
 drawnow;
+axis([-4 4 -4 4])
 end
