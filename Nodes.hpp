@@ -83,33 +83,14 @@ private:
 	{
 		  if(fixednode ==0)
 			{
-      cout<<"The force Fx is: " << Fx << endl;
-			cout<<"The force Fy is: " << Fy << endl;
-			cout <<"The input weight win is " <<win << endl;
-			cout <<"The force ux is: " <<ux << endl;
-
 		  pxdotdot= (Fx + (win*ux))/m;
       pydotdot= (Fy/m);
-
-			cout <<"The acceleration in x is: " << pxdotdot << endl;
-			cout <<"The acceleration in y is: " << pydotdot << endl;
-
         //You want to calculate the velocity so that initial velocity is 0 and than calculate the corresponding change in position
       pydot += dt*pydotdot;
-
-      cout <<"The velocity in y is: " << pydot << endl;
-
-
       y_position += dt*pydot;
-
-			cout <<"The position at y is: "<< y_position << endl;
-
+			
       pxdot += dt*pxdotdot;
-
-			cout <<"The velocity in x is: " << pxdot << endl;
 			x_position += dt*pxdot;
-
-			cout <<"The position at x is: "<< x_position << endl;
 	  	}
 			else
 			{

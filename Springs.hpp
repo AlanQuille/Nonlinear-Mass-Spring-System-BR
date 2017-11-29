@@ -59,7 +59,6 @@ class Springs
         q=d3*x2*x2*x2 + d1*x2;
         x2force = -p-q;
         Fsum = x2force;
-        cout <<"Fsum at spring is: " << -p-q << endl;
     };
 
     void Change_Length_And_Velocity(double &dt, double &l)
@@ -68,8 +67,6 @@ class Springs
         x2 = ((x1new - x1)/dt);
         this->x1 = x1new;
 		    //RungeKutta2ndOrder(dt, x2);
-        cout <<"The relative position of the spring is: " << x1 << endl;
-        cout <<"The velocity of the spring is " << x2 << endl;
 	  };
 
 

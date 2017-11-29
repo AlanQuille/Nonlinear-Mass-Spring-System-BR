@@ -57,6 +57,10 @@ private:
   vector<vector<double>> EdgeList;
   vector<double> NodeList;
 	vector<double> EdgeNodeList;
+
+	vector<double> TargetSignal;
+
+
   double w_out_initial;
   double w_out_final;
   double w_in_initial;
@@ -144,7 +148,7 @@ public:
   }
 
 
-	Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data)
+	Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Lvx, vector<double> &Lvy)
 	{
 
 		//rand(); rand(); rand();
@@ -155,11 +159,16 @@ public:
 		this->total_input_nodes = (data.input_connectivity)*rounds*no_of_points_per_round;
 		//Learning phase
 		Initialize_Nodes(radius, rounds, no_of_points_per_round, data);
+
 		this->t0 = data.t0;
 		this->tmax = data.tmax;
 		this->dt = data.dt;
+    TargetSignal = Lvx;
+
 	 	Execute_In_Time_2();
 		Output_For_Plot();
+
+
 	//	Delaunay_Triangulation_and_Spring_Creation();
 
 		//Part two
@@ -203,52 +212,41 @@ public:
 		 x0 = (j+1)*radius*cos((0));
 		 y0 = (j+1)*radius*sin((0));
 
-		 cout <<"Round: " <<j+1 << endl;
 		 for(int i=0; i<no_of_points_per_round; i++)
 		 {
 			  //So this
-				cout <<"Node: " <<k<< endl;
 			  x_position = (j+1)*radius*cos((i*angle));
 				y_position = (j+1)*radius*sin((i*angle));
 
-				cout <<"X_position is: "<< x_position << endl;
-				cout <<"Y_position is: "<< y_position << endl;
 
 				Nodes node(x_position, y_position);
 
         //THIS IS NOT GOOD CODING PRACTICE. FIX IT.
+				//FIX IT
+				//FIX IT
 				win = Uniform(0,2);
 				win -= 1;
 				BeforeRand = Uniform(0,1);
-				cout << win << endl;
 
 				n.push_back(node);
 
 				if(BeforeRand<=input_connectivity)
 				{
 				n[k].Input_Node(data.ux, data.uy, win);
-				cout <<"This is an input node!: " <<k;
 				cout << endl;
 				}
 
 				if(i>0)
 				{
 				k1 = log10(Uniform(data.initial_log_uniform, data.final_log_uniform));
-				cout <<"k1 is: " << k1 << endl;
 			  d1 = log10(Uniform(data.initial_log_uniform, data.final_log_uniform));
-				cout <<"d1 is: " << d1 << endl;
 				k3 = Uniform(data.initial_uniform, data.final_uniform);
-				cout <<"k3 is: "<<k3 << endl;
 				d3 = Uniform(data.initial_uniform, data.final_uniform);
-				cout <<"d3 is: "<< d3 << endl;
 
 				l0 = Eucl_Dist(x0, y0, x_position, y_position);
 				wout = Uniform(data.w_out_initial, data.w_out_final);
 
 				s.push_back(Springs(k1, d1, k3, d3, l0, k, k-1, wout));
-				cout <<"Node1: " <<k << endl;
-				cout <<"Node2: " <<k-1 << endl;
-				cout <<"Length is: "<<l0 << endl;
 			  }
 
 				x0 = x_position;
@@ -260,35 +258,21 @@ public:
 		 y_position = (j+1)*radius*sin((0));
 
 		 k1 = log10(Uniform(data.initial_log_uniform, data.final_log_uniform));
-		 cout <<"k1 is: "<<k1<< endl;
 		 d1 = log10(Uniform(data.initial_log_uniform, data.final_log_uniform));
-		 cout <<"d1 is: "<<d1<< endl;
 		 k3 = Uniform(data.initial_uniform, data.final_uniform);
-		 cout <<"k3 is: "<<k3<< endl;
 		 d3 = Uniform(data.initial_uniform, data.final_uniform);
-		 cout <<"d3 is: "<<d3<< endl;
 		 l0 = Eucl_Dist(x0, y0, x_position, y_position);
-		 cout << "l0 is: "<<l0<< endl;
 		 wout = Uniform(data.w_out_initial, data.w_out_final);
-		 cout <<"wout is: "<< wout << endl;
 
 		 if(no_of_points_per_round>2)
 		 {
 		 s.push_back(Springs(k1, d1, k3, d3, l0, (k-no_of_points_per_round), k-1, wout));
-		 cout <<"Node1: " <<(k-no_of_points_per_round) << endl;
-		 cout <<"Node2: " <<k-1<< endl;
-		 cout <<"Length is: "<<l0 << endl;
 	   }
 	 }
 
-	  cout<<"The fixed node is: " << no_of_points_per_round*(rounds-1);
-		cout<<"The fixed node is: " <<2+no_of_points_per_round*(rounds-1);
 
 	 n[no_of_points_per_round*(rounds-1)].FixedNode();
 	 n[2+no_of_points_per_round*(rounds-1)].FixedNode();
-
-	 cout <<"The number of nodes is: " << n.size() << endl;
-	 cout <<"The number of springs is: "<< s.size() << endl;
 	}
 
  //Overloaded Execute_in_Time
@@ -331,11 +315,8 @@ public:
 
 
     int maxtimesteps = (int)((tmax-t0)/dt);
-		cout <<"number of timesteps is: " << maxtimesteps;
 		MatrixXd LearningMatrix(maxtimesteps, s.size());
-		MatrixXd TargetSignal(maxtimesteps, s.size());
-
-		    cout << endl << "Is it working here?" << endl;
+		MatrixXd Target_Signal(maxtimesteps, s.size());
 
 
     double outputsignal = 0;
@@ -343,12 +324,14 @@ public:
 		{
 
 			LearningMatrix(0,j)=s[j].Return_Original_Length();
-			cout <<"The original length is: " <<s[j].Return_Original_Length() << endl;
-			TargetSignal(0,j) = SineWave(0);
+			//TargetSignal(0,j) = SineWave(0);
+			Target_Signal(0,j) = TargetSignal[j];
 		}
 
 
 		outputsignal = 0;
+
+		cout <<"Here?"  << endl;
 
 		for(int i=1; i<maxtimesteps; i++)
 		{
@@ -363,13 +346,9 @@ public:
 				// breaktheloop = 1
 				 ofs3 << i*dt<<"," <<Fsum << endl;
 
-				 cout <<"Fsum is: "<<Fsum << endl;
-
     	   nodea = s[j].Nodea();
     	   nodeb = s[j].Nodeb();
 
-				 cout <<nodea << endl;
-				 cout <<nodeb << endl;
 
     	   x0 = n[nodea].X_Position();
     	   x1 = n[nodeb].X_Position();
@@ -378,7 +357,6 @@ public:
 
 				 //Change position of first node
     	   theta = abs(Angle(x0, x1, y0, y1));
-				 cout <<"Theta is: " << theta;
 
     	   if(x1>x0)
          {
@@ -403,14 +381,6 @@ public:
 				 }
 
 
-         cout << endl;
-				 cout << "Fx_nodeb is: " << Fx_nodeb << endl;
-				 cout << "Fy_nodeb is: " << Fy_nodeb << endl;
-
-				 cout << "Fx_nodea is: " << Fx_nodea << endl;
-				 cout << "Fy_nodea is: " << Fy_nodea << endl;
-
-
          n[nodea].Change_Position(Fx_nodea, Fy_nodea, dt);
     	   n[nodeb].Change_Position(Fx_nodeb, Fy_nodeb, dt);
 
@@ -420,15 +390,6 @@ public:
 				 ofs <<dt*i <<","<< x0;
 				 ofs2 <<dt*i <<"," << x1;
 
-				 cout << "x0 is: "<< x0;
-				 cout << endl;
-				 cout << "x1 is: " << x1;
-			   cout << endl;
-
-				 cout << "y0 is: "<< y0;
-				 cout << endl;
-				 cout << "x1 is: " << y1;
-				 cout << endl;
 
     	   y0 = n[nodea].Y_Position();
     	   y1 = n[nodeb].Y_Position();
@@ -440,11 +401,10 @@ public:
     	   l = Eucl_Dist(x0, y0, x1, y1);
 				 currentlength = l;
 
-				 cout <<"The current length is: "<<currentlength << endl;
 
         // cout <<"Is this running?" << endl;
 				 LearningMatrix(i,j) = currentlength;
-				 TargetSignal(i,j) = SineWave(dt*i);
+				 Target_Signal(i,j) = TargetSignal[i];
 
 
          s[j].Change_Length_And_Velocity(dt, l);
@@ -453,15 +413,12 @@ public:
 				outputsignal = 0;
 	    }
 
-			cout <<"output the learning matrix: " << LearningMatrix << endl;
 
       LM = LearningMatrix;
 			Moore_Penrose_Pseudoinverse(LearningMatrix);
 
-			cout <<"The Moore Penrose Inverse Matrix is: " << LearningMatrix;
-			LearningMatrix= LearningMatrix * TargetSignal;
+			LearningMatrix= LearningMatrix * Target_Signal;
 
-			cout <<"The weights: " << LearningMatrix << endl;
 			Populate_Learning_Weights(LearningMatrix);
 
 
@@ -578,11 +535,6 @@ public:
 		for (int i =0; i<s.size(); i++)
 		{
 			s[i].Output();
-			cout << endl;
-			cout << "The position of Node a of spring " <<i << " " << n[s[i].Nodea()].X_Position() <<"," <<n[s[i].Nodea()].Y_Position();
-			cout << endl;
-			cout << "The position of Node b of spring " <<i << " " << n[s[i].Nodeb()].X_Position() <<"," <<n[s[i].Nodeb()].Y_Position();
-			cout << endl;
 		}
 	}
 
@@ -612,7 +564,7 @@ public:
     	//	cout << e << endl;
     		tri.push_back(s1.str());
     		tri.at(k) = tri.at(k).substr(1, tri.at(k).size()-3);
-    		cout << tri.at(k) << endl;
+    		//cout << tri.at(k) << endl;
     //		cout <<endl;
             s1.str("");
             istringstream iss(tri.at(k));
@@ -799,10 +751,8 @@ public:
 		while(j<n.size())
 		{
 			nodesX << n[j].X_Position();
-			cout <<"X is: "<<n[j].X_Position() << endl;
 			if(j<n.size()-1) nodesX<<",";
 			nodesY << n[j].Y_Position();
-			cout <<"Y is: "<<n[j].Y_Position() << endl;
 			if(j<n.size()-1) nodesY<<",";
 			j++;
 		}
@@ -852,11 +802,9 @@ public:
 
 
     int maxtimesteps = (int)((tmax-t0)/dt);
-		cout <<"number of timesteps is: " << maxtimesteps;
 		MatrixXd LearningMatrix(maxtimesteps, s.size());
 		MatrixXd TargetSignal(maxtimesteps, s.size());
 
-		    cout << endl << "Is it working here?" << endl;
 
 
     double outputsignal = 0;
@@ -883,8 +831,6 @@ public:
 				// breaktheloop = 1
 				 ofs3 << i*dt<<"," <<Fsum << endl;
 
-				 cout <<"Fsum is: "<<Fsum << endl;
-
     	   nodea = s[j].Nodea();
     	   nodeb = s[j].Nodeb();
 
@@ -895,7 +841,6 @@ public:
 
 				 //Change position of first node
     	   theta = abs(Angle(x0, x1, y0, y1));
-				 cout <<"Theta is: " << theta;
 
     	   if(x1>x0)
          {
@@ -920,14 +865,6 @@ public:
 				 }
 
 
-         cout << endl;
-				 cout << "Fx_nodeb is: " << Fx_nodeb << endl;
-				 cout << "Fy_nodeb is: " << Fy_nodeb << endl;
-
-				 cout << "Fx_nodea is: " << Fx_nodea << endl;
-				 cout << "Fy_nodea is: " << Fy_nodea << endl;
-
-
          n[nodea].Change_Position(Fx_nodea, Fy_nodea, dt);
     	   n[nodeb].Change_Position(Fx_nodeb, Fy_nodeb, dt);
 
@@ -937,15 +874,6 @@ public:
 				 ofs <<dt*i <<","<< x0;
 				 ofs2 <<dt*i <<"," << x1;
 
-				 cout << "x0 is: "<< x0;
-				 cout << endl;
-				 cout << "x1 is: " << x1;
-			   cout << endl;
-
-				 cout << "y0 is: "<< y0;
-				 cout << endl;
-				 cout << "x1 is: " << y1;
-				 cout << endl;
 
     	   y0 = n[nodea].Y_Position();
     	   y1 = n[nodeb].Y_Position();
@@ -957,7 +885,6 @@ public:
     	   l = Eucl_Dist(x0, y0, x1, y1);
 				 currentlength = l;
 
-				 cout <<"The current length is: "<<currentlength << endl;
 
         // cout <<"Is this running?" << endl;
 				 LearningMatrix(i,j) = currentlength;
@@ -978,7 +905,6 @@ public:
 
         //Next step, get output signal.
 
-				cout <<"Is this running? " << endl;
 
 
   }
@@ -994,11 +920,13 @@ public:
 	void Output_Signal_And_MSE()
 	{
 		double maxtimesteps = ((t0-tmax)/dt);
+		/*
 		for(int i=0; i<maxtimesteps; i++)
 		{
 			cout<< "The output signal at last is: " << Output_Signal[i];
 			cout << endl;
 		}
+		*/
 	}
 
 	vector<double>& Return_Learning_Weights()

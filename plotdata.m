@@ -1,5 +1,5 @@
 
-for i=1:1
+for i=1:999
 s = num2str(i*0.001);
 if(length(s)==4)
     s =strcat(s, "0");
@@ -39,7 +39,9 @@ end
 
 %test(:,1)
 plot(G,'XData',x,'YData',y);
-pause(0.1);
+xlim([-0.215 -0.19])
+ylim([0.4 0.45])
+pause(0.001);
 drawnow;
-axis([-4 4 -4 4])
+axis([-0.1 0.1 -0.1 0.1])
 end

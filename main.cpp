@@ -19,6 +19,35 @@ unsigned long long rdtsc()
 
 
 
+
+void LotkaVolterra(vector<double> &LVx, vector<double> &LVy, int maxtimesteps, double dt)
+{
+  //USe Euler's to get quick Lotka Volterra. Parameters = 1, 1 just for speed.
+  double x0;
+  double xnext;
+  double y0;
+  double ynext;
+
+  //Initial conditions
+  x0 = 1.2;
+  y0 = 1.2;
+
+  LVx.push_back(x0);
+  LVy.push_back(y0);
+
+  for(int i=1; i<maxtimesteps; i++)
+  {
+
+    xnext = x0 + dt*(x0 - x0*y0);
+    ynext = y0 + dt*(x0*y0 - y0);
+    x0 = xnext;
+    y0 = ynext;
+    LVx.push_back(xnext);
+    LVy.push_back(ynext);
+  }
+}
+
+
 int main(int argc, char** argv)
 {
   clock_t start_time,stop_time;
@@ -49,7 +78,7 @@ int main(int argc, char** argv)
   data.final_uniform = 200;
   data.t0 = 0;
 //  data.tmax = 2*M_PI;
-  data.tmax = M_PI;
+  data.tmax = 10;
   data.dt = 0.001;
 
   //run same simulation x timeb_s
@@ -86,42 +115,49 @@ int main(int argc, char** argv)
   int rounds =3;
   double radius =1.0;
   int no_of_points_per_round = 8;
+  int maxtimesteps = ((data.tmax - data.t0)/(data.dt));
 
   vector<double> LW;
   vector<double> Output_Signal;
+
+  //Lotka Volterra vectors
+  vector<double> LotkaX;
+  vector<double> LotkaY;
+
+  LotkaVolterra(LotkaX, LotkaY, maxtimesteps, data.dt);
+
+  cout<<"Lotka initial is: "<<LotkaX[50] << endl;
   MatrixXd LM;
-  Simulation sim(radius, rounds, no_of_points_per_round, data);
+  Simulation sim(radius, rounds, no_of_points_per_round, data, LotkaX, LotkaY);
+
+  cout <<"Here?" <<endl;
 
   LW = sim.Return_Learning_Weights();
 //  Simulation sim2(data);
   LM = sim.Return_Learning_Matrix();
-  cout <<LM << endl;
+
 
   ofstream output("outputsignal.csv");
+  ofstream output2("learningweights.csv");
 
-  int maxtimesteps = ((data.tmax - data.t0)/(data.dt));
-  cout <<"Maxtimesteps" << maxtimesteps << endl;
   double outputsignal = 0;
   double currenttime = 0;
   for(int i=0; i<maxtimesteps; i++)
   {
-    cout<<"Is it working at timestep: " <<i*data.dt<<endl;
   for(int j=0; j<LM.cols(); j++)
   {
     outputsignal += LW.at(j) * LM(i, j);
-    cout <<outputsignal << endl;
+    if(i==0) output2 << LW[j] << endl;
   }
   Output_Signal.push_back(outputsignal);
-  cout <<"The output signal is "<<Output_Signal[i] << endl;
   currenttime = data.t0 + i*data.dt;
-  output << currenttime<<"," << Output_Signal[i] << endl;
+  cout << outputsignal;
+  cout << endl;
+  output << currenttime <<"," << Output_Signal.at(i);
+  output << endl;
   outputsignal = 0;
+
   }
-
-
-
-  cout << LW[0];
-  cout <<  endl;
 
 
   stop_time = clock();
