@@ -249,6 +249,20 @@ public:
 				s.push_back(Springs(k1, d1, k3, d3, l0, k, k-1, wout));
 			  }
 
+        //For radial pattern.
+				if(j>0)
+				{
+				k1 = log10(Uniform(data.initial_log_uniform, data.final_log_uniform));
+				d1 = log10(Uniform(data.initial_log_uniform, data.final_log_uniform));
+				k3 = Uniform(data.initial_uniform, data.final_uniform);
+				d3 = Uniform(data.initial_uniform, data.final_uniform);
+
+				l0 = Eucl_Dist(x0, y0, x_position, y_position);
+				wout = Uniform(data.w_out_initial, data.w_out_final);
+
+				s.push_back(Springs(k1, d1, k3, d3, l0, k, k-no_of_points_per_round, wout));
+				}
+
 				x0 = x_position;
 				y0 = y_position;
 				k++;

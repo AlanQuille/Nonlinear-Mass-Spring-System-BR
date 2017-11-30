@@ -78,7 +78,7 @@ int main(int argc, char** argv)
   data.final_uniform = 200;
   data.t0 = 0;
 //  data.tmax = 2*M_PI;
-  data.tmax = 10;
+  data.tmax = 0.002;
   data.dt = 0.001;
 
   //run same simulation x timeb_s
