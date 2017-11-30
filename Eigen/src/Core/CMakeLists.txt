@@ -1,10 +1,6 @@
-FILE(GLOB Eigen_Core_SRCS "*.h")
+FILE(GLOB Eigen_Core_util_SRCS "*.h")
 
-INSTALL(FILES
-  ${Eigen_Core_SRCS}
-  DESTINATION ${INCLUDE_INSTALL_DIR}/Eigen/src/Core COMPONENT Devel
+INSTALL(FILES 
+  ${Eigen_Core_util_SRCS}
+  DESTINATION ${INCLUDE_INSTALL_DIR}/Eigen/src/Core/util COMPONENT Devel
   )
-
-ADD_SUBDIRECTORY(products)
-ADD_SUBDIRECTORY(util)
-ADD_SUBDIRECTORY(arch)

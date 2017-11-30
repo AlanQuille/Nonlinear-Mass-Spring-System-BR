@@ -9,6 +9,7 @@
 #include "Springs.hpp"
 #include "Nodes.hpp"
 #include "Eigen/Dense"
+#include "Eigen/QR"
 #include <sstream>
 #include <fstream>
 #include <string>
@@ -224,9 +225,14 @@ public:
         //THIS IS NOT GOOD CODING PRACTICE. FIX IT.
 				//FIX IT
 				//FIX IT
+        win = Uniform(data.w_in_initial, data.w_in_final);
+				cout << win << endl;
+
+				 /*
 				win = Uniform(0,2);
 				win -= 1;
 				BeforeRand = Uniform(0,1);
+				*/
 
 				n.push_back(node);
 
@@ -509,9 +515,12 @@ public:
 			{
 				//win = Uniform(w_in_initial, w_in_final);
 				//This has to be done, cannot do minus numbers for some reason
+				/*
 				win = Uniform(0,2);
 				win -= 1;
 				BeforeRand = Uniform(0,1);
+				*/
+				win = Uniform(w_in_initial, w_in_final);
 				cout << win << endl;
 				if(BeforeRand<=input_connectivity) n[i].Input_Node(ux, uy, win);
 				DT.AddPoint(Point(n[i].X_Position(),n[i].Y_Position(),0));

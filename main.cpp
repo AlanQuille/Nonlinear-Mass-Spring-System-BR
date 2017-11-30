@@ -3,7 +3,6 @@
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
-
 #include "Simulation.hpp"
 
 using namespace std;
