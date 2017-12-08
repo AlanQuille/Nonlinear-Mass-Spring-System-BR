@@ -175,7 +175,6 @@ int main(int argc, char** argv)
   output << currenttime <<"," << Output_Signal.at(i);
   output << endl;
   outputsignal = 0;
-
   }
 
 

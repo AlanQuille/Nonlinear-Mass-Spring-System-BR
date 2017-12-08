@@ -1,10 +1,8 @@
-#ifndef __SIMULATION_H_INCLUDED__
-#define __SIMULATION_H_INCLUDED__
 #include <vector>
 #include "Eigen/Dense"
 #include "Delaunay.hpp"
-#include "Springs.hpp"
-#include "Nodes.hpp"
+#include "Springs.cpp"
+#include "Nodes.cpp"
 using namespace Eigen;
 
 
@@ -192,4 +190,3 @@ public:
   //Return number of edges from the triangle.
 	double Spring_List();
 };
-#endif // __SIMULATION_H_INCLUDED__
