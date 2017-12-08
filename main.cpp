@@ -3,9 +3,12 @@
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
-#include "Simulation.hpp"
+#include "Simulation.cpp"
+#include "Eigen/Dense"
+#include "Eigen/QR"
 
 using namespace std;
+using namespace Eigen;
 
 
 //This takes the pseudo-cycles from the processor for srand()
@@ -15,8 +18,6 @@ unsigned long long rdtsc()
     __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
     return ((unsigned long long)hi << 32) | lo;
 }
-
-
 
 
 void LotkaVolterra(vector<double> &LVx, vector<double> &LVy, int maxtimesteps, double dt)
@@ -114,6 +115,25 @@ int main(int argc, char** argv)
   int rounds =3;
   double radius =1.0;
   int no_of_points_per_round = 8;
+
+  data.initial_log_uniform = 1;
+  data.final_log_uniform = 10;
+  data.initial_uniform = 100;
+  data.final_uniform = 200;
+  data.t0 = 0;
+//  data.tmax = 2*M_PI;
+  data.ux=1;
+  data.uy= 0;
+  data.input_connectivity = 0.2;
+//data.w_in_initial = -1;
+  data.w_in_initial = -1;
+  data.w_in_final = 1;
+  data.w_out_initial = -1;
+  data.w_out_final = 1;
+
+  data.tmax = 0.002;
+  data.dt = 0.001;
+
   int maxtimesteps = ((data.tmax - data.t0)/(data.dt));
 
   vector<double> LW;
@@ -145,7 +165,7 @@ int main(int argc, char** argv)
   {
   for(int j=0; j<LM.cols(); j++)
   {
-    outputsignal += LW.at(j) * LM(i, j);
+    outputsignal += LW[j] * LM(i, j);
     if(i==0) output2 << LW[j] << endl;
   }
   Output_Signal.push_back(outputsignal);
@@ -164,6 +184,12 @@ int main(int argc, char** argv)
 
   cout << "The time it took for the programme to run in total in milliseconds: ";
   cout << difference << endl;
+
+if( __cplusplus == 201402L ) std::cout << "C++14\n" ;
+else if( __cplusplus == 201103L ) std::cout << "C++11\n" ;
+else if( __cplusplus == 19971L ) std::cout << "C++98\n" ;
+else std::cout << "pre-standard C++\n" ;
+
 
 
   return 0;

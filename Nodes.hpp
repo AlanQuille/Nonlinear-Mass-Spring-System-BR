@@ -88,7 +88,7 @@ private:
         //You want to calculate the velocity so that initial velocity is 0 and than calculate the corresponding change in position
       pydot += dt*pydotdot;
       y_position += dt*pydot;
-			
+
       pxdot += dt*pxdotdot;
 			x_position += dt*pxdot;
 	  	}
