@@ -29,11 +29,24 @@ struct InitialDataValues
 	double dt;
 };
 
+class DynamicalSystems
+{
+private:
+  double t0;
+	double dt;
+	double tmax;
+	int maxtimesteps;
+public:
+	//This loads in the initial values for the signal, t0, tmax and dt
+	DynamicalSystems(double t0, double tmax, double dt);
+	//This is the LotkaVolterra System
+	void LotkaVolterra(vector<double> &LVx, vector<double> &LVy);
+};
+
 class Simulation
 {
 
 private:
-
   //No of mass points
   int N;
   double input_connectivity;
@@ -87,11 +100,10 @@ private:
 	MatrixXd LM;
 
 
-
 public:
 
   //Default constructor
-  Simulation(InitialDataValues &data);
+  Simulation(InitialDataValues &data, vector<double> &Target_Signal);
 
   //This is an overloaded default constructor. This is not randomly initialized mass spring system, this is a determined one.
 	Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Lvx, vector<double> &Lvy);
@@ -105,7 +117,7 @@ public:
 	//This changes position of springs and nodes dynamically in time.
   void Execute_In_Time();
 
- //Overloaded Execute_in_Time
+ //Overloaded Execute_in_Time, will use this for 3D
 	void Execute_In_Time_2();
 
   //This does the delaunay triangulation for the two dimensional case and creates the springs for the reservoir computer, not the radial spider web
@@ -134,6 +146,9 @@ public:
 
   //Output for Matlab plot
 	void Output_For_Plot();
+
+  //Mean Squared Error between vector A and estimator Ahat
+	double MSE(vector<double>& A, vector<double>& Ahat);
 
   //Return learning matrix, MatrixXd defined in Eigen library
 	MatrixXd& Return_Learning_Matrix();
@@ -177,6 +192,7 @@ public:
 
   //Sorting two input numbers
   void Sort(int &a, int &b);
+
 
   //Remove duplicates from two dimensional vector.
   void RemoveDuplicates(vector<vector<double>> &x);

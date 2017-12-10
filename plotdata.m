@@ -1,5 +1,5 @@
 
-for i=1:1
+for i=1:2
 s = num2str(i*0.001);
 if(length(s)==4)
     s =strcat(s, "0");

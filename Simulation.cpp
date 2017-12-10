@@ -15,7 +15,7 @@ using namespace std;
 using namespace Eigen;
 
 
-Simulation::Simulation(InitialDataValues &data)
+Simulation::Simulation(InitialDataValues &data, vector<double> &TS)
 {
 
   //rand(); rand(); rand();
@@ -43,9 +43,12 @@ Simulation::Simulation(InitialDataValues &data)
 
   this->maxtimesteps = ((data.tmax - data.t0)/data.dt);
 
+  Target_Signal = TS;
+
   bool learning_phase = 0;
   //Learning phase
   Initialize_Nodes(range0x, range1x, range0y, range1y);
+    cout <<"Here?" <<endl;
   Delaunay_Triangulation_and_Spring_Creation();
 }
 
@@ -63,13 +66,13 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
 
   Target_Signal = Lvx;
 
-  Execute_In_Time_2();
+  Execute_In_Time();
   Output_For_Plot();
 }
 
 void Simulation::Initialize_Nodes(double range0x, double range1x, double range0y, double range1y)
    {
-     ofstream fixed("fixednode.txt");
+    ofstream fixed("fixednode.txt");
  		ofstream Initialnodes("initial.txt");
 
 
@@ -276,8 +279,6 @@ void Simulation::Execute_In_Time()
   MatrixXd LearningMatrix(maxtimesteps, s.size());
   MatrixXd TargetSignal(maxtimesteps, s.size());
 
-
-
   double outputsignal = 0;
   for(int j=0; j<s.size(); j++)
   {
@@ -394,8 +395,6 @@ void Simulation::Execute_In_Time_2()
 
   double currentlength = 0;
 
-
-  int maxtimesteps = (int)((tmax-t0)/dt);
   MatrixXd LearningMatrix(maxtimesteps, s.size());
   MatrixXd TargetSignal(maxtimesteps, s.size());
 
@@ -499,7 +498,6 @@ void Simulation::Execute_In_Time_2()
     Moore_Penrose_Pseudoinverse(LearningMatrix);
     LearningMatrix= LearningMatrix * TargetSignal;
     Populate_Learning_Weights(LearningMatrix);
-
 }
 
 void Simulation::Moore_Penrose_Pseudoinverse(MatrixXd& L)
@@ -527,10 +525,57 @@ void Simulation::Populate_Learning_Weights(MatrixXd& L)
 
 void Simulation::Output_Signal_And_MSE()
 {
+  MatrixXd LM;
+  vector<double> LW;
 
+  LM = Return_Learning_Matrix();
+  LW = Return_Learning_Weights();
+
+  ofstream output("outputsignal.csv");
+  ofstream output2("learningweights.csv");
+
+  double outputsignal = 0;
+  double currenttime = 0;
+
+  for(int i=0; i<maxtimesteps; i++)
+  {
+  for(int j=0; j<LM.cols(); j++)
+  {
+    outputsignal += LW[j] * LM(i, j);
+    if(i==0) output2 << LW[j] << endl;
+  }
+
+  Output_Signal.push_back(outputsignal);
+  currenttime = t0 + i*dt;
+  cout << outputsignal;
+  cout << endl;
+  output << currenttime <<"," << Output_Signal.at(i);
+  output << endl;
+  outputsignal = 0;
+  }
+
+  cout <<"The mean squared error of the output signal versus the target signal is: " << MSE(Output_Signal, Target_Signal);
+  cout <<endl;
 }
 
+double Simulation::MSE(vector<double>& A, vector<double>& Ahat)
+{
 
+double MSEsum = 0;
+double MSE = 0;
+double InverseTotal;
+
+for(int i =0; i<A.size(); i++)
+{
+  MSEsum += (A[i]-Ahat[i])*(A[i]-Ahat[i]);
+}
+
+InverseTotal = (1/(A.size()));
+
+MSE = InverseTotal*MSEsum;
+
+return MSE;
+}
 
 int Simulation::Random_Input_Nodes(int N)
 {
@@ -859,7 +904,6 @@ void Simulation::Output_For_Plot()
  }
 
 }
-
 Springs Simulation::Spring_Return(int i)
 {
   return s[i];
@@ -873,4 +917,37 @@ Nodes Simulation::NodeReturn(int i)
 double Simulation::Spring_List()
 {
   return EdgeList.size();
+}
+
+//The helper functions for the Dynamical Systems class
+
+DynamicalSystems::DynamicalSystems(double t0, double tmax, double dt)
+{
+  this->maxtimesteps = ((tmax - t0)/dt);
+}
+
+void DynamicalSystems::LotkaVolterra(vector<double> &LVx, vector<double> &LVy)
+{
+  //USe Euler's to get quick Lotka Volterra. Parameters = 1, 1 just for speed.
+  double x0;
+  double xnext;
+  double y0;
+  double ynext;
+
+  //Initial conditions
+  x0 = 1.2;
+  y0 = 1.2;
+
+  LVx.push_back(x0);
+  LVy.push_back(y0);
+
+  for(int i=1; i<maxtimesteps; i++)
+  {
+    xnext = x0 + dt*(x0 - x0*y0);
+    ynext = y0 + dt*(x0*y0 - y0);
+    x0 = xnext;
+    y0 = ynext;
+    LVx.push_back(xnext);
+    LVy.push_back(ynext);
+  }
 }
