@@ -30,10 +30,10 @@ int main(int argc, char** argv)
   srand(rdtsc());
 
 
-  data.N =70;
+  data.N =5;
   data.ux=1;
   data.uy= 0;
-  data.input_connectivity = 1;
+  data.input_connectivity = 0.2;
   //data.w_in_initial = -1;
   data.w_in_initial = -1;
   data.w_in_final = 1;
@@ -49,15 +49,15 @@ int main(int argc, char** argv)
   data.initial_uniform = 100;
   data.final_uniform = 200;
   data.t0 = 0;
-  data.tmax = 3.141592654;
+  data.tmax = 2*M_PI;
 //  data.tmax = 1;
   data.dt = 0.001;
+
 
 
     vector<double> LotkaX;
     vector<double> LotkaY;
     vector<double> Sine_Wave;
-    cout <<"WHat?" << endl;
 
     DynamicalSystems sys1(data.t0, data.tmax, data.dt);
 

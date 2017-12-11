@@ -25,6 +25,8 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &TS)
   this->total_input_nodes = (data.input_connectivity)*N;
   this->w_out_initial = data.w_out_initial;
   this->w_out_final = data.w_out_final;
+  this->w_in_initial = data.w_in_initial;
+  this->w_in_final = data.w_in_final;
   this->initial_log_uniform= data.initial_log_uniform;
   this->final_log_uniform = data.final_log_uniform;
   this->initial_uniform = data.initial_uniform;
@@ -55,6 +57,14 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
 {
   this->input_connectivity = data.input_connectivity;
   this->total_input_nodes = (data.input_connectivity)*rounds*no_of_points_per_round;
+
+  this->N = data.N;
+  //Step 2: The positions of the nodes were initialized and 20% of the nodes are connected to the input.
+  this->w_out_initial = data.w_out_initial;
+  this->w_out_final = data.w_out_final;
+  this->w_in_initial = data.w_in_initial;
+  this->w_in_final = data.w_in_final;
+
   //Learning phase
   Initialize_Nodes(radius, rounds, no_of_points_per_round, data);
 
@@ -230,13 +240,22 @@ void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_pe
 void Simulation::Delaunay_Triangulation_and_Spring_Creation()
 {
     DelaunayTriangulation DT(abs(range1x-range0x), abs(range1y-range0y));
-    double win;
+    double win = 0;
     double BeforeRand = 0;
+
+    //This offset is to counteract the negativity.
+  //  double offset = abs(w_in_initial)+abs(w_in_final);
+
+  //  cout <<"offset is: " << offset;
+  //  cout << endl << w_in_initial;
+  //  cout <<endl << w_in_final;
 
     for(int i=0; i<N; i++)
     {
       win = Uniform(w_in_initial, w_in_final);
-      cout << win << endl;
+  //    cout <<"win is: "<< win << endl;
+  //    win -= offset;
+      cout <<"win is: "<< win << endl;
       if(BeforeRand<=input_connectivity) n[i].Input_Node(ux, uy, win);
       DT.AddPoint(Point(n[i].X_Position(),n[i].Y_Position(),0));
     //  DT.AddPoint(Point(n[i].X_Position(), Point(n[i].Y_Position());
@@ -568,16 +587,17 @@ double Simulation::MSE(vector<double>& A, vector<double>& Ahat)
 
 double MSEsum = 0;
 double MSE = 0;
-double InverseTotal;
+double Total;
 
 for(int i =0; i<A.size(); i++)
 {
   MSEsum += (A[i]-Ahat[i])*(A[i]-Ahat[i]);
 }
 
-InverseTotal = (1/(A.size()));
+Total = (double)A.size();
 
-MSE = InverseTotal*MSEsum;
+//cout <<"Inverse total is: " << Total << endl;
+MSE = (1/Total)*MSEsum;
 
 return MSE;
 }
