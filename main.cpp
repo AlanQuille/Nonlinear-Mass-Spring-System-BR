@@ -30,7 +30,7 @@ int main(int argc, char** argv)
   srand(rdtsc());
 
 
-  data.N =5;
+  data.N =15;
   data.ux=1;
   data.uy= 0;
   data.input_connectivity = 0.2;
@@ -49,7 +49,7 @@ int main(int argc, char** argv)
   data.initial_uniform = 100;
   data.final_uniform = 200;
   data.t0 = 0;
-  data.tmax = 2*M_PI;
+  data.tmax = 10;
 //  data.tmax = 1;
   data.dt = 0.001;
 
@@ -61,14 +61,14 @@ int main(int argc, char** argv)
 
     DynamicalSystems sys1(data.t0, data.tmax, data.dt);
 
-  //  sys1.LotkaVolterra(LotkaX, LotkaY);
-    sys1.SineWave(Sine_Wave);
+    sys1.LotkaVolterra(LotkaX, LotkaY);
+  //  sys1.SineWave(Sine_Wave);
 
     cout <<"WHat?" << endl;
 
 
 
-    Simulation sim(data, Sine_Wave);
+    Simulation sim(data, LotkaX);
     sim.Output_Signal_And_MSE();
 
     stop_time = clock();

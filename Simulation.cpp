@@ -314,7 +314,6 @@ void Simulation::Execute_In_Time()
   for(int j=0;  j<s.size(); j++)
     {
        s[j].ForceEq(Fsum);
-       cout <<"Fsum is: " <<Fsum << endl;
        ofs3 << i*dt<<"," <<Fsum << endl;
 
        nodea = s[j].Nodea();
@@ -550,8 +549,6 @@ void Simulation::Output_Signal_And_MSE()
   LM = Return_Learning_Matrix();
   LW = Return_Learning_Weights();
 
-  cout <<"Learning matrix is: " << LM;
-
   ofstream output("outputsignal.csv");
   ofstream output2("learningweights.csv");
   ofstream output3("targetsignal.csv");
@@ -569,8 +566,7 @@ void Simulation::Output_Signal_And_MSE()
 
   Output_Signal.push_back(outputsignal);
   currenttime = t0 + i*dt;
-  cout << outputsignal;
-  cout << endl;
+
   output << currenttime <<"," << Output_Signal.at(i);
   output << endl;
   output3 <<currenttime <<"," << Target_Signal.at(i);
