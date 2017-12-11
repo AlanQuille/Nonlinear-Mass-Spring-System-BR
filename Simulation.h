@@ -39,8 +39,12 @@ private:
 public:
 	//This loads in the initial values for the signal, t0, tmax and dt
 	DynamicalSystems(double t0, double tmax, double dt);
+
 	//This is the LotkaVolterra System
 	void LotkaVolterra(vector<double> &LVx, vector<double> &LVy);
+
+	//A simple sinewave to test target signal;
+	void SineWave(vector<double> &SineWave);
 };
 
 class Simulation

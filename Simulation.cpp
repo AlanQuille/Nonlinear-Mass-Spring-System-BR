@@ -48,7 +48,6 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &TS)
   bool learning_phase = 0;
   //Learning phase
   Initialize_Nodes(range0x, range1x, range0y, range1y);
-    cout <<"Here?" <<endl;
   Delaunay_Triangulation_and_Spring_Creation();
 }
 
@@ -296,6 +295,7 @@ void Simulation::Execute_In_Time()
   for(int j=0;  j<s.size(); j++)
     {
        s[j].ForceEq(Fsum);
+       cout <<"Fsum is: " <<Fsum << endl;
        ofs3 << i*dt<<"," <<Fsum << endl;
 
        nodea = s[j].Nodea();
@@ -531,8 +531,11 @@ void Simulation::Output_Signal_And_MSE()
   LM = Return_Learning_Matrix();
   LW = Return_Learning_Weights();
 
+  cout <<"Learning matrix is: " << LM;
+
   ofstream output("outputsignal.csv");
   ofstream output2("learningweights.csv");
+  ofstream output3("targetsignal.csv");
 
   double outputsignal = 0;
   double currenttime = 0;
@@ -551,6 +554,8 @@ void Simulation::Output_Signal_And_MSE()
   cout << endl;
   output << currenttime <<"," << Output_Signal.at(i);
   output << endl;
+  output3 <<currenttime <<"," << Target_Signal.at(i);
+  output3 << endl;
   outputsignal = 0;
   }
 
@@ -923,7 +928,20 @@ double Simulation::Spring_List()
 
 DynamicalSystems::DynamicalSystems(double t0, double tmax, double dt)
 {
-  this->maxtimesteps = ((tmax - t0)/dt);
+  this->maxtimesteps = (int)((tmax - t0)/dt);
+  this->tmax = tmax;
+  this->dt = dt;
+  this->t0 = t0;
+}
+
+void DynamicalSystems::SineWave(vector<double> &Sine_Wave)
+{
+  double currenttime =0;
+  for(int i =0; i<maxtimesteps; i++)
+  {
+     Sine_Wave.push_back(sin(t0+i*dt));
+     cout <<sin(t0+i*dt) << endl;
+  }
 }
 
 void DynamicalSystems::LotkaVolterra(vector<double> &LVx, vector<double> &LVy)
@@ -935,8 +953,8 @@ void DynamicalSystems::LotkaVolterra(vector<double> &LVx, vector<double> &LVy)
   double ynext;
 
   //Initial conditions
-  x0 = 1.2;
-  y0 = 1.2;
+  x0 = 1.05;
+  y0 = 1.05;
 
   LVx.push_back(x0);
   LVy.push_back(y0);

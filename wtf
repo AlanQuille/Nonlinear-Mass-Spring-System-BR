@@ -1,0 +1,38 @@
+Simulation::Simulation()
+{
+this->N = data.N;
+//Step 2: The positions of the nodes were initialized and 20% of the nodes are connected to the input.
+this->input_connectivity = data.input_connectivity;
+this->total_input_nodes = (data.input_connectivity)*N;
+this->w_out_initial = data.w_out_initial;
+this->w_out_final = data.w_out_final;
+this->initial_log_uniform= data.initial_log_uniform;
+this->final_log_uniform = data.final_log_uniform;
+this->initial_uniform = data.initial_uniform;
+this->final_uniform = data.final_uniform;
+this->t0 = data.t0;
+this->tmax = data.tmax;
+this->dt = data.dt;
+
+this->range0x = data.range0x;
+this->range0y = data.range0y;
+this->range1x = data.range1x;
+this->range1y = data.range1y;
+
+this->ux = data.ux;
+this->uy = data.uy;
+
+bool learning_phase = 0;
+//Learning phase
+Initialize_Nodes(range0x, range1x, range0y, range1y);
+Delaunay_Triangulation_and_Spring_Creation();
+
+//Part two
+
+/*
+if(EdgeList.size() < N)
+{
+  cout <<"Delaunay Triangulation needs to be done again, there are unconnected nodes.";
+}
+*/
+}

@@ -1,5 +1,5 @@
 
-for i=1:2
+for i=1:999
 s = num2str(i*0.001);
 if(length(s)==4)
     s =strcat(s, "0");
@@ -43,5 +43,5 @@ xlim([-0.215 -0.19])
 ylim([0.4 0.45])
 pause(0.001);
 drawnow;
-axis([-5 5 -5 5])
+axis([0 10 0 10]);
 end
