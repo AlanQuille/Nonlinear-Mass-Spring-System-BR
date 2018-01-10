@@ -110,7 +110,7 @@ void Simulation::Initialize_Nodes(double range0x, double range1x, double range0y
  				 x0=x;
  				 k=i;
  			 }
- 		   Nodes p(x, y);
+ 		   Nodes p(x, y, 0);
  			 Initialnodes <<x <<"," <<y << endl;
       //The first input_connectivity percent of the nodes are marked as input nodes, and the
         n.push_back(p);
@@ -124,6 +124,54 @@ void Simulation::Initialize_Nodes(double range0x, double range1x, double range0y
  		//Just one node for test;
  		 //Fixed the leftmost and rightmost nodes.
    }
+
+void Simulation::Initialize_Nodes_3D(double range0x, double range1x, double range0y, double range1y, double range0z, double range1z)
+  {
+       ofstream fixed("fixednode.txt");
+    	 ofstream Initialnodes("initial.txt");
+
+
+    		double x;
+    		double y;
+        double z;
+
+    		double x1 =range0x;
+    		double x0 =range1x;
+
+        //for fixed nodes.
+    		int j=0;
+    		int k=0;
+
+         for(int i=0; i<N; i++)
+    		 {
+
+    			 x=Uniform(range0x, range1x);
+    			 if(x1<x)
+    			 {
+    			  x1=x;
+    				j=i;
+    			}
+    			 y=Uniform(range0y, range1y);
+    			 if(x0>x)
+    			 {
+    				 x0=x;
+    				 k=i;
+    			 }
+
+    		   Nodes p(x, y, z);
+    			 Initialnodes <<x <<"," <<y <<"," << z<< endl;
+         //The first input_connectivity percent of the nodes are marked as input nodes, and the
+           n.push_back(p);
+    	   }
+
+    		 fixed <<j << endl;
+    		 fixed <<k << endl;
+
+    		 n[j].FixedNode();
+    		 n[k].FixedNode();
+    		//Just one node for test;
+    		 //Fixed the leftmost and rightmost nodes.
+  }
 
 void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data)
 {
@@ -162,7 +210,7 @@ void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_pe
       y_position = (j+1)*radius*sin((i*angle));
 
 
-      Nodes node(x_position, y_position);
+      Nodes node(x_position, y_position, 0);
 
       //THIS IS NOT GOOD CODING PRACTICE. FIX IT.
       //FIX IT
@@ -237,6 +285,126 @@ void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_pe
  n[2+no_of_points_per_round*(rounds-1)].FixedNode();
 }
 
+void Simulation::Initialize_Nodes_3D(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data)
+{
+  double angle = ((2*M_PI)/no_of_points_per_round);
+  double x_position;
+  double y_position;
+  double z_position;
+
+  double k1;
+  double d1;
+  double k3;
+  double d3;
+
+  double x0;
+  double x1;
+
+  double y0;
+  double y1;
+
+  double z0;
+  double z1;
+
+  double l0;
+  double wout;
+  double win;
+  double BeforeRand = 0;
+
+
+  int k =0;
+
+ for(int j=0; j<rounds; j++)
+ {
+   x0 = (j+1)*radius*cos((0));
+   y0 = (j+1)*radius*sin((0));
+   z0 = 0;
+
+   for(int i=0; i<no_of_points_per_round; i++)
+   {
+      //So this
+      x_position = (j+1)*radius*cos((i*angle));
+      y_position = (j+1)*radius*sin((i*angle));
+      z_position = 0;
+
+
+      Nodes node(x_position, y_position, z_position);
+
+      //THIS IS NOT GOOD CODING PRACTICE. FIX IT.
+      //FIX IT
+      //FIX IT
+      win = Uniform(data.w_in_initial, data.w_in_final);
+      cout << win << endl;
+
+       /*
+      win = Uniform(0,2);
+      win -= 1;
+      BeforeRand = Uniform(0,1);
+      */
+
+      n.push_back(node);
+
+      if(BeforeRand<=input_connectivity)
+      {
+      n[k].Input_Node(data.ux, data.uy, win);
+      cout << endl;
+      }
+
+      if(i>0)
+      {
+      k1 = log10(Uniform(data.initial_log_uniform, data.final_log_uniform));
+      d1 = log10(Uniform(data.initial_log_uniform, data.final_log_uniform));
+      k3 = Uniform(data.initial_uniform, data.final_uniform);
+      d3 = Uniform(data.initial_uniform, data.final_uniform);
+
+      l0 = Eucl_Dist(x0, y0, x_position, y_position);
+      wout = Uniform(data.w_out_initial, data.w_out_final);
+
+      s.push_back(Springs(k1, d1, k3, d3, l0, k, k-1, wout));
+      }
+
+      //For radial pattern.
+      if(j>0)
+      {
+      k1 = log10(Uniform(data.initial_log_uniform, data.final_log_uniform));
+      d1 = log10(Uniform(data.initial_log_uniform, data.final_log_uniform));
+      k3 = Uniform(data.initial_uniform, data.final_uniform);
+      d3 = Uniform(data.initial_uniform, data.final_uniform);
+
+      l0 = Eucl_Dist(x0, y0, x_position, y_position);
+      wout = Uniform(data.w_out_initial, data.w_out_final);
+
+      s.push_back(Springs(k1, d1, k3, d3, l0, k, k-no_of_points_per_round, wout));
+      }
+
+      x0 = x_position;
+      y0 = y_position;
+      z0 = z_position;
+      k++;
+
+   }
+   x_position = (j+1)*radius*cos((0));
+   y_position = (j+1)*radius*sin((0));
+   z_position = 0;
+
+   k1 = log10(Uniform(data.initial_log_uniform, data.final_log_uniform));
+   d1 = log10(Uniform(data.initial_log_uniform, data.final_log_uniform));
+   k3 = Uniform(data.initial_uniform, data.final_uniform);
+   d3 = Uniform(data.initial_uniform, data.final_uniform);
+   l0 = Eucl_Dist(x0, y0, x_position, y_position);
+   wout = Uniform(data.w_out_initial, data.w_out_final);
+
+   if(no_of_points_per_round>2)
+   {
+   s.push_back(Springs(k1, d1, k3, d3, l0, (k-no_of_points_per_round), k-1, wout));
+   }
+ }
+
+
+ n[no_of_points_per_round*(rounds-1)].FixedNode();
+ n[2+no_of_points_per_round*(rounds-1)].FixedNode();
+}
+
 void Simulation::Delaunay_Triangulation_and_Spring_Creation()
 {
     DelaunayTriangulation DT(abs(range1x-range0x), abs(range1y-range0y));
@@ -266,7 +434,37 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
     Initialize_Springs();
     Execute_In_Time();
     Output_For_Plot();
+}
 
+void Simulation::Delaunay_Triangulation_and_Spring_Creation_3D()
+{
+    DelaunayTriangulation DT(abs(range1x-range0x), abs(range1y-range0y));
+    double win = 0;
+    double BeforeRand = 0;
+
+    //This offset is to counteract the negativity.
+  //  double offset = abs(w_in_initial)+abs(w_in_final);
+
+  //  cout <<"offset is: " << offset;
+  //  cout << endl << w_in_initial;
+  //  cout <<endl << w_in_final;
+
+    for(int i=0; i<N; i++)
+    {
+      win = Uniform(w_in_initial, w_in_final);
+  //    cout <<"win is: "<< win << endl;
+  //    win -= offset;
+      cout <<"win is: "<< win << endl;
+      if(BeforeRand<=input_connectivity) n[i].Input_Node(ux, uy, win);
+      DT.AddPoint(Point(n[i].X_Position(),n[i].Y_Position(),n[i].Z_Position()));
+    //  DT.AddPoint(Point(n[i].X_Position(), Point(n[i].Y_Position());
+    }
+    DT.print();
+
+    Get_Triangles(DT);
+    Initialize_Springs();
+    Execute_In_Time();
+    Output_For_Plot();
 }
 
 void Simulation::Execute_In_Time()
@@ -350,8 +548,8 @@ void Simulation::Execute_In_Time()
        }
 
 
-       n[nodea].Change_Position(Fx_nodea, Fy_nodea, dt);
-       n[nodeb].Change_Position(Fx_nodeb, Fy_nodeb, dt);
+       n[nodea].Change_Position(Fx_nodea, Fy_nodea, 0, dt);
+       n[nodeb].Change_Position(Fx_nodeb, Fy_nodeb, 0, dt);
 
        x0 = n[nodea].X_Position();
        x1 = n[nodeb].X_Position();
@@ -395,7 +593,19 @@ void Simulation::Execute_In_Time_2()
   double Fy_nodea =0;
   double Fx_nodeb =0;
   double Fy_nodeb =0;
-  double theta = 0;
+  double Fz_nodea = 0;
+  double Fz_nodeb = 0;
+
+  //Direction cosines
+  double alpha = 0;
+  double beta = 0;
+  double gamma = 0;
+
+  //Distances in x, y and z directions
+  double lx;
+  double ly;
+  double lz;
+
   double l = 0;
 
   double nodea =0;
@@ -405,6 +615,8 @@ void Simulation::Execute_In_Time_2()
   double x1 = 0;
   double y0 = 0;
   double y1 = 0;
+  double z0 = 0;
+  double z1 = 0;
 
   ofstream ofs("Node1.csv");
   ofstream ofs2("Node2.csv");
@@ -452,35 +664,81 @@ void Simulation::Execute_In_Time_2()
        x1 = n[nodeb].X_Position();
        y0 = n[nodea].Y_Position();
        y1 = n[nodeb].Y_Position();
+       z0 = n[nodea].Z_Position();
+       z1 = n[nodeb].Z_Position();
 
-       //Change position of first node
-       theta = abs(Angle(x0, x1, y0, y1));
+       lx = abs(x1-x0);
+       ly = abs(y1-y0);
+       lz = abs(z1-z0);
+
+       //Total lengths
+       l = Eucl_Dist(x0, y0, z0, x1, y1, z1);
+
+       //Direction cosines
+       alpha= lx/l;
+       beta = ly/l;
+       gamma = lz/l;
 
        if(x1>x0)
        {
-       Fx_nodeb = X_Comp(Fsum, theta);
-       Fx_nodea = -X_Comp(Fsum, theta);
+       //Fx_nodeb = X_Comp(Fsum, theta);
+       //Fx_nodea = -X_Comp(Fsum, theta);
+       Fx_nodeb = Fsum*cos(alpha);
+       Fx_nodea = -Fsum*cos(alpha);
        }
+
        if(y1>y0)
        {
-       Fy_nodeb = Y_Comp(Fsum, theta);
-       Fy_nodea = -Y_Comp(Fsum, theta);
+    //   Fy_nodeb = Y_Comp(Fsum, theta);
+      // Fy_nodea = -Y_Comp(Fsum, theta);
+       Fy_nodeb = Fsum*cos(beta);
+       Fy_nodea = -Fsum*cos(beta);
+       }
+
+       if(z1>z0)
+       {
+    //   Fy_nodeb = Y_Comp(Fsum, theta);
+      // Fy_nodea = -Y_Comp(Fsum, theta);
+       Fz_nodeb = Fsum*cos(gamma);
+       Fz_nodea = -Fsum*cos(gamma);
        }
 
        if(x0>x1)
        {
-       Fx_nodeb = -X_Comp(Fsum, theta);
-       Fx_nodea = X_Comp(Fsum, theta);
+       //Fx_nodeb = X_Comp(Fsum, theta);
+       //Fx_nodea = -X_Comp(Fsum, theta);
+       Fx_nodeb = -Fsum*cos(alpha);
+       Fx_nodea = Fsum*cos(alpha);
        }
+
        if(y0>y1)
        {
-       Fy_nodeb = -Y_Comp(Fsum, theta);
-       Fy_nodea = Y_Comp(Fsum, theta);
+    //   Fy_nodeb = Y_Comp(Fsum, theta);
+      // Fy_nodea = -Y_Comp(Fsum, theta);
+       Fy_nodeb = -Fsum*cos(beta);
+       Fy_nodea = Fsum*cos(beta);
+       }
+
+       if(z0>z1)
+       {
+    //   Fy_nodeb = Y_Comp(Fsum, theta);
+      // Fy_nodea = -Y_Comp(Fsum, theta);
+       Fz_nodeb = -Fsum*cos(gamma);
+       Fz_nodea = Fsum*cos(gamma);
+       }
+
+       //The solenoid is simulated here. Each web at a time.
+       //Square pulse in positive z direction for first web
+       if(j==0)
+       {
+       Fz_nodea += SquareWave(t0+i*dt);
+       Fz_nodeb += SquareWave(t0+i*dt);
        }
 
 
-       n[nodea].Change_Position(Fx_nodea, Fy_nodea, dt);
-       n[nodeb].Change_Position(Fx_nodeb, Fy_nodeb, dt);
+
+       n[nodea].Change_Position(Fx_nodea, Fy_nodea, Fz_nodea, dt);
+       n[nodeb].Change_Position(Fx_nodeb, Fy_nodeb, Fz_nodeb, dt);
 
        x0 = n[nodea].X_Position();
        x1 = n[nodeb].X_Position();
@@ -495,8 +753,14 @@ void Simulation::Execute_In_Time_2()
        ofs <<"," << y0 << endl;
        ofs2 <<"," << y1 << endl;
 
+       z0 = n[nodea].Z_Position();
+       z1 = n[nodeb].Z_Position();
+
+       ofs <<dt*i <<","<< z0;
+       ofs2 <<dt*i <<"," << z1;
+
        //Be very careful with the lengths here.
-       l = Eucl_Dist(x0, y0, x1, y1);
+       l = Eucl_Dist(x0, y0,z0, x1, y1,z1);
        currentlength = l;
 
 
@@ -516,6 +780,14 @@ void Simulation::Execute_In_Time_2()
     Moore_Penrose_Pseudoinverse(LearningMatrix);
     LearningMatrix= LearningMatrix * TargetSignal;
     Populate_Learning_Weights(LearningMatrix);
+}
+
+double Simulation::SquareWave(double currenttime)
+{
+  double Amplitude = 1;
+
+  if(currenttime<0.003) return Amplitude;
+  else return 0;
 }
 
 void Simulation::Moore_Penrose_Pseudoinverse(MatrixXd& L)
@@ -626,6 +898,11 @@ double Simulation::Spring_And_Damping_Coefficient_2(double initial, double final
 double Simulation::Eucl_Dist(double x1, double y1, double x2, double y2)
 {
   return sqrt((y2-y1)*(y2-y1) + (x2-x1)*(x2-x1));
+}
+
+double Simulation::Eucl_Dist(double x1, double y1, double z1, double x2, double y2, double z2)
+{
+  return sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) + (z2-z1)*(z2-z1));
 }
 
 double Simulation::Angle(double x0, double x1, double y0, double y1)
@@ -923,6 +1200,66 @@ void Simulation::Output_For_Plot()
   }
 
  }
+}
+
+ void Simulation::Output_For_Plot_3D()
+ {
+   string str;
+   str = "s.csv";
+  // if(i%10 == 0) str.erase(str.length()-4);
+   ofstream EdgesS(str);
+   string str2;
+   str2 = "t.csv";
+   ofstream EdgesT(str2);
+   vector<int>::iterator NodeNums;
+
+   string str3;
+
+   //In Matlab, it does not accept indices of 0 for node graphs.
+   //Replace EdgeList with s for consistency.
+   for(int j=0; j<s.size()-1; j++)
+   {
+     EdgesS <<s[j].Nodea()+1 <<",";
+     EdgesT <<s[j].Nodeb()+1 <<",";
+   }
+
+   EdgesS <<s[s.size()-1].Nodea()+1;
+   EdgesT <<s[s.size()-1].Nodeb()+1;
+
+
+   for(int i=0; i<maxtimesteps; i++)
+  {
+    str = to_string(i*dt);
+   // if(i%10 == 0) str.erase(str.length()-4);
+    str.erase(str.length()-3);
+    str.append("X_3D.csv");
+    ofstream nodesX(str);
+
+    str2 = to_string(i*dt);
+   // if(i%10 == 0) str.erase(str.length()-4);
+    str2.erase(str.length()-5);
+    str2.append("Y_3D.csv");
+    ofstream nodesY(str2);
+
+    str3 = to_string(i*dt);
+    //Why is this 5?
+    str.erase(str.length()-5);
+    str2.append("Z_3D.csv");
+    ofstream nodesZ(str3);
+
+   int j=0;
+   while(j<n.size())
+   {
+     nodesX << n[j].X_Position();
+     if(j<n.size()-1) nodesX<<",";
+     nodesY << n[j].Y_Position();
+     if(j<n.size()-1) nodesY<<",";
+     nodesZ << n[j].Z_Position();
+     if(j<n.size()-1) nodesZ<<",";
+     j++;
+   }
+
+  }
 
 }
 Springs Simulation::Spring_Return(int i)

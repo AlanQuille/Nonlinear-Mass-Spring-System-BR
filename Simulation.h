@@ -9,6 +9,7 @@ using namespace Eigen;
 struct InitialDataValues
 {
 	double N;
+	//Exchange these with functions in x, y and z directions
 	double ux;
 	double uy;
 	double input_connectivity;
@@ -20,6 +21,8 @@ struct InitialDataValues
 	double range1x;
 	double range0y;
 	double range1y;
+	double range0z;
+	double range1z;
 	double initial_log_uniform;
 	double final_log_uniform;
 	double initial_uniform;
@@ -81,10 +84,13 @@ private:
   //Ranges for the delaunay triangulation
   double range0x;
   double range0y;
+	double range0z;
   double range1x;
   double range1y;
+	double range1z;
 
   //These are constant horizontal forces on the input nodes. If this changes so each input node receives a unique force we will have to modify the code
+	//I will modify the code after the fact imo
 	double ux;
 	double uy;
 
@@ -118,14 +124,26 @@ public:
 	//This initializes the nodes and puts in appropriate values for the ranges and the weights
 	void Initialize_Nodes(double range0x, double range1x, double range0y, double range1y);
 
+	//Not overloaded for 3D, make it explicit
+	void Initialize_Nodes_3D(double range0x, double range1x, double range0y, double range1y, double range0z, double range1z);
+
+	//Not overloaded for 3D, make it explicit
+	void Initialize_Nodes_3D(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data);
+
 	//This changes position of springs and nodes dynamically in time.
   void Execute_In_Time();
 
- //Overloaded Execute_in_Time, will use this for 3D
+ //Overloaded Execute_in_Time, will use this for 3D. This uses direction cosines instead of sine and theta.
 	void Execute_In_Time_2();
+
+	//Functions used for z direction. The first one = square pulse.
+	double SquareWave(double currenttime);
 
   //This does the delaunay triangulation for the two dimensional case and creates the springs for the reservoir computer, not the radial spider web
 	void Delaunay_Triangulation_and_Spring_Creation();
+
+	//3D version
+	void Delaunay_Triangulation_and_Spring_Creation_3D();
 
   //Create EdgeNodeList, defunct function don't want to get rid of it.
 	void Create_EdgeNodeList();
@@ -150,6 +168,9 @@ public:
 
   //Output for Matlab plot
 	void Output_For_Plot();
+
+	//3D Output for Matlab plot
+  void Output_For_Plot_3D();
 
   //Mean Squared Error between vector A and estimator Ahat
 	double MSE(vector<double>& A, vector<double>& Ahat);
@@ -179,10 +200,14 @@ public:
   double Spring_And_Damping_Coefficient_1(double initial, double finalvalue);
   double Spring_And_Damping_Coefficient_2(double initial, double finalvalue);
 
-  //Euclidean distance between two points on x y plane, will overload for 3D
+  //Euclidean distance between two points on x y plane
   double Eucl_Dist(double x1, double y1, double x2, double y2);
 
+	//Euclidean distance between two points on x y z plane
+	double Eucl_Dist(double x1, double y1, double x2, double y2, double z1, double z2);
+
 	//Angle for line between two points.
+	//Do it twice for 3D
   double Angle(double x0, double x1, double y0, double y1);
 
   //X component of vector from one point to another

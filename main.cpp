@@ -1,5 +1,6 @@
 #define _USE_MATH_DEFINES
 #include <iostream>
+#include <string>
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
@@ -30,7 +31,35 @@ int main(int argc, char** argv)
   srand(rdtsc());
 
 
-  data.N =15;
+  vector<double> Volterra;
+  vector<string> classData;
+
+  ifstream file ( "volterra.csv" ); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
+  string value;
+
+  while (getline(file, value,'\n'))
+{
+    classData.push_back(value); //Get each line of the file as a string
+}
+
+int s = classData.size();
+double x;
+for (unsigned int i=1; i<s; ++i)
+{
+
+    size_t pos = classData[i].find(";");      // position of the end of the name of each one in the respective string
+    x = stod(classData[i].substr(pos+1,classData[i].size()));
+    Volterra.push_back(x); // convert string age to a double
+}
+
+  cout <<"Size of Volterra is: " << Volterra.size() << endl;
+
+
+    //30 nodes
+
+
+
+  data.N =50;
   data.ux=1;
   data.uy= 0;
   data.input_connectivity = 0.2;
@@ -44,12 +73,14 @@ int main(int argc, char** argv)
   data.range1x = 10;
   data.range0y = 0;
   data.range1y = 10;
+  data.range0z = 0;
+  data.range1z = 0;
   data.initial_log_uniform = 1;
   data.final_log_uniform = 10;
   data.initial_uniform = 100;
   data.final_uniform = 200;
   data.t0 = 0;
-  data.tmax = 10;
+  data.tmax = 5;
 //  data.tmax = 1;
   data.dt = 0.001;
 
@@ -64,11 +95,16 @@ int main(int argc, char** argv)
     sys1.LotkaVolterra(LotkaX, LotkaY);
   //  sys1.SineWave(Sine_Wave);
 
-    cout <<"WHat?" << endl;
+
+//    Simulation sim(data, LotkaX);
+
+    cout << LotkaX.size();
+    cout << endl;
 
 
+    vector<double> foo(Volterra.begin(), Volterra.begin() + LotkaX.size());
 
-    Simulation sim(data, LotkaX);
+    Simulation sim(data, foo);
     sim.Output_Signal_And_MSE();
 
     stop_time = clock();
