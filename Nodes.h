@@ -20,8 +20,6 @@ private:
   double ux =0;
 	//Force in y direction
   double uy = 0;
-	//Force in z direction. Not yet.
-//double uz = 0;
 
 	//Input weight
   double win = 0;
@@ -33,7 +31,7 @@ private:
 	//Acceleration
 	double pxdotdot = 0;
 	double pydotdot = 0;
-  double pzdotdot = 0;
+	double pzdotdot = 0;
 
   //Velocity
 	double pxdot = 0;
@@ -56,15 +54,18 @@ private:
   //Show current position
 	void Output_Position();
 
-  //Show x_position
+  //Show xposition
 	double X_Position();
 
   //Show yposition
 	double Y_Position();
 
-	//Show zposition
+	//Show z positions
 	double Z_Position();
 
 	//This is the function that incrementally changes the nodes position in the next timestep;
-	void Change_Position(double Fx, double  Fy, double Fz, double  dt);
+	void Change_Position(double Fx, double  Fy, double Fz, double dt);
+
+	//Change z position
+	void Change_Z_Position(double input);
 };
