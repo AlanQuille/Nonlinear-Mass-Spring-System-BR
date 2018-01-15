@@ -117,7 +117,7 @@ int main(int argc, char** argv)
   data.final_uniform = 200;
   data.t0 = 0;
 //  data.tmax = 2*M_PI;
-  data.ux=1;
+  data.ux=0;
   data.uy= 0;
   data.input_connectivity = 0.2;
 //data.w_in_initial = -1;
