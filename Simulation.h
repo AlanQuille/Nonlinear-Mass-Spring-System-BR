@@ -8,6 +8,7 @@ using namespace Eigen;
 
 struct InitialDataValues
 {
+	bool twothirdsprotocol;
 	double N;
 	double ux;
 	double uy;
@@ -74,6 +75,10 @@ private:
   double tmax;
   double dt;
 
+ //Proportion of the signal used for learning weights; Default 1
+	double x;
+	double y;
+
 	int maxtimesteps;
 
   bool input_node;
@@ -103,14 +108,17 @@ private:
 	//LearningMatrix for learning weight multiplication
 	MatrixXd LM;
 
+	//MatrixXD for
+	MatrixXd TS;
+
 
 public:
 
   //Default constructor
-  Simulation(InitialDataValues &data, vector<double> &Target_Signal);
+  Simulation(InitialDataValues &data, vector<double> &Target_Signal, double x);
 
   //This is an overloaded default constructor. This is not randomly initialized mass spring system, this is a determined one.
-	Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Lvx, vector<double> &Lvy);
+	Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Lvx, double x);
 
 
 
@@ -162,6 +170,9 @@ public:
   //Return Output Signal after learning phase and the mean squared error.
 	void Output_Signal_And_MSE();
 
+	//This is to use the previous learning weights for the next phase of the simulation/
+	void Output_Signal_And_MSE(vector<double>& External_Weights);
+
   //Return the weights after learning phase as a vector
 	vector<double>& Return_Learning_Weights();
 
@@ -185,7 +196,7 @@ public:
   double Eucl_Dist(double x1, double y1, double x2, double y2);
 
 	//Euclidean distance between two points on x y plane, will overload for 3D
-	double Eucl_Dist(double x1, double y1, double x2, double y2, double z1, double z2);
+	double Eucl_Dist(double x1, double y1,double z1, double x2, double y2, double z2);
 
 	//Angle for line between two points.
   double Angle(double x0, double x1, double y0, double y1);

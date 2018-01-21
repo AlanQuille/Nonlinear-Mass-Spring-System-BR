@@ -15,7 +15,7 @@ using namespace std;
 using namespace Eigen;
 
 
-Simulation::Simulation(InitialDataValues &data, vector<double> &TS)
+Simulation::Simulation(InitialDataValues &data, vector<double> &TS, double x)
 {
 
   //rand(); rand(); rand();
@@ -45,6 +45,9 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &TS)
 
   this->maxtimesteps = ((data.tmax - data.t0)/data.dt);
 
+  this->x = x;
+  this->y = 1-x;
+
   Target_Signal = TS;
 
   bool learning_phase = 0;
@@ -53,7 +56,7 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &TS)
   Delaunay_Triangulation_and_Spring_Creation();
 }
 
-Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Lvx, vector<double> &Lvy)
+Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Lvx, double x)
 {
   this->input_connectivity = data.input_connectivity;
   this->total_input_nodes = (data.input_connectivity)*rounds*no_of_points_per_round;
@@ -64,6 +67,9 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
   this->w_out_final = data.w_out_final;
   this->w_in_initial = data.w_in_initial;
   this->w_in_final = data.w_in_final;
+
+  this->x = x;
+  this->y = 1-x;
 
   //Learning phase
   Initialize_Nodes(radius, rounds, no_of_points_per_round, data);
@@ -246,6 +252,8 @@ void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_pe
    }
  }
 
+
+
 n[no_of_points_per_round*(rounds-1)].FixedNode();
 n[(no_of_points_per_round/2)+no_of_points_per_round*(rounds-1)].FixedNode();
 
@@ -312,6 +320,7 @@ void Simulation::Execute_In_Time()
   double z0 = 0;
   double z1 = 0;
 
+
   double lx = 0;
   double ly = 0;
   double lz = 0;
@@ -332,13 +341,21 @@ void Simulation::Execute_In_Time()
 
   double currentlength = 0;
 
+  int y = maxtimesteps - x;
+
+
+
+
+
   MatrixXd LearningMatrix(maxtimesteps, s.size());
+
+
   MatrixXd TargetSignal(maxtimesteps, s.size());
+
 
   double outputsignal = 0;
   for(int j=0; j<s.size(); j++)
   {
-
     LearningMatrix(0,j)=s[j].Return_Original_Length();
     TargetSignal(0,j) = Target_Signal[0];
   }
@@ -348,6 +365,8 @@ void Simulation::Execute_In_Time()
   double currenttime = 0;
   double currenttime1 = 0;
   double currenttime2 = 0;
+
+  //
 
   for(int i=1; i<maxtimesteps; i++)
   {
@@ -373,57 +392,74 @@ void Simulation::Execute_In_Time()
        //theta = abs(Angle(x0, x1, y0, y1));
 
        //Lengths in x,y and z directions
-       l = Eucl_Dist(x0, x1, y0, y1, z0, z1);
-       lx = abs(x1-x0);
-       ly = abs(y1-y0);
-       lz = abs(z1-z0);
+       l = Eucl_Dist(x0, y0, z0, x1, y1, z1);
 
+
+
+       cout <<"There shuold be oscillations in x: " << x0 << endl;
+       cout <<"There shuold be oscillations in x: " << x1 << endl;
+
+       //Unit vector for two points
+
+       lx = x1 - x0;
+       ly = y1 - y0;
+       lz = z1 - z0;
+
+      //Direction cosines
        alpha = lx/l;
        beta = ly/l;
        gamma = lz/l;
 
 
-       if(x1>x0)
-       {
-       Fx_nodeb = Fsum*cos(alpha);
-       Fx_nodea = -Fx_nodeb;
-       }
-       if(y1>y0)
-       {
-       Fy_nodeb = Fsum*cos(beta);
-       Fy_nodea = -Fy_nodeb;
-       }
 
-       if(z1>z0)
-       {
-       Fz_nodeb = Fsum*cos(gamma);
-       Fz_nodea = -Fz_nodeb;
-       }
+       cout<<"Fsum is: "<< Fsum << endl;
+       cout <<"Fx is: " << Fsum*alpha << endl;
+       cout <<"Fy is: " << Fsum*beta << endl;
+       cout <<"Fz is: " << Fsum*gamma << endl;
 
-       if(x0>x1)
-       {
-       Fx_nodeb = -Fsum*cos(alpha);
-       Fx_nodea = Fx_nodeb;
-       }
-       if(y0>y1)
-       {
-       Fy_nodeb = -Fsum*cos(beta);
-       Fy_nodea = Fy_nodeb;
-       }
+       cout <<"alpha is: " << alpha << endl;
+       cout <<"beta is: " << beta << endl;
+       cout <<"gamma is: " << gamma << endl;
 
-       if(z0>z1)
-       {
-       Fz_nodeb = -Fsum*cos(gamma);
-       Fz_nodea = Fz_nodeb;
-       }
+       Fx_nodeb = Fsum*alpha;
+       Fy_nodeb = Fsum*beta;
+       Fz_nodeb = Fsum*gamma;
+
+       Fx_nodea = -Fsum*alpha;
+       Fy_nodea = -Fsum*beta;
+       Fz_nodea = -Fsum*gamma;
+
+
+       cout <<Fx_nodea << endl;
+       cout <<Fx_nodeb << endl;
+
+       cout <<Fy_nodea << endl;
+       cout <<Fy_nodeb << endl;
+
+       cout <<Fz_nodea << endl;
+       cout <<Fz_nodeb << endl;
+
+
+       cout <<"Alpha is: " << alpha << endl;
+       cout <<"Beta is: " << beta << endl;
+       cout <<"Gamma is: " << gamma << endl;
+
+
+      // Fz_nodea += Uniform(-0.01,0.01)*sin(currenttime);
+    //   Fz_nodeb += Uniform(-0.01,0.01)*sin(currenttime);
+
+
+       //Square web temp
+       //if(j<=4) Fz_nodea += Uniform(-0.01,0.01);
+       //if(j<=4) Fz_nodeb += Uniform(-0.01,0.01);
 
        //Square wave on first web
 
-       if(j==0 && currenttime == 0.001) Fz_nodea += 1;
-       if(j==0 && currenttime == 0.001) Fz_nodeb += 1;
+       //if(j==0 && currenttime == 0.001) Fz_nodea += 1;
+       //if(j==0 && currenttime == 0.001) Fz_nodeb += 1;
 
-       if(j==0 && currenttime == 0.004) Fz_nodea -= 1;
-       if(j==0 && currenttime == 0.004) Fz_nodeb -= 1;
+       //if(j==0 && currenttime == 0.004) Fz_nodea -= 1;
+      // if(j==0 && currenttime == 0.004) Fz_nodeb -= 1;
 
        //if(currenttime<currenttime2 && currenttime>currenttime1) n[nodea].Change_Z_Position(1*(currenttime)*currenttime + 1*(currenttime) + 0.5);
       // if(currenttime<currenttime2 && currenttime>currenttime1) n[nodeb].Change_Z_Position(1*(currenttime)*currenttime + 1*(currenttime) + 0.
@@ -450,8 +486,10 @@ void Simulation::Execute_In_Time()
        ofs2 <<"," << y1 << endl;
 
        //Be very careful with the lengths here.
-       l = Eucl_Dist(x0, y0, x1, y1,z0,z1);
+       l = Eucl_Dist(x0, y0, z0, x1,y1,z1);
        currentlength = l;
+
+       cout << l << endl;
 
 
       // cout <<"Is this running?" << endl;
@@ -466,14 +504,36 @@ void Simulation::Execute_In_Time()
     }
 
     LM = LearningMatrix;
-    Moore_Penrose_Pseudoinverse(LearningMatrix);
-    LearningMatrix= LearningMatrix * TargetSignal;
-    Populate_Learning_Weights(LearningMatrix);
-}
+    TS = TargetSignal;
+    //This is the protocl for 2/3 learning weights, 1/3 learnt signal.
+  //  LM = LearningMatrix1;
 
+      LM = LearningMatrix.block(x, 0, maxtimesteps-x, LearningMatrix.cols());
+      TS = TargetSignal.block(x, 0, maxtimesteps-x, TargetSignal.cols());
+
+  //    cout <<"TS is now " << TS;
+
+    LearningMatrix = LearningMatrix.block(0, 0, x, LearningMatrix.cols());
+    TargetSignal = TargetSignal.block(0, 0, x, TargetSignal.cols());
+
+    cout <<LearningMatrix;
+    cout <<TargetSignal;
+
+
+
+    Moore_Penrose_Pseudoinverse(LearningMatrix);
+  //  TargetSignal = TargetSignal.block(0,0,x,TargetSignal);
+    LearningMatrix= LearningMatrix * TargetSignal;
+
+    cout <<LearningMatrix;
+    Populate_Learning_Weights(LearningMatrix);
+
+
+}
 
 void Simulation::Moore_Penrose_Pseudoinverse(MatrixXd& L)
 {
+  //First one third of signal.
   L = L.completeOrthogonalDecomposition().pseudoInverse();
 }
 
@@ -497,11 +557,50 @@ void Simulation::Populate_Learning_Weights(MatrixXd& L)
 
 void Simulation::Output_Signal_And_MSE()
 {
-  MatrixXd LM;
-  vector<double> LW;
+//  MatrixXd LM;
+//  vector<double> LW;
 
-  LM = Return_Learning_Matrix();
-  LW = Return_Learning_Weights();
+//  LM = Return_Learning_Matrix();
+//  LW = Return_Learning_Weights();
+
+
+
+  ofstream output("outputsignal.csv");
+  ofstream output2("learningweights.csv");
+  ofstream output3("targetsignal.csv");
+
+  double outputsignal = 0;
+  double currenttime = 0;
+
+  for(int i=0; i<LM.rows(); i++)
+  {
+  for(int j=0; j<LM.cols(); j++)
+  {
+    outputsignal += Learning_Weights[j] * LM(i, j);
+    if(i==0) output2 << Learning_Weights[j] << endl;
+  }
+
+  Output_Signal.push_back(outputsignal);
+  currenttime = t0 + i*dt;
+
+  output << currenttime <<"," << Output_Signal.at(i);
+  output << endl;
+  output3 <<currenttime <<"," << TS(i, 0);
+  output3 << endl;
+  outputsignal = 0;
+  }
+
+  cout <<"The mean squared error of the output signal versus the target signal is: " << MSE(Output_Signal, Target_Signal);
+  cout <<endl;
+}
+
+void Simulation::Output_Signal_And_MSE(vector<double>& External_Weights)
+{
+//  MatrixXd LM;
+//  vector<double> LW;
+
+//  LM = Return_Learning_Matrix();
+//  LW = Return_Learning_Weights();
 
   ofstream output("outputsignal.csv");
   ofstream output2("learningweights.csv");
@@ -512,10 +611,10 @@ void Simulation::Output_Signal_And_MSE()
 
   for(int i=0; i<maxtimesteps; i++)
   {
-  for(int j=0; j<LM.cols(); j++)
+  for(int j=0; j<External_Weights.size(); j++)
   {
-    outputsignal += LW[j] * LM(i, j);
-    if(i==0) output2 << LW[j] << endl;
+    outputsignal += External_Weights[j] * LM(i, j);
+    if(i==0) output2 << External_Weights[j] << endl;
   }
 
   Output_Signal.push_back(outputsignal);
@@ -582,9 +681,9 @@ double Simulation::Eucl_Dist(double x1, double y1, double x2, double y2)
   return sqrt((y2-y1)*(y2-y1) + (x2-x1)*(x2-x1));
 }
 
-double Simulation::Eucl_Dist(double x1, double y1, double x2, double y2, double z1, double z2)
+double Simulation::Eucl_Dist(double x1, double y1, double z1, double x2, double y2, double z2)
 {
-  return sqrt((y2-y1)*(y2-y1) + (x2-x1)*(x2-x1) + (z2-z1)*(z2-z1) );
+  return sqrt((y2-y1)*(y2-y1) + (x2-x1)*(x2-x1) + (z2-z1)*(z2-z1));
 }
 
 double Simulation::Angle(double x0, double x1, double y0, double y1)

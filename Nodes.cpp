@@ -71,6 +71,15 @@ void Nodes::Change_Position(double Fx, double  Fy, double Fz, double  dt)
       pydot = 0;
     }
 }
+void Nodes::Change_X_Position(double input)
+{
+  x_position += input;
+}
+
+void Nodes::Change_Y_Position(double input)
+{
+  y_position += input;
+}
 
 void Nodes::Change_Z_Position(double input)
 {

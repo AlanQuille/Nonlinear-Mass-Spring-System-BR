@@ -66,6 +66,12 @@ private:
 	//This is the function that incrementally changes the nodes position in the next timestep;
 	void Change_Position(double Fx, double  Fy, double Fz, double dt);
 
+	//Change x position
+	void Change_X_Position(double input);
+
+	//Change y position
+	void Change_Y_Position(double input);
+
 	//Change z position
 	void Change_Z_Position(double input);
 };
