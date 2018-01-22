@@ -347,17 +347,18 @@ void Simulation::Execute_In_Time()
 
 
 
-  MatrixXd LearningMatrix(maxtimesteps, s.size());
+  MatrixXd LearningMatrix(Target_Signal.size(), s.size());
 
-
-  MatrixXd TargetSignal(maxtimesteps, s.size());
+  MatrixXd TargetSignal(Target_Signal.size(), s.size());
 
 
   double outputsignal = 0;
   for(int j=0; j<s.size(); j++)
   {
     LearningMatrix(0,j)=s[j].Return_Original_Length();
+    //LearningMatrix1(0, j) = s[j].Return_Original_Length();
     TargetSignal(0,j) = Target_Signal[0];
+  //  TargetSignal1(0,j) = Target_Signal[0];
   }
 
 
@@ -366,9 +367,9 @@ void Simulation::Execute_In_Time()
   double currenttime1 = 0;
   double currenttime2 = 0;
 
-  //
 
-  for(int i=1; i<maxtimesteps; i++)
+
+  for(int i=1; i<Target_Signal.size(); i++)
   {
     currenttime = t0+ i*dt;
 
@@ -494,7 +495,11 @@ void Simulation::Execute_In_Time()
 
       // cout <<"Is this running?" << endl;
        LearningMatrix(i,j) = currentlength;
+    //   if(i<x) LearningMatrix1(i,j) = currentlength;
+
        TargetSignal(i,j) = Target_Signal[i];
+    //   if(i<x) TargetSignal1(i,j) = Target_Signal[i];
+
 
 
        s[j].Change_Length_And_Velocity(dt, l);
@@ -503,31 +508,26 @@ void Simulation::Execute_In_Time()
       outputsignal = 0;
     }
 
+//   cout <<LearningMatrix.rows();
+  // cout << endl;
+  // cout <<  LearningMatrix.block(0, 0, x, LearningMatrix.cols()).rows();
+  // cout << endl;
+
     LM = LearningMatrix;
-    TS = TargetSignal;
     //This is the protocl for 2/3 learning weights, 1/3 learnt signal.
   //  LM = LearningMatrix1;
 
-      LM = LearningMatrix.block(x, 0, maxtimesteps-x, LearningMatrix.cols());
-      TS = TargetSignal.block(x, 0, maxtimesteps-x, TargetSignal.cols());
+  //LearningMatrix = LearningMatrix.block(0, 0, x, LearningMatrix.cols());
 
-  //    cout <<"TS is now " << TS;
-
-    LearningMatrix = LearningMatrix.block(0, 0, x, LearningMatrix.cols());
-    TargetSignal = TargetSignal.block(0, 0, x, TargetSignal.cols());
-
-    cout <<LearningMatrix;
-    cout <<TargetSignal;
-
-
-
+  //    cout <<"TS is now " << T
     Moore_Penrose_Pseudoinverse(LearningMatrix);
-  //  TargetSignal = TargetSignal.block(0,0,x,TargetSignal);
+  //  cout << LearningMatrix;
+  //  TargetSignal = TargetSignal.block(0,0,x,TargetSignal.cols());
     LearningMatrix= LearningMatrix * TargetSignal;
 
-    cout <<LearningMatrix;
+//    cout << LearningMatrix;
+//    cout << TargetSignal;
     Populate_Learning_Weights(LearningMatrix);
-
 
 }
 
@@ -585,7 +585,7 @@ void Simulation::Output_Signal_And_MSE()
 
   output << currenttime <<"," << Output_Signal.at(i);
   output << endl;
-  output3 <<currenttime <<"," << TS(i, 0);
+  output3 <<currenttime <<"," << Target_Signal.at(i);
   output3 << endl;
   outputsignal = 0;
   }

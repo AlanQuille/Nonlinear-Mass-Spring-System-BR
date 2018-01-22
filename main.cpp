@@ -53,6 +53,8 @@ int main(int argc, char** argv)
   }
 
 
+
+
   data.N =15;
   data.ux=1;
   data.uy= 0;
@@ -72,7 +74,7 @@ int main(int argc, char** argv)
   data.initial_uniform = 100;
   data.final_uniform = 200;
   data.t0 = 0;
-  data.tmax = 0.5;
+  data.tmax = 1;
 //  data.tmax = 1;
   data.dt = 0.001;
 
@@ -83,12 +85,18 @@ int main(int argc, char** argv)
     //Proportion of input signal that is used to generate learning weights.
     x = (int)(0.666666*((data.tmax - data.t0)/data.dt));
 
+    int maxtimesteps = (int)((data.tmax-data.t0)/data.dt);
+
+    std::vector<double> Volterra2(Volterra.begin(), Volterra.end() - 0.999*Volterra.size());
+
     cout <<"x is: " << x << endl;
 
+    cout << Volterra2.size() << endl;
 
 
 
-    Simulation sim(data, Volterra, x);
+
+    Simulation sim(data, Volterra2, x);
     sim.Output_Signal_And_MSE();
 
     stop_time = clock();
