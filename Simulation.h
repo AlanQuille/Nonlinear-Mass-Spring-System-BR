@@ -105,6 +105,9 @@ private:
 //This is the target signal for learning
 	vector<double> Target_Signal;
 
+	//This is the last Target_Signal
+	vector<double> Learning_Matrix_3;
+
 	//LearningMatrix for learning weight multiplication
 	MatrixXd LM;
 
@@ -115,11 +118,10 @@ private:
 public:
 
   //Default constructor
-  Simulation(InitialDataValues &data, vector<double> &Target_Signal, double x);
+  Simulation(InitialDataValues &data, vector<double> &Target_Signal);
 
   //This is an overloaded default constructor. This is not randomly initialized mass spring system, this is a determined one.
-	Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Lvx, double x);
-
+	Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Lvx);
 
 
   //This creates the nodes for the reservoir computer implementation

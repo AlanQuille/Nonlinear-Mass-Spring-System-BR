@@ -15,7 +15,7 @@ using namespace std;
 using namespace Eigen;
 
 
-Simulation::Simulation(InitialDataValues &data, vector<double> &TS, double x)
+Simulation::Simulation(InitialDataValues &data, vector<double> &TS)
 {
 
   //rand(); rand(); rand();
@@ -45,8 +45,6 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &TS, double x)
 
   this->maxtimesteps = ((data.tmax - data.t0)/data.dt);
 
-  this->x = x;
-  this->y = 1-x;
 
   Target_Signal = TS;
 
@@ -56,7 +54,7 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &TS, double x)
   Delaunay_Triangulation_and_Spring_Creation();
 }
 
-Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Lvx, double x)
+Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Lvx)
 {
   this->input_connectivity = data.input_connectivity;
   this->total_input_nodes = (data.input_connectivity)*rounds*no_of_points_per_round;
@@ -348,17 +346,23 @@ void Simulation::Execute_In_Time()
 
 
   MatrixXd LearningMatrix(Target_Signal.size(), s.size());
-
   MatrixXd TargetSignal(Target_Signal.size(), s.size());
+
+  int p = 0.66666*Target_Signal.size();
+
+  MatrixXd LearningMatrix2(p, s.size());
+  MatrixXd TargetSignal2(p, s.size());
+
+
 
 
   double outputsignal = 0;
   for(int j=0; j<s.size(); j++)
   {
     LearningMatrix(0,j)=s[j].Return_Original_Length();
-    //LearningMatrix1(0, j) = s[j].Return_Original_Length();
+    LearningMatrix2(0, j) = s[j].Return_Original_Length();
     TargetSignal(0,j) = Target_Signal[0];
-  //  TargetSignal1(0,j) = Target_Signal[0];
+    TargetSignal2(0,j) = Target_Signal[0];
   }
 
 
@@ -372,6 +376,7 @@ void Simulation::Execute_In_Time()
   for(int i=1; i<Target_Signal.size(); i++)
   {
     currenttime = t0+ i*dt;
+  //  Learning_Matrix_3.push_back(vector<double>());
 
   for(int j=0;  j<s.size(); j++)
     {
@@ -495,10 +500,11 @@ void Simulation::Execute_In_Time()
 
       // cout <<"Is this running?" << endl;
        LearningMatrix(i,j) = currentlength;
-    //   if(i<x) LearningMatrix1(i,j) = currentlength;
+       if(i<p) LearningMatrix2(i,j) = currentlength;
+  //     if(i>=p) Learning_Matrix_3.push_back(currentlength);
 
        TargetSignal(i,j) = Target_Signal[i];
-    //   if(i<x) TargetSignal1(i,j) = Target_Signal[i];
+       if(i<p) TargetSignal2(i,j) = Target_Signal[i];
 
 
 
@@ -507,6 +513,14 @@ void Simulation::Execute_In_Time()
       }
       outputsignal = 0;
     }
+
+   cout<< Target_Signal.size() << endl;
+   cout << p << endl;
+    cout <<"The size of Learning Matrix" << LearningMatrix.rows() << endl;
+
+    cout <<"The size of Learning Matrix 2" << LearningMatrix2.rows() << endl;
+  //  cout <<"The size of Learning Matrix 3" << Learning_Matrix_3.size() << endl;
+
 
 //   cout <<LearningMatrix.rows();
   // cout << endl;
@@ -520,14 +534,20 @@ void Simulation::Execute_In_Time()
   //LearningMatrix = LearningMatrix.block(0, 0, x, LearningMatrix.cols());
 
   //    cout <<"TS is now " << T
-    Moore_Penrose_Pseudoinverse(LearningMatrix);
+    Moore_Penrose_Pseudoinverse(LearningMatrix2);
   //  cout << LearningMatrix;
   //  TargetSignal = TargetSignal.block(0,0,x,TargetSignal.cols());
-    LearningMatrix= LearningMatrix * TargetSignal;
+    LearningMatrix2= LearningMatrix2 * TargetSignal2;
 
 //    cout << LearningMatrix;
 //    cout << TargetSignal;
-    Populate_Learning_Weights(LearningMatrix);
+    Populate_Learning_Weights(LearningMatrix2);
+
+    cout << Learning_Weights[0] << endl;
+    cout << Learning_Weights[1] << endl;
+    cout << Learning_Weights[2] << endl;
+    cout << Learning_Weights[3] << endl;
+    cout << Learning_Weights[4] << endl;
 
 }
 
@@ -572,26 +592,36 @@ void Simulation::Output_Signal_And_MSE()
   double outputsignal = 0;
   double currenttime = 0;
 
-  for(int i=0; i<LM.rows(); i++)
+  int p = 0.66666*Target_Signal.size();
+  cout << p << endl;
+  cout << Target_Signal.size() << endl;
+
+  for(int i=p; i<Target_Signal.size(); i++)
   {
-  for(int j=0; j<LM.cols(); j++)
+
+  for(int j=0; j<s.size(); j++)
   {
-    outputsignal += Learning_Weights[j] * LM(i, j);
-    if(i==0) output2 << Learning_Weights[j] << endl;
+    outputsignal += Learning_Weights[j] * LM(i,j);
+    if(i==p) output2 << Learning_Weights[j] << endl;
   }
 
   Output_Signal.push_back(outputsignal);
   currenttime = t0 + i*dt;
 
-  output << currenttime <<"," << Output_Signal.at(i);
+  output << currenttime <<"," << outputsignal;
   output << endl;
   output3 <<currenttime <<"," << Target_Signal.at(i);
   output3 << endl;
   outputsignal = 0;
   }
 
-  cout <<"The mean squared error of the output signal versus the target signal is: " << MSE(Output_Signal, Target_Signal);
-  cout <<endl;
+
+cout << Output_Signal.size() << endl;
+vector<double> Target_Signal_23(Target_Signal.begin() + p, Target_Signal.end());
+cout << Target_Signal.size();
+cout << endl;
+cout <<"The mean squared error of the output signal versus the target signal is: " << MSE(Output_Signal, Target_Signal_23);
+//cout <<endl;
 }
 
 void Simulation::Output_Signal_And_MSE(vector<double>& External_Weights)
@@ -608,6 +638,9 @@ void Simulation::Output_Signal_And_MSE(vector<double>& External_Weights)
 
   double outputsignal = 0;
   double currenttime = 0;
+
+  int finaltime = 0.66666*Target_Signal.size();
+
 
   for(int i=0; i<maxtimesteps; i++)
   {

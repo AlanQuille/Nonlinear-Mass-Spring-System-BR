@@ -83,20 +83,20 @@ int main(int argc, char** argv)
   //  sys1.SineWave(Sine_Wave)
 
     //Proportion of input signal that is used to generate learning weights.
-    x = (int)(0.666666*((data.tmax - data.t0)/data.dt));
+    //x = (int)(0.666666*((data.tmax - data.t0)/data.dt));
 
     int maxtimesteps = (int)((data.tmax-data.t0)/data.dt);
 
-    std::vector<double> Volterra2(Volterra.begin(), Volterra.end() - 0.999*Volterra.size());
+
+    std::vector<double> Volterra2(Volterra.begin(), Volterra.end() - 0.9*Volterra.size());
+  //  std::vector<double> Volterra3(Volterra.begin()+x*(1-0.3333333)*Volterra.Size(), x*Volterra.end());
 
     cout <<"x is: " << x << endl;
 
-    cout << Volterra2.size() << endl;
+    //cout << Volterra2.size() << endl;
 
 
-
-
-    Simulation sim(data, Volterra2, x);
+    Simulation sim(data, Volterra2);
     sim.Output_Signal_And_MSE();
 
     stop_time = clock();
