@@ -55,7 +55,7 @@ int main(int argc, char** argv)
 
 
 
-  data.N =15;
+  data.N =63;
   data.ux=1;
   data.uy= 0;
   data.input_connectivity = 0.2;
@@ -88,7 +88,7 @@ int main(int argc, char** argv)
     int maxtimesteps = (int)((data.tmax-data.t0)/data.dt);
 
 
-    std::vector<double> Volterra2(Volterra.begin(), Volterra.end() - 0.9*Volterra.size());
+    std::vector<double> Volterra2(Volterra.begin(), Volterra.end() - 0.90*Volterra.size());
   //  std::vector<double> Volterra3(Volterra.begin()+x*(1-0.3333333)*Volterra.Size(), x*Volterra.end());
 
     cout <<"x is: " << x << endl;
