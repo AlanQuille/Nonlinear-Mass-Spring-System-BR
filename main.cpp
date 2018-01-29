@@ -93,7 +93,7 @@ int main(int argc, char** argv)
     std::vector<double> Volterra2(Volterra.begin()+0.02*Volterra.size(), Volterra.begin()+0.023*Volterra.size());
     for(int i =0; i<Volterra2.size(); i++)
     {
-      Volterra2.at(i) = sin(3.141592654*i*data.dt*10);
+      Volterra2.at(i) = sin(3.141592654*i*data.dt);
     }
 
 
@@ -105,7 +105,7 @@ int main(int argc, char** argv)
 
     //cout << Volterra2.size() << endl;
 
-    double twothirdsprotocol = 0.9;
+    double twothirdsprotocol = 0.99;
 
 
     Simulation sim(data, Volterra2, twothirdsprotocol);
@@ -117,6 +117,7 @@ int main(int argc, char** argv)
     cout << "The time it took for the programme to run in total in milliseconds: ";
     cout << difference << endl;
     cout <<Volterra2.size() << endl;
+    cout <<Volterra.size() << endl;
 //  int rounds =1;
 //  double radius =1.0;
 //  int no_of_points_per_round = 5;
