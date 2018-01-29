@@ -15,7 +15,7 @@ using namespace std;
 using namespace Eigen;
 
 
-Simulation::Simulation(InitialDataValues &data, vector<double> &TS)
+Simulation::Simulation(InitialDataValues &data, vector<double> &TS, double x)
 {
 
   //rand(); rand(); rand();
@@ -43,6 +43,8 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &TS)
   this->ux = data.ux;
   this->uy = data.uy;
 
+  this->twothirdsprotocol = x;
+
   this->maxtimesteps = ((data.tmax - data.t0)/data.dt);
 
 
@@ -65,9 +67,6 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
   this->w_out_final = data.w_out_final;
   this->w_in_initial = data.w_in_initial;
   this->w_in_final = data.w_in_final;
-
-  this->x = x;
-  this->y = 1-x;
 
   //Learning phase
   Initialize_Nodes(radius, rounds, no_of_points_per_round, data);
@@ -128,6 +127,11 @@ void Simulation::Initialize_Nodes(double range0x, double range1x, double range0y
  		//Just one node for test;
  		 //Fixed the leftmost and rightmost nodes.
    }
+
+//void Input23Protocol(double twothirdsprotool)
+//{
+//  this->twothirdsprotocol =
+//}
 
 void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data)
 {
@@ -262,6 +266,7 @@ void Simulation::FixNode(int i)
   n[i].FixedNode();
 }
 
+
 void Simulation::Delaunay_Triangulation_and_Spring_Creation()
 {
     DelaunayTriangulation DT(abs(range1x-range0x), abs(range1y-range0y));
@@ -339,8 +344,6 @@ void Simulation::Execute_In_Time()
 
   double currentlength = 0;
 
-  int y = maxtimesteps - x;
-
 
 
 
@@ -348,7 +351,8 @@ void Simulation::Execute_In_Time()
   MatrixXd LearningMatrix(Target_Signal.size(), s.size());
   MatrixXd TargetSignal(Target_Signal.size(), s.size());
 
-  int p = 0.66666*Target_Signal.size();
+//  int p = 0.66666*Target_Signal.size();
+  int p = twothirdsprotocol *Target_Signal.size();
 
   MatrixXd LearningMatrix2(p, s.size());
   MatrixXd TargetSignal2(p, s.size());
@@ -592,7 +596,8 @@ void Simulation::Output_Signal_And_MSE()
   double outputsignal = 0;
   double currenttime = 0;
 
-  int p = 0.66666*Target_Signal.size();
+//  int p = 0.66666*Target_Signal.size();
+  int p = twothirdsprotocol*Target_Signal.size();
   cout << p << endl;
   cout << Target_Signal.size() << endl;
 
@@ -618,7 +623,7 @@ void Simulation::Output_Signal_And_MSE()
 
 cout << Output_Signal.size() << endl;
 vector<double> Target_Signal_23(Target_Signal.begin() + p, Target_Signal.end());
-cout << Target_Signal.size();
+cout << Target_Signal_23.size();
 cout << endl;
 cout <<"The mean squared error of the output signal versus the target signal is: " << MSE(Output_Signal, Target_Signal_23);
 //cout <<endl;

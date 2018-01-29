@@ -55,7 +55,7 @@ int main(int argc, char** argv)
 
 
 
-  data.N =63;
+  data.N =30;
   data.ux=1;
   data.uy= 0;
   data.input_connectivity = 0.2;
@@ -74,7 +74,7 @@ int main(int argc, char** argv)
   data.initial_uniform = 100;
   data.final_uniform = 200;
   data.t0 = 0;
-  data.tmax = 1;
+  data.tmax = 0.1;
 //  data.tmax = 1;
   data.dt = 0.001;
 
@@ -88,15 +88,27 @@ int main(int argc, char** argv)
     int maxtimesteps = (int)((data.tmax-data.t0)/data.dt);
 
 
-    std::vector<double> Volterra2(Volterra.begin(), Volterra.end() - 0.90*Volterra.size());
+
+    //std::vector<double> Volterra2(Volterra.begin()+0.5*Volterra.size(), Volterra.end() - 0.49*Volterra.size());
+    std::vector<double> Volterra2(Volterra.begin()+0.02*Volterra.size(), Volterra.begin()+0.023*Volterra.size());
+    for(int i =0; i<Volterra2.size(); i++)
+    {
+      Volterra2.at(i) = sin(3.141592654*i*data.dt*10);
+    }
+
+
   //  std::vector<double> Volterra3(Volterra.begin()+x*(1-0.3333333)*Volterra.Size(), x*Volterra.end());
+
+  cout <<"Size of input vector is: " << Volterra2.size() << endl;
 
     cout <<"x is: " << x << endl;
 
     //cout << Volterra2.size() << endl;
 
+    double twothirdsprotocol = 0.9;
 
-    Simulation sim(data, Volterra2);
+
+    Simulation sim(data, Volterra2, twothirdsprotocol);
     sim.Output_Signal_And_MSE();
 
     stop_time = clock();
@@ -104,6 +116,7 @@ int main(int argc, char** argv)
 
     cout << "The time it took for the programme to run in total in milliseconds: ";
     cout << difference << endl;
+    cout <<Volterra2.size() << endl;
 //  int rounds =1;
 //  double radius =1.0;
 //  int no_of_points_per_round = 5;

@@ -8,7 +8,6 @@ using namespace Eigen;
 
 struct InitialDataValues
 {
-	bool twothirdsprotocol;
 	double N;
 	double ux;
 	double uy;
@@ -76,8 +75,8 @@ private:
   double dt;
 
  //Proportion of the signal used for learning weights; Default 1
-	double x;
-	double y;
+ 	double twothirdsprotocol = 1;
+
 
 	int maxtimesteps;
 
@@ -118,7 +117,7 @@ private:
 public:
 
   //Default constructor
-  Simulation(InitialDataValues &data, vector<double> &Target_Signal);
+  Simulation(InitialDataValues &data, vector<double> &Target_Signal, double x);
 
   //This is an overloaded default constructor. This is not randomly initialized mass spring system, this is a determined one.
 	Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Lvx);
@@ -132,6 +131,9 @@ public:
 
 	//Fix nodes externally for spider web
 	void FixNode(int i);
+
+	//Change length of input vector
+	void InputVector(double x);
 
 	//This changes position of springs and nodes dynamically in time.
   void Execute_In_Time();
