@@ -385,7 +385,7 @@ void Simulation::Execute_In_Time()
   for(int j=0;  j<s.size(); j++)
     {
        s[j].ForceEq(Fsum);
-       ofs3 << i*dt<<"," <<Fsum << endl;
+       //ofs3 << i*dt<<"," <<Fsum << endl;
 
        nodea = s[j].Nodea();
        nodeb = s[j].Nodeb();
@@ -406,8 +406,8 @@ void Simulation::Execute_In_Time()
 
 
 
-       cout <<"There shuold be oscillations in x: " << x0 << endl;
-       cout <<"There shuold be oscillations in x: " << x1 << endl;
+//       cout <<"There shuold be oscillations in x: " << x0 << endl;
+  //     cout <<"There shuold be oscillations in x: " << x1 << endl;
 
        //Unit vector for two points
 
@@ -422,14 +422,14 @@ void Simulation::Execute_In_Time()
 
 
 
-       cout<<"Fsum is: "<< Fsum << endl;
-       cout <<"Fx is: " << Fsum*alpha << endl;
-       cout <<"Fy is: " << Fsum*beta << endl;
-       cout <<"Fz is: " << Fsum*gamma << endl;
+    //   cout<<"Fsum is: "<< Fsum << endl;
+    //   cout <<"Fx is: " << Fsum*alpha << endl;
+    //   cout <<"Fy is: " << Fsum*beta << endl;
+    //   cout <<"Fz is: " << Fsum*gamma << endl;
 
-       cout <<"alpha is: " << alpha << endl;
-       cout <<"beta is: " << beta << endl;
-       cout <<"gamma is: " << gamma << endl;
+  //     cout <<"alpha is: " << alpha << endl;
+  //     cout <<"beta is: " << beta << endl;
+    //   cout <<"gamma is: " << gamma << endl;
 
        Fx_nodeb = Fsum*alpha;
        Fy_nodeb = Fsum*beta;
@@ -440,19 +440,11 @@ void Simulation::Execute_In_Time()
        Fz_nodea = -Fsum*gamma;
 
 
-       cout <<Fx_nodea << endl;
-       cout <<Fx_nodeb << endl;
-
-       cout <<Fy_nodea << endl;
-       cout <<Fy_nodeb << endl;
-
-       cout <<Fz_nodea << endl;
-       cout <<Fz_nodeb << endl;
 
 
-       cout <<"Alpha is: " << alpha << endl;
-       cout <<"Beta is: " << beta << endl;
-       cout <<"Gamma is: " << gamma << endl;
+    //   cout <<"Alpha is: " << alpha << endl;
+    //   cout <<"Beta is: " << beta << endl;
+      // cout <<"Gamma is: " << gamma << endl;
 
 
       // Fz_nodea += Uniform(-0.01,0.01)*sin(currenttime);
@@ -479,27 +471,24 @@ void Simulation::Execute_In_Time()
        n[nodeb].Change_Position(Fx_nodeb, Fy_nodeb, Fz_nodeb, dt);
 
 
-
-
-
        x0 = n[nodea].X_Position();
        x1 = n[nodeb].X_Position();
 
-       ofs <<dt*i <<","<< x0;
-       ofs2 <<dt*i <<"," << x1;
+    //   ofs <<dt*i <<","<< x0;
+    //   ofs2 <<dt*i <<"," << x1;
 
 
        y0 = n[nodea].Y_Position();
        y1 = n[nodeb].Y_Position();
 
-       ofs <<"," << y0 << endl;
-       ofs2 <<"," << y1 << endl;
+  //     ofs <<"," << y0 << endl;
+  //     ofs2 <<"," << y1 << endl;
 
        //Be very careful with the lengths here.
        l = Eucl_Dist(x0, y0, z0, x1,y1,z1);
        currentlength = l;
 
-       cout << l << endl;
+       //cout << l << endl;
 
 
       // cout <<"Is this running?" << endl;
@@ -510,19 +499,12 @@ void Simulation::Execute_In_Time()
        TargetSignal(i,j) = Target_Signal[i];
        if(i<p) TargetSignal2(i,j) = Target_Signal[i];
 
-
-
        s[j].Change_Length_And_Velocity(dt, l);
        Fsum = 0;
       }
       outputsignal = 0;
     }
 
-   cout<< Target_Signal.size() << endl;
-   cout << p << endl;
-    cout <<"The size of Learning Matrix" << LearningMatrix.rows() << endl;
-
-    cout <<"The size of Learning Matrix 2" << LearningMatrix2.rows() << endl;
   //  cout <<"The size of Learning Matrix 3" << Learning_Matrix_3.size() << endl;
 
 
@@ -531,21 +513,47 @@ void Simulation::Execute_In_Time()
   // cout <<  LearningMatrix.block(0, 0, x, LearningMatrix.cols()).rows();
   // cout << endl;
 
+    //Comment out this one
     LM = LearningMatrix;
+    cout << endl;
+    cout <<LearningMatrix2.rows();
+    cout << endl;
+    cout <<LearningMatrix2.cols();
+    cout << endl;
+
+    cout <<TargetSignal2.rows();
+    cout << endl;
+    cout <<TargetSignal2.cols();
+    cout << endl;
+
+
+
     //This is the protocl for 2/3 learning weights, 1/3 learnt signal.
-  //  LM = LearningMatrix1;
 
   //LearningMatrix = LearningMatrix.block(0, 0, x, LearningMatrix.cols());
 
   //    cout <<"TS is now " << T
-    Moore_Penrose_Pseudoinverse(LearningMatrix2);
+
+
+   //Comment on this one
+  //Moore_Penrose_Pseudoinverse(LM);
+  Moore_Penrose_Pseudoinverse(LearningMatrix2);
+
+
   //  cout << LearningMatrix;
   //  TargetSignal = TargetSignal.block(0,0,x,TargetSignal.cols());
-    LearningMatrix2= LearningMatrix2 * TargetSignal2;
+
+   //Comment out this one
+   LearningMatrix2= LearningMatrix2 * TargetSignal2;
+
+
 
 //    cout << LearningMatrix;
 //    cout << TargetSignal;
+
+    //Coment out this one.
     Populate_Learning_Weights(LearningMatrix2);
+
 
     cout << Learning_Weights[0] << endl;
     cout << Learning_Weights[1] << endl;

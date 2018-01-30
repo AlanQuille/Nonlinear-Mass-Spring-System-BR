@@ -90,12 +90,7 @@ int main(int argc, char** argv)
 
 
     //std::vector<double> Volterra2(Volterra.begin()+0.5*Volterra.size(), Volterra.end() - 0.49*Volterra.size());
-    std::vector<double> Volterra2(Volterra.begin()+0.02*Volterra.size(), Volterra.begin()+0.023*Volterra.size());
-    for(int i =0; i<Volterra2.size(); i++)
-    {
-      Volterra2.at(i) = sin(3.141592654*i*data.dt);
-    }
-
+    std::vector<double> Volterra2(Volterra.begin()+0.02*Volterra.size(), Volterra.begin()+0.0201*Volterra.size());
 
   //  std::vector<double> Volterra3(Volterra.begin()+x*(1-0.3333333)*Volterra.Size(), x*Volterra.end());
 
@@ -109,7 +104,7 @@ int main(int argc, char** argv)
 
 
     Simulation sim(data, Volterra2, twothirdsprotocol);
-    sim.Output_Signal_And_MSE();
+    //sim.Output_Signal_And_MSE();
 
     stop_time = clock();
     double difference = (1000)*((stop_time - start_time)/CLOCKS_PER_SEC);
