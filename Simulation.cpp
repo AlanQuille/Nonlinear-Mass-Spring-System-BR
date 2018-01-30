@@ -11,6 +11,7 @@
 #include <sstream>
 #include <fstream>
 #include <string>
+#include "armadillo"
 using namespace std;
 using namespace Eigen;
 
@@ -488,9 +489,6 @@ void Simulation::Execute_In_Time()
        l = Eucl_Dist(x0, y0, z0, x1,y1,z1);
        currentlength = l;
 
-       //cout << l << endl;
-
-
       // cout <<"Is this running?" << endl;
        LearningMatrix(i,j) = currentlength;
        if(i<p) LearningMatrix2(i,j) = currentlength;
@@ -498,6 +496,8 @@ void Simulation::Execute_In_Time()
 
        TargetSignal(i,j) = Target_Signal[i];
        if(i<p) TargetSignal2(i,j) = Target_Signal[i];
+
+       //LearningMatrix2(i,j) = LearningMatrix2(i,j)*TargetSignal2(i, j);
 
        s[j].Change_Length_And_Velocity(dt, l);
        Fsum = 0;
@@ -528,6 +528,13 @@ void Simulation::Execute_In_Time()
 
 
 
+  //  cout <<TargetSignal2.rows();
+  //  cout << endl;
+  //  cout <<TargetSignal2.cols();
+  //  cout << endl;
+
+
+
     //This is the protocl for 2/3 learning weights, 1/3 learnt signal.
 
   //LearningMatrix = LearningMatrix.block(0, 0, x, LearningMatrix.cols());
@@ -536,15 +543,25 @@ void Simulation::Execute_In_Time()
 
 
    //Comment on this one
-  //Moore_Penrose_Pseudoinverse(LM);
-  Moore_Penrose_Pseudoinverse(LearningMatrix2);
+//  Moore_Penrose_Pseudoinverse(LearningMatrix2);
+
+
+  cout <<"Hello " << endl;
+//  Moore_Penrose_Pseudoinverse(LearningMatrix2);
 
 
   //  cout << LearningMatrix;
   //  TargetSignal = TargetSignal.block(0,0,x,TargetSignal.cols());
 
    //Comment out this one
-   LearningMatrix2= LearningMatrix2 * TargetSignal2;
+
+
+    LearningMatrix2 = LearningMatrix2.completeOrthogonalDecomposition().pseudoInverse();
+
+    cout <<"Hello" << endl;
+
+    LearningMatrix2= LearningMatrix2 * TargetSignal2;
+
 
 
 
@@ -567,6 +584,9 @@ void Simulation::Moore_Penrose_Pseudoinverse(MatrixXd& L)
 {
   //First one third of signal.
   L = L.completeOrthogonalDecomposition().pseudoInverse();
+// L = L.completeOrthogonalDecomposition()
+//L = L.pinv();
+//L = L;
 }
 
 vector<double>& Simulation::Return_Learning_Weights()

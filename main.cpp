@@ -6,6 +6,7 @@
 #include "Simulation.cpp"
 #include "Eigen/Dense"
 #include "Eigen/QR"
+#include "armadillo"
 
 using namespace std;
 using namespace Eigen;
@@ -29,6 +30,8 @@ int main(int argc, char** argv)
   //send from processor
 
   srand(rdtsc());
+
+
 
 
   vector<double> Volterra;
@@ -55,7 +58,7 @@ int main(int argc, char** argv)
 
 
 
-  data.N =30;
+  data.N =10;
   data.ux=1;
   data.uy= 0;
   data.input_connectivity = 0.2;
@@ -90,7 +93,7 @@ int main(int argc, char** argv)
 
 
     //std::vector<double> Volterra2(Volterra.begin()+0.5*Volterra.size(), Volterra.end() - 0.49*Volterra.size());
-    std::vector<double> Volterra2(Volterra.begin()+0.02*Volterra.size(), Volterra.begin()+0.0201*Volterra.size());
+    std::vector<double> Volterra2(Volterra.begin()+0.02*Volterra.size(), Volterra.begin()+0.03*Volterra.size());
 
   //  std::vector<double> Volterra3(Volterra.begin()+x*(1-0.3333333)*Volterra.Size(), x*Volterra.end());
 
@@ -113,6 +116,16 @@ int main(int argc, char** argv)
     cout << difference << endl;
     cout <<Volterra2.size() << endl;
     cout <<Volterra.size() << endl;
+
+
+    // Initialize the random generator
+    arma::arma_rng::set_seed_random();
+
+      // Create a 4x4 random matrix and print it on the screen
+    arma::Mat<double> A = arma::randu(4,4);
+    std::cout << "A:\n" << A << "\n";
+
+
 //  int rounds =1;
 //  double radius =1.0;
 //  int no_of_points_per_round = 5;
