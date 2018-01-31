@@ -62,7 +62,7 @@ int main(int argc, char** argv)
 
 
 
-  data.N =10;
+  data.N =100;
   data.ux=1;
   data.uy= 0;
   data.input_connectivity = 0.2;
@@ -97,7 +97,7 @@ int main(int argc, char** argv)
 
 
     //std::vector<double> Volterra2(Volterra.begin()+0.5*Volterra.size(), Volterra.end() - 0.49*Volterra.size());
-    std::vector<double> Volterra2(Volterra.begin()+0.02*Volterra.size(), Volterra.begin()+0.09*Volterra.size());
+    std::vector<double> Volterra2(Volterra.begin()+0.02*Volterra.size(), Volterra.begin()+1*Volterra.size());
 
   //  std::vector<double> Volterra3(Volterra.begin()+x*(1-0.3333333)*Volterra.Size(), x*Volterra.end());
 
@@ -112,7 +112,7 @@ int main(int argc, char** argv)
 
    //Testing eigen lapacke
     Simulation sim(data, Volterra2, twothirdsprotocol);
-    //sim.Output_Signal_And_MSE();
+    sim.Output_Signal_And_MSE();
 
     stop_time = clock();
     double difference = (1000)*((stop_time - start_time)/CLOCKS_PER_SEC);
