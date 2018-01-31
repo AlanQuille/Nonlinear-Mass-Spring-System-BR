@@ -111,7 +111,7 @@ int main(int argc, char** argv)
 
 
    //Testing eigen lapacke
-  //  Simulation sim(data, Volterra2, twothirdsprotocol);
+    Simulation sim(data, Volterra2, twothirdsprotocol);
     //sim.Output_Signal_And_MSE();
 
     stop_time = clock();

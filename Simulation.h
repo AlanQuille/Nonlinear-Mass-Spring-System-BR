@@ -113,6 +113,9 @@ private:
 	//MatrixXD for
 	MatrixXd TS;
 
+  //MatrixXD
+	MatrixXd TempMat;
+
 
 public:
 

@@ -559,11 +559,20 @@ void Simulation::Execute_In_Time()
    //Comment out this one
 
 
-    LearningMatrix2 = LearningMatrix2.completeOrthogonalDecomposition().pseudoInverse();
+  //  LearningMatrix2 = LearningMatrix2.completeOrthogonalDecomposition().pseudoInverse();
+  //  LearningMatrix2.transposeInPlace();
+
+    TempMat = LearningMatrix2;
+
+    TempMat.transposeInPlace();
+
+
+
+    LearningMatrix2 =  ((TempMat* LearningMatrix2).inverse())*TempMat;
 
     cout <<"Hello" << endl;
 
-    LearningMatrix2= LearningMatrix2 * TargetSignal2;
+    //LearningMatrix2= LearningMatrix2 * TargetSignal2;
 
 
 
