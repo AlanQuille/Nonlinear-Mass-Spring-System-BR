@@ -1,12 +1,16 @@
 #define _USE_MATH_DEFINES
+//#define EIGEN_USE_BLAS
+//#define EIGEN_USE_LAPACKE
+//#define EIGEN_USE_LAPACKE_STRICT
 #include <iostream>
+#include <complex>
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
 #include "Simulation.cpp"
 #include "Eigen/Dense"
 #include "Eigen/QR"
-#include "armadillo"
+
 
 using namespace std;
 using namespace Eigen;
@@ -93,7 +97,7 @@ int main(int argc, char** argv)
 
 
     //std::vector<double> Volterra2(Volterra.begin()+0.5*Volterra.size(), Volterra.end() - 0.49*Volterra.size());
-    std::vector<double> Volterra2(Volterra.begin()+0.02*Volterra.size(), Volterra.begin()+0.03*Volterra.size());
+    std::vector<double> Volterra2(Volterra.begin()+0.02*Volterra.size(), Volterra.begin()+0.09*Volterra.size());
 
   //  std::vector<double> Volterra3(Volterra.begin()+x*(1-0.3333333)*Volterra.Size(), x*Volterra.end());
 
@@ -106,7 +110,8 @@ int main(int argc, char** argv)
     double twothirdsprotocol = 0.99;
 
 
-    Simulation sim(data, Volterra2, twothirdsprotocol);
+   //Testing eigen lapacke
+  //  Simulation sim(data, Volterra2, twothirdsprotocol);
     //sim.Output_Signal_And_MSE();
 
     stop_time = clock();
@@ -118,12 +123,76 @@ int main(int argc, char** argv)
     cout <<Volterra.size() << endl;
 
 
+  MatrixXd m(3,2);
+
+  m(0,0) = 3;
+  m(1,0) = 2.5;
+  m(0,1) = -1;
+  m(2,1) = 50;
+  m(2,0) = 40;
+  m(1,1) = m(1,0) + m(0,1) +5;
+
+  std::cout << m << std::endl;
+  start_time = clock();
+  cout << m.completeOrthogonalDecomposition().pseudoInverse() << endl;
+  stop_time = clock();
+  difference = (1000)*((stop_time - start_time)/CLOCKS_PER_SEC);
+  cout <<"The time is took for the original pseduoinverse is: " << difference << endl;
+  //Eigen::P =  m.colPivHouseholderQr();
+  //cout <<
+
+  HouseholderQR<MatrixXd> qr(m);
+  cout << endl;
+  MatrixXd Q = qr.householderQ();
+  cout << Q << endl;
+  MatrixXd R = qr.matrixQR().triangularView<Upper>();
+  cout <<R;
+
+  cout << (R.transpose()*R) * R.transpose();
+  cout << endl;
+  cout <<Q.transpose();
+  cout << endl;
+  //cout << ((R.transpose()*R) * R.transpose())*Q.transpose();
+//  .inverse()*R.tranpose();
+ start_time = clock();
+  cout <<Q*R << endl;
+  cout << ((m.transpose() * m).inverse() )*m.transpose();
+  cout << endl;
+  //cout << m.transpose() * ((m.transpose() * m).inverse());
+//  cout << endl;
+  stop_time = clock();
+  difference = (1000)*((stop_time - start_time)/CLOCKS_PER_SEC);
+  cout <<"The time is took for the new method is: " << difference << endl;
+  //cout <<R.inverse();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // Initialize the random generator
-    arma::arma_rng::set_seed_random();
+  //  arma::arma_rng::set_seed_random();
 
       // Create a 4x4 random matrix and print it on the screen
-    arma::Mat<double> A = arma::randu(4,4);
-    std::cout << "A:\n" << A << "\n";
+  //  arma::Mat<double> A = arma::randu(4,4);
+  //  std::cout << "A:\n" << inv(A) << "\n";
+    //arma::Mat<double> B = A * A;
+
+    //arma::Mat<double> B = arma::pinv(A);        // use default tolerance
+
+
 
 
 //  int rounds =1;

@@ -370,6 +370,9 @@ void Simulation::Execute_In_Time()
     TargetSignal2(0,j) = Target_Signal[0];
   }
 
+  arma::Mat<double> A = arma::randu(4,4);
+  std::cout << "A:\n" << A << "\n";
+
 
   outputsignal = 0;
   double currenttime = 0;
