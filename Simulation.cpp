@@ -394,6 +394,7 @@ void Simulation::Execute_In_Time()
 
   for(int j=0;  j<s.size(); j++)
     {
+
        s[j].ForceEq(Fsum);
        //ofs3 << i*dt<<"," <<Fsum << endl;
 
@@ -451,8 +452,13 @@ void Simulation::Execute_In_Time()
 
 
        //Input Signal, set up int his programme as external horizontal force.
-       if(n[nodea].InputNodeReturn()) Fx_nodea+=1*Uniform(w_in_initial, w_in_final)*Input_Signal[i];
-       if(n[nodeb].InputNodeReturn()) Fx_nodeb+=1*Uniform(w_in_initial, w_in_final)*Input_Signal[i];
+       if(n[nodea].InputNodeReturn()==true) Fx_nodea+=Uniform(-1,1) *Input_Signal[i];
+       if(n[nodeb].InputNodeReturn()==true) Fx_nodeb+=Uniform(-1,1)*Input_Signal[i];
+
+    //   cout <<Fx_nodea << endl;
+
+      // if(n[nodea].InputNodeReturn()==true) Fx_nodea+=Uniform(w_initial, w_final)*1;
+      // if(n[nodeb].InputNodeReturn()==true) Fx_nodeb+=Uniform(w_initial, w_final)*1;
 
 
     //   cout <<"Alpha is: " << alpha << endl;
@@ -515,6 +521,14 @@ void Simulation::Execute_In_Time()
 
        s[j].Change_Length_And_Velocity(dt, l);
        Fsum = 0;
+       Fx_nodeb = 0;
+       Fy_nodeb = 0;
+       Fz_nodeb = 0;
+
+       Fx_nodea = 0;
+       Fy_nodea = 0;
+       Fz_nodea = 0;
+
       }
       outputsignal = 0;
     }
@@ -529,17 +543,6 @@ void Simulation::Execute_In_Time()
 
     //Comment out this one
     LM = LearningMatrix;
-    cout << endl;
-    cout <<LearningMatrix2.rows();
-    cout << endl;
-    cout <<LearningMatrix2.cols();
-    cout << endl;
-
-    cout <<TargetSignal2.rows();
-    cout << endl;
-    cout <<TargetSignal2.cols();
-    cout << endl;
-
 
 
   //  cout <<TargetSignal2.rows();
@@ -570,23 +573,24 @@ void Simulation::Execute_In_Time()
    //Comment out this one
 
 
-  //  LearningMatrix2 = LearningMatrix2.completeOrthogonalDecomposition().pseudoInverse();
-  //  LearningMatrix2.transposeInPlace();
+//    LearningMatrix2 = LearningMatrix2.completeOrthogonalDecomposition().pseudoInverse();
+    //LearningMatrix2.transposeInPlace();
 
     TempMat = LearningMatrix2;
 
-    TempMat.transposeInPlace();
+     TempMat.transposeInPlace();
+
+     //cout <<TempMat;
 
 
 
-    LearningMatrix2 =  ((TempMat* LearningMatrix2).inverse())*TempMat;
+   LearningMatrix2 =  ((TempMat* LearningMatrix2).inverse())*TempMat;
+   LearningMatrix2 = LearningMatrix2*TargetSignal2;
 
     cout <<"Hello" << endl;
 
     //LearningMatrix2= LearningMatrix2 * TargetSignal2;
-
-
-
+    //Test out new paradigm
 
 //    cout << LearningMatrix;
 //    cout << TargetSignal;
@@ -595,11 +599,14 @@ void Simulation::Execute_In_Time()
     Populate_Learning_Weights(LearningMatrix2);
 
 
-    cout << Learning_Weights[0] << endl;
-    cout << Learning_Weights[1] << endl;
-    cout << Learning_Weights[2] << endl;
-    cout << Learning_Weights[3] << endl;
-    cout << Learning_Weights[4] << endl;
+
+    double sum = std::accumulate(Learning_Weights.begin(), Learning_Weights.end(), 0.0);
+    double mean = sum / Learning_Weights.size();
+
+    cout << mean << endl;
+
+
+
 
 }
 

@@ -59,6 +59,7 @@ int main(int argc, char** argv)
     size_t pos = classData[i].find(";");      // position of the end of the name of each one in the respective string
     x = stod(classData[i].substr(pos+1,classData[i].size()));
     Volterra.push_back(x); // convert string age to a double
+  //  cout <<Volterra.at(i) << endl;
   }
 
   ifstream file2 ("inputsignal.csv"); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
@@ -75,14 +76,15 @@ int main(int argc, char** argv)
 
     size_t pos = classData2[i].find(";");      // position of the end of the name of each one in the respective string
     x = stod(classData2[i].substr(pos+1,classData2[i].size()));
-    Input_Signal.push_back(x); // convert string age to a double
+    Input_Signal.push_back(x); // convert string age to a doubl
+    //cout <<Input_Signal.at(i) << endl;
   }
 
 
 
 
   data.N =10;
-  data.ux=1;
+  data.ux=0;
   data.uy= 0;
   data.input_connectivity = 0.2;
   //data.w_in_initial = -1;
@@ -113,27 +115,47 @@ int main(int argc, char** argv)
 
     int maxtimesteps = (int)((data.tmax-data.t0)/data.dt);
 
+    double sum2 = std::accumulate(Input_Signal.begin(), Input_Signal.end(), 0.0);
+    double mean2 = sum2/ Input_Signal.size();
+
+    double sq_sum2 = std::inner_product(Input_Signal.begin(), Input_Signal.end(), Input_Signal.begin(), 0.0);
+    double stdev2 = std::sqrt(sq_sum2 /Input_Signal.size() - mean2*mean2);
+
+
+    for( int i =0; i<Input_Signal.size(); i++)
+    {
+     Input_Signal.at(i) = (Input_Signal.at(i) - mean2)/(stdev2);
+    }
+
 
 
     //std::vector<double> Volterra2(Volterra.begin()+0.5*Volterra.size(), Volterra.end() - 0.49*Volterra.size());
-    std::vector<double> Volterra2(Volterra.begin()+0.02*Volterra.size(), Volterra.begin()+0.5*Volterra.size());
+    std::vector<double> Volterra2(Volterra.begin()+0.02*Volterra.size(), Volterra.begin()+0.08*Volterra.size());
+    std::vector<double> Input_Signal2(Input_Signal.begin()+0.02*Input_Signal.size(), Input_Signal.begin()+0.08*Input_Signal.size());
+
+
+
     double sum = std::accumulate(Volterra2.begin(), Volterra2.end(), 0.0);
     double mean = sum / Volterra2.size();
 
     double sq_sum = std::inner_product(Volterra2.begin(), Volterra2.end(), Volterra2.begin(), 0.0);
-    double stdev = std::sqrt(sq_sum / Volterra2.size() - mean * mean);
+    double stdev = std::sqrt(sq_sum /Volterra2.size() - mean * mean);
 
-    for( int i =0; i<Volterra2.size(); i++)
-    {
-      Volterra2.at(i) = (Volterra2.at(i) - mean)/(stdev);
-    }
+    cout << mean << endl;
+    cout << stdev << endl;
+
+    cout <<"is it normalised? " << endl;
+
+
+
+
     sum = std::accumulate(Volterra2.begin(), Volterra2.end(), 0.0);
     mean = sum / Volterra2.size();
     sq_sum = std::inner_product(Volterra2.begin(), Volterra2.end(), Volterra2.begin(), 0.0);
     stdev = std::sqrt(sq_sum / Volterra2.size() - mean * mean);
     cout <<"Volterra mean and sd is:" << mean << endl;
     cout <<"Volterra mean and sd is:" << stdev << endl;
-    std::vector<double> Input_Signal2(Input_Signal.begin()+0.02*Input_Signal.size(), Input_Signal.begin()+0.5*Input_Signal.size());
+
 
   //  std::vector<double> Volterra3(Volterra.begin()+x*(1-0.3333333)*Volterra.Size(), x*Volterra.end());
 
@@ -143,12 +165,12 @@ int main(int argc, char** argv)
 
     //cout << Volterra2.size() << endl;
 
-    double twothirdsprotocol = 0.92;
+    double twothirdsprotocol = 0.99;
 
 
    //Testing eigen lapacke
-    //Simulation sim(data, Volterra2, twothirdsprotocol, Input_Signal2);
-  //  sim.Output_Signal_And_MSE();
+    Simulation sim(data, Volterra2, twothirdsprotocol, Input_Signal2);
+    sim.Output_Signal_And_MSE();
 
     stop_time = clock();
     double difference = (1000)*((stop_time - start_time)/CLOCKS_PER_SEC);
@@ -192,8 +214,26 @@ int main(int argc, char** argv)
 //  .inverse()*R.tranpose();
  start_time = clock();
   cout <<Q*R << endl;
-  cout << ((m.transpose() * m).inverse() )*m.transpose();
+
+  //m.transposeInPlace();
+
+  cout << m;
+  m.transposeInPlace();
   cout << endl;
+  cout << m;
+  MatrixXd n(3,2);
+  n(0,0) = 3;
+  n(1,0) = 2.5;
+  n(0,1) = -1;
+  n(2,1) = 50;
+  n(2,0) = 40;
+  n(1,1) = n(1,0) + n(0,1) +5;
+
+  cout << endl << ((m*n).inverse())*m;
+
+
+  //cout << m*((m * n).inverse() );
+//  cout << endl;
   //cout << m.transpose() * ((m.transpose() * m).inverse());
 //  cout << endl;
   stop_time = clock();
