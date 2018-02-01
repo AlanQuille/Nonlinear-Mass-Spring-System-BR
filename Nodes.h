@@ -14,7 +14,7 @@ private:
 	//The velocity of the nodes initially it is zero.
 
 	int connections;
-  bool input_node=0;
+  bool input_node= 0;
 
 	//Force in x direction
   double ux =0;
@@ -50,6 +50,9 @@ private:
 
   //Whether the node is fixed or not. In the reservoir computer the left and right node are fixed
 	void FixedNode();
+
+  //Overloaded function determines whether node is input or not.
+	bool InputNodeReturn();
 
   //Show current position
 	void Output_Position();

@@ -23,6 +23,12 @@ void Nodes::FixedNode()
   fixednode = 1;
 }
 
+bool Nodes::InputNodeReturn()
+{
+  return input_node;
+
+}
+
 void Nodes::Output_Position()
 {
   cout <<"X_position" << x_position << " " <<"Y_Position" << y_position <<" " << "Z_position" <<" " <<z_position << input_node;

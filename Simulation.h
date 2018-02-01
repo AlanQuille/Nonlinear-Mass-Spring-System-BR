@@ -95,6 +95,9 @@ private:
   //This is for the first phase of reservoir computing
 	bool learning_phase_over = 0;
 
+	//This is the Input Signal, more directions will be added.
+	vector<double> Input_Signal;
+
 	//This is the final function which SHOULD be like the target signal.
 	vector<double> Output_Signal;
 
@@ -120,7 +123,7 @@ private:
 public:
 
   //Default constructor
-  Simulation(InitialDataValues &data, vector<double> &Target_Signal, double x);
+  Simulation(InitialDataValues &data, vector<double> &Target_Signal, double x, vector<double> &InputSignal);
 
   //This is an overloaded default constructor. This is not randomly initialized mass spring system, this is a determined one.
 	Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Lvx);

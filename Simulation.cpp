@@ -16,7 +16,7 @@ using namespace std;
 using namespace Eigen;
 
 
-Simulation::Simulation(InitialDataValues &data, vector<double> &TS, double x)
+Simulation::Simulation(InitialDataValues &data, vector<double> &TS, double x, vector<double> &InputSignal)
 {
 
   //rand(); rand(); rand();
@@ -43,6 +43,8 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &TS, double x)
 
   this->ux = data.ux;
   this->uy = data.uy;
+
+  Input_Signal = InputSignal;
 
   this->twothirdsprotocol = x;
 
@@ -287,6 +289,7 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
   //    cout <<"win is: "<< win << endl;
   //    win -= offset;
       cout <<"win is: "<< win << endl;
+      BeforeRand = Uniform(0,1);
       if(BeforeRand<=input_connectivity) n[i].Input_Node(ux, uy, win);
       DT.AddPoint(Point(n[i].X_Position(),n[i].Y_Position(),0));
     //  DT.AddPoint(Point(n[i].X_Position(), Point(n[i].Y_Position());
@@ -379,6 +382,9 @@ void Simulation::Execute_In_Time()
   double currenttime1 = 0;
   double currenttime2 = 0;
 
+  bool a = false;
+  bool b = false;
+
 
 
   for(int i=1; i<Target_Signal.size(); i++)
@@ -444,11 +450,16 @@ void Simulation::Execute_In_Time()
        Fz_nodea = -Fsum*gamma;
 
 
+       //Input Signal, set up int his programme as external horizontal force.
+       if(n[nodea].InputNodeReturn()) Fx_nodea+=1*Uniform(w_in_initial, w_in_final)*Input_Signal[i];
+       if(n[nodeb].InputNodeReturn()) Fx_nodeb+=1*Uniform(w_in_initial, w_in_final)*Input_Signal[i];
 
 
     //   cout <<"Alpha is: " << alpha << endl;
     //   cout <<"Beta is: " << beta << endl;
       // cout <<"Gamma is: " << gamma << endl;
+
+
 
 
       // Fz_nodea += Uniform(-0.01,0.01)*sin(currenttime);

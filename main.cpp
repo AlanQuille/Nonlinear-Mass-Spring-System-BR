@@ -37,9 +37,11 @@ int main(int argc, char** argv)
 
 
 
-
+//Volterra target signal and input signal.
   vector<double> Volterra;
+  vector<double> Input_Signal;
   vector<string> classData;
+  vector<string> classData2;
 
   ifstream file ( "volterra.csv" ); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
   string value;
@@ -59,10 +61,27 @@ int main(int argc, char** argv)
     Volterra.push_back(x); // convert string age to a double
   }
 
+  ifstream file2 ("inputsignal.csv"); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
+  string value2;
+
+  while (getline(file2, value2,'\n'))
+  {
+    classData2.push_back(value2); //Get each line of the file as a string
+  }
+
+  s = classData2.size();
+  for (unsigned int i=1; i<s; ++i)
+  {
+
+    size_t pos = classData2[i].find(";");      // position of the end of the name of each one in the respective string
+    x = stod(classData2[i].substr(pos+1,classData2[i].size()));
+    Input_Signal.push_back(x); // convert string age to a double
+  }
 
 
 
-  data.N =100;
+
+  data.N =10;
   data.ux=1;
   data.uy= 0;
   data.input_connectivity = 0.2;
@@ -97,7 +116,24 @@ int main(int argc, char** argv)
 
 
     //std::vector<double> Volterra2(Volterra.begin()+0.5*Volterra.size(), Volterra.end() - 0.49*Volterra.size());
-    std::vector<double> Volterra2(Volterra.begin()+0.02*Volterra.size(), Volterra.begin()+1*Volterra.size());
+    std::vector<double> Volterra2(Volterra.begin()+0.02*Volterra.size(), Volterra.begin()+0.5*Volterra.size());
+    double sum = std::accumulate(Volterra2.begin(), Volterra2.end(), 0.0);
+    double mean = sum / Volterra2.size();
+
+    double sq_sum = std::inner_product(Volterra2.begin(), Volterra2.end(), Volterra2.begin(), 0.0);
+    double stdev = std::sqrt(sq_sum / Volterra2.size() - mean * mean);
+
+    for( int i =0; i<Volterra2.size(); i++)
+    {
+      Volterra2.at(i) = (Volterra2.at(i) - mean)/(stdev);
+    }
+    sum = std::accumulate(Volterra2.begin(), Volterra2.end(), 0.0);
+    mean = sum / Volterra2.size();
+    sq_sum = std::inner_product(Volterra2.begin(), Volterra2.end(), Volterra2.begin(), 0.0);
+    stdev = std::sqrt(sq_sum / Volterra2.size() - mean * mean);
+    cout <<"Volterra mean and sd is:" << mean << endl;
+    cout <<"Volterra mean and sd is:" << stdev << endl;
+    std::vector<double> Input_Signal2(Input_Signal.begin()+0.02*Input_Signal.size(), Input_Signal.begin()+0.5*Input_Signal.size());
 
   //  std::vector<double> Volterra3(Volterra.begin()+x*(1-0.3333333)*Volterra.Size(), x*Volterra.end());
 
@@ -107,12 +143,12 @@ int main(int argc, char** argv)
 
     //cout << Volterra2.size() << endl;
 
-    double twothirdsprotocol = 0.99;
+    double twothirdsprotocol = 0.92;
 
 
    //Testing eigen lapacke
-    Simulation sim(data, Volterra2, twothirdsprotocol);
-    sim.Output_Signal_And_MSE();
+    //Simulation sim(data, Volterra2, twothirdsprotocol, Input_Signal2);
+  //  sim.Output_Signal_And_MSE();
 
     stop_time = clock();
     double difference = (1000)*((stop_time - start_time)/CLOCKS_PER_SEC);
@@ -203,24 +239,18 @@ int main(int argc, char** argv)
   //send from processor
   /*
   srand(rdtsc());
-
-
   vector<double> Volterra;
   vector<string> classData;
-
   ifstream file ( "volterra.csv" ); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
   string value;
-
   while (getline(file, value,'\n'))
   {
     classData.push_back(value); //Get each line of the file as a string
   }
-
   int s = classData.size();
   double x;
   for (unsigned int i=1; i<s; ++i)
   {
-
     size_t pos = classData[i].find(";");      // position of the end of the name of each one in the respective string
     x = stod(classData[i].substr(pos+1,classData[i].size()));
     Volterra.push_back(x); // convert string age to a double
@@ -229,7 +259,6 @@ int main(int argc, char** argv)
 
 /*
   cout <<"Size of Volterra is: " << Volterra.size() << endl;
-
   data.initial_log_uniform = 1;
   data.final_log_uniform = 10;
   data.initial_uniform = 100;
@@ -245,45 +274,28 @@ int main(int argc, char** argv)
   data.w_in_final = 1;
   data.w_out_initial = -1;
   data.w_out_final = 1;
-
   data.tmax = 33.33;
   data.dt = 0.001;
-
-
-
   vector<double> LW;
   vector<double> Output_Signal;
-
   //Lotka Volterra vectors
   vector<double> LotkaX;
   vector<double> LotkaY;
-
   vector<double> LeWe;
-
-
   DynamicalSystems sys1(data.t0, data.tmax, data.dt);
   sys1.LotkaVolterra(LotkaX, LotkaY);
-
   cout<<"Lotka initial is: "<<LotkaX[50] << endl;
   MatrixXd LM;
   Simulation sim(radius, rounds, no_of_points_per_round, data, Volterra);
-
   sim.Output_Signal_And_MSE();
-
   data.t0 = 33.33;
   data.tmax = 50.199;
   cout <<"Tmax is: " <<data.tmax << endl;
-
-
   Simulation sim2(radius, rounds, no_of_points_per_round, data, Volterra);
-
   LeWe = sim.Return_Learning_Weights();
-
   sim2.Output_Signal_And_MSE(LeWe);
   cout <<"Size of old learning weights" <<  sim.Return_Learning_Weights().size() << endl;
   cout  <<"Size of cols" << sim2.Return_Learning_Matrix().cols() << endl;
-
-
 */
 
 //  stop_time = clock();
@@ -295,3 +307,4 @@ int main(int argc, char** argv)
 
   return 0;
 }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
