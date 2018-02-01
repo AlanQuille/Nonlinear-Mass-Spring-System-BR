@@ -356,7 +356,8 @@ void Simulation::Execute_In_Time()
   MatrixXd TargetSignal(Target_Signal.size(), s.size());
 
 //  int p = 0.66666*Target_Signal.size();
-  int p = twothirdsprotocol *Target_Signal.size();
+//  int p = twothirdsprotocol *Target_Signal.size();
+   int p = Target_Signal.size();
 
   MatrixXd LearningMatrix2(p, s.size());
   MatrixXd TargetSignal2(p, s.size());
@@ -452,10 +453,9 @@ void Simulation::Execute_In_Time()
 
 
        //Input Signal, set up int his programme as external horizontal force.
-       if(n[nodea].InputNodeReturn()==true) Fx_nodea+=Uniform(-1,1) *Input_Signal[i];
-       if(n[nodeb].InputNodeReturn()==true) Fx_nodeb+=Uniform(-1,1)*Input_Signal[i];
+       if(n[nodea].InputNodeReturn()==true) Fx_nodea+=Uniform(-1,1) *(Input_Signal[i]);
+       if(n[nodeb].InputNodeReturn()==true) Fx_nodeb+=Uniform(-1,1)*(Input_Signal[i]);
 
-    //   cout <<Fx_nodea << endl;
 
       // if(n[nodea].InputNodeReturn()==true) Fx_nodea+=Uniform(w_initial, w_final)*1;
       // if(n[nodeb].InputNodeReturn()==true) Fx_nodeb+=Uniform(w_initial, w_final)*1;
@@ -544,6 +544,8 @@ void Simulation::Execute_In_Time()
     //Comment out this one
     LM = LearningMatrix;
 
+    //cout << LM << endl;
+
 
   //  cout <<TargetSignal2.rows();
   //  cout << endl;
@@ -587,7 +589,11 @@ void Simulation::Execute_In_Time()
    LearningMatrix2 =  ((TempMat* LearningMatrix2).inverse())*TempMat;
    LearningMatrix2 = LearningMatrix2*TargetSignal2;
 
-    cout <<"Hello" << endl;
+   //cout << TargetSignal2 << endl;
+
+    //cout <<LearningMatrix2 << endl;
+
+  //  cout << LM*LearningMatrix2 << endl;
 
     //LearningMatrix2= LearningMatrix2 * TargetSignal2;
     //Test out new paradigm
@@ -600,10 +606,7 @@ void Simulation::Execute_In_Time()
 
 
 
-    double sum = std::accumulate(Learning_Weights.begin(), Learning_Weights.end(), 0.0);
-    double mean = sum / Learning_Weights.size();
-
-    cout << mean << endl;
+    cout <<"Mean of learning weights is: " << endl;
 
 
 
@@ -655,7 +658,9 @@ void Simulation::Output_Signal_And_MSE()
   double currenttime = 0;
 
 //  int p = 0.66666*Target_Signal.size();
-  int p = twothirdsprotocol*Target_Signal.size();
+  //int p = twothirdsprotocol*Target_Signal.size();
+  //time to test.
+  int p = 0;
   cout << p << endl;
   cout << Target_Signal.size() << endl;
 
@@ -665,6 +670,8 @@ void Simulation::Output_Signal_And_MSE()
   for(int j=0; j<s.size(); j++)
   {
     outputsignal += Learning_Weights[j] * LM(i,j);
+    //cout << Learning_Weights[j] << endl;
+    //cout << LM(i,j) << endl;
     if(i==p) output2 << Learning_Weights[j] << endl;
   }
 

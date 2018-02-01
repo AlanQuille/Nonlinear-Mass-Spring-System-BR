@@ -43,7 +43,7 @@ int main(int argc, char** argv)
   vector<string> classData;
   vector<string> classData2;
 
-  ifstream file ( "volterra.csv" ); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
+  ifstream file ( "newoutput.csv" ); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
   string value;
 
   while (getline(file, value,'\n'))
@@ -62,7 +62,7 @@ int main(int argc, char** argv)
   //  cout <<Volterra.at(i) << endl;
   }
 
-  ifstream file2 ("inputsignal.csv"); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
+  ifstream file2 ("newinput.csv"); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
   string value2;
 
   while (getline(file2, value2,'\n'))
@@ -79,11 +79,12 @@ int main(int argc, char** argv)
     Input_Signal.push_back(x); // convert string age to a doubl
     //cout <<Input_Signal.at(i) << endl;
   }
+  cout <<"Size of new signal is: "<< Input_Signal.size();
 
 
 
 
-  data.N =10;
+  data.N =30;
   data.ux=0;
   data.uy= 0;
   data.input_connectivity = 0.2;
@@ -121,25 +122,27 @@ int main(int argc, char** argv)
     double sq_sum2 = std::inner_product(Input_Signal.begin(), Input_Signal.end(), Input_Signal.begin(), 0.0);
     double stdev2 = std::sqrt(sq_sum2 /Input_Signal.size() - mean2*mean2);
 
+    double sum = std::accumulate(Volterra.begin(), Volterra.end(), 0.0);
+    double mean = sum / Volterra.size();
 
-    for( int i =0; i<Input_Signal.size(); i++)
-    {
-     Input_Signal.at(i) = (Input_Signal.at(i) - mean2)/(stdev2);
-    }
+    double sq_sum = std::inner_product(Volterra.begin(), Volterra.end(), Volterra.begin(), 0.0);
+    double stdev = std::sqrt(sq_sum /Volterra.size() - mean * mean);
+
+
+
+  //  for( int i =0; i<Input_Signal.size(); i++)
+  //  {
+    // Input_Signal.at(i) = (Input_Signal.at(i) - mean2)/(stdev2);
+    //}
+
 
 
 
     //std::vector<double> Volterra2(Volterra.begin()+0.5*Volterra.size(), Volterra.end() - 0.49*Volterra.size());
-    std::vector<double> Volterra2(Volterra.begin()+0.02*Volterra.size(), Volterra.begin()+0.08*Volterra.size());
-    std::vector<double> Input_Signal2(Input_Signal.begin()+0.02*Input_Signal.size(), Input_Signal.begin()+0.08*Input_Signal.size());
+    std::vector<double> Volterra2(Volterra.begin()+20000, Volterra.begin()+235000);
+    std::vector<double> Input_Signal2(Input_Signal.begin()+20000, Input_Signal.begin()+235000);
 
 
-
-    double sum = std::accumulate(Volterra2.begin(), Volterra2.end(), 0.0);
-    double mean = sum / Volterra2.size();
-
-    double sq_sum = std::inner_product(Volterra2.begin(), Volterra2.end(), Volterra2.begin(), 0.0);
-    double stdev = std::sqrt(sq_sum /Volterra2.size() - mean * mean);
 
     cout << mean << endl;
     cout << stdev << endl;
@@ -165,7 +168,7 @@ int main(int argc, char** argv)
 
     //cout << Volterra2.size() << endl;
 
-    double twothirdsprotocol = 0.99;
+    double twothirdsprotocol = 0.930232;
 
 
    //Testing eigen lapacke
