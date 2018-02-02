@@ -87,10 +87,10 @@ int main(int argc, char** argv)
   data.N =40;
   data.ux=0;
   data.uy= 0;
-  data.input_connectivity = 1.0;
+  data.input_connectivity = 0.2;
   //data.w_in_initial = -1;
-  data.w_in_initial = -1.5;
-  data.w_in_final = 1.5;
+  data.w_in_initial = -2;
+  data.w_in_final = 2;
   data.w_out_initial = -1;
   data.w_out_final = 1;
   //range-doubled, was fooling around with something, didn't change  back. Will change later.
