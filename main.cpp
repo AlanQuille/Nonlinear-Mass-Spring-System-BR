@@ -43,7 +43,7 @@ int main(int argc, char** argv)
   vector<string> classData;
   vector<string> classData2;
 
-  ifstream file ( "newoutput.csv" ); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
+  ifstream file ( "volterra.csv" ); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
   string value;
 
   while (getline(file, value,'\n'))
@@ -62,7 +62,7 @@ int main(int argc, char** argv)
   //  cout <<Volterra.at(i) << endl;
   }
 
-  ifstream file2 ("newinput.csv"); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
+  ifstream file2 ("inputsignal.csv"); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
   string value2;
 
   while (getline(file2, value2,'\n'))
@@ -84,13 +84,13 @@ int main(int argc, char** argv)
 
 
 
-  data.N =30;
+  data.N =40;
   data.ux=0;
   data.uy= 0;
-  data.input_connectivity = 0.2;
+  data.input_connectivity = 1.0;
   //data.w_in_initial = -1;
-  data.w_in_initial = -1;
-  data.w_in_final = 1;
+  data.w_in_initial = -1.5;
+  data.w_in_final = 1.5;
   data.w_out_initial = -1;
   data.w_out_final = 1;
   //range-doubled, was fooling around with something, didn't change  back. Will change later.
@@ -139,8 +139,8 @@ int main(int argc, char** argv)
 
 
     //std::vector<double> Volterra2(Volterra.begin()+0.5*Volterra.size(), Volterra.end() - 0.49*Volterra.size());
-    std::vector<double> Volterra2(Volterra.begin()+20000, Volterra.begin()+235000);
-    std::vector<double> Input_Signal2(Input_Signal.begin()+20000, Input_Signal.begin()+235000);
+    std::vector<double> Volterra2(Volterra.begin()+0, Volterra.begin()+235000);
+    std::vector<double> Input_Signal2(Input_Signal.begin()+0, Input_Signal.begin()+235000);
 
 
 

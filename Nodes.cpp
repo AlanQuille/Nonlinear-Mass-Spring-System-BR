@@ -51,11 +51,11 @@ double Nodes::Z_Position()
 
 //This is the function that incrementally changes the nodes position in the next timestep;
 //Z Position will be directed by a different function
-void Nodes::Change_Position(double Fx, double  Fy, double Fz, double  dt)
+void Nodes::Change_Position(double Fx, double  Fy, double Fz, double  dt, double Input_Signal)
 {
     if(fixednode ==0)
     {
-    pxdotdot= (Fx + (win*ux))/m;
+    pxdotdot= (Fx + win*Input_Signal)/m;
     pydotdot= (Fy/m);
     pzdotdot = (Fz/m);
       //You want to calculate the velocity so that initial velocity is 0 and than calculate the corresponding change in position

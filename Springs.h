@@ -16,6 +16,7 @@ class Springs
     //This is the velocity of the spring relative to l0.
     double x2 = 0;
     //spring constants, not approriate for spring constnats.
+    double x1new = 0;
     double k1;
     double d1;
     double k3;

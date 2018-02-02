@@ -26,11 +26,12 @@ void Springs::ForceEq(double &Fsum)
     q=d3*x2*x2*x2 + d1*x2;
     x2force = -p-q;
     Fsum = x2force;
+
 };
 
 void Springs::Change_Length_And_Velocity(double &dt, double &l)
 {
-    double x1new = l-l0;
+    x1new = l-l0;
     x2 = ((x1new - x1)/dt);
     this->x1 = x1new;
     //RungeKutta2ndOrder(dt, x2);

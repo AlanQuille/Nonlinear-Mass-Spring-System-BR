@@ -127,6 +127,7 @@ void Simulation::Initialize_Nodes(double range0x, double range1x, double range0y
 
  		 n[j].FixedNode();
  		 n[k].FixedNode();
+    //Just one node for 1 spring test
  		//Just one node for test;
  		 //Fixed the leftmost and rightmost nodes.
    }
@@ -356,8 +357,8 @@ void Simulation::Execute_In_Time()
   MatrixXd TargetSignal(Target_Signal.size(), s.size());
 
 //  int p = 0.66666*Target_Signal.size();
-//  int p = twothirdsprotocol *Target_Signal.size();
-   int p = Target_Signal.size();
+ int p = twothirdsprotocol *Target_Signal.size();
+ p = Target_Signal.size();
 
   MatrixXd LearningMatrix2(p, s.size());
   MatrixXd TargetSignal2(p, s.size());
@@ -372,10 +373,14 @@ void Simulation::Execute_In_Time()
     LearningMatrix2(0, j) = s[j].Return_Original_Length();
     TargetSignal(0,j) = Target_Signal[0];
     TargetSignal2(0,j) = Target_Signal[0];
+
+    nodea = s[j].Nodea();
+    nodeb = s[j].Nodeb();
+
+  //  n[nodea].Change_Position(Fx_nodea, Fy_nodea, Fz_nodea, dt, 100);
+  //  n[nodeb].Change_Position(Fx_nodeb, Fy_nodeb, Fz_nodeb, dt, 100);
   }
 
-  arma::Mat<double> A = arma::randu(4,4);
-  std::cout << "A:\n" << A << "\n";
 
 
   outputsignal = 0;
@@ -385,7 +390,6 @@ void Simulation::Execute_In_Time()
 
   bool a = false;
   bool b = false;
-
 
 
   for(int i=1; i<Target_Signal.size(); i++)
@@ -451,10 +455,14 @@ void Simulation::Execute_In_Time()
        Fy_nodea = -Fsum*beta;
        Fz_nodea = -Fsum*gamma;
 
+       n[nodea].Change_Position(Fx_nodea, Fy_nodea, Fz_nodea, dt, Input_Signal[i]);
+       n[nodeb].Change_Position(Fx_nodeb, Fy_nodeb, Fz_nodeb, dt, Input_Signal[i]);
+
+
+
 
        //Input Signal, set up int his programme as external horizontal force.
-       if(n[nodea].InputNodeReturn()==true) Fx_nodea+=Uniform(-1,1) *(Input_Signal[i]);
-       if(n[nodeb].InputNodeReturn()==true) Fx_nodeb+=Uniform(-1,1)*(Input_Signal[i]);
+
 
 
       // if(n[nodea].InputNodeReturn()==true) Fx_nodea+=Uniform(w_initial, w_final)*1;
@@ -488,8 +496,6 @@ void Simulation::Execute_In_Time()
       // if(currenttime<currenttime2 && currenttime>currenttime1) n[nodeb].Change_Z_Position(1*(currenttime)*currenttime + 1*(currenttime) + 0.
 
 
-       n[nodea].Change_Position(Fx_nodea, Fy_nodea, Fz_nodea, dt);
-       n[nodeb].Change_Position(Fx_nodeb, Fy_nodeb, Fz_nodeb, dt);
 
 
        x0 = n[nodea].X_Position();
@@ -504,6 +510,9 @@ void Simulation::Execute_In_Time()
 
   //     ofs <<"," << y0 << endl;
   //     ofs2 <<"," << y1 << endl;
+
+      z0 = n[nodea].Z_Position();
+      z1 = n[nodeb].Z_Position();
 
        //Be very careful with the lengths here.
        l = Eucl_Dist(x0, y0, z0, x1,y1,z1);
@@ -578,7 +587,7 @@ void Simulation::Execute_In_Time()
 //    LearningMatrix2 = LearningMatrix2.completeOrthogonalDecomposition().pseudoInverse();
     //LearningMatrix2.transposeInPlace();
 
-    TempMat = LearningMatrix2;
+    TempMat = LearningMatrix;
 
      TempMat.transposeInPlace();
 
@@ -586,8 +595,12 @@ void Simulation::Execute_In_Time()
 
 
 
-   LearningMatrix2 =  ((TempMat* LearningMatrix2).inverse())*TempMat;
-   LearningMatrix2 = LearningMatrix2*TargetSignal2;
+   TempMat =  ((TempMat*LearningMatrix).inverse())*TempMat;
+   TempMat = TempMat*TargetSignal;
+
+//   cout << LearningMatrix*TempMat;
+
+
 
    //cout << TargetSignal2 << endl;
 
@@ -602,7 +615,7 @@ void Simulation::Execute_In_Time()
 //    cout << TargetSignal;
 
     //Coment out this one.
-    Populate_Learning_Weights(LearningMatrix2);
+    Populate_Learning_Weights(TempMat);
 
 
 
@@ -653,14 +666,18 @@ void Simulation::Output_Signal_And_MSE()
   ofstream output("outputsignal.csv");
   ofstream output2("learningweights.csv");
   ofstream output3("targetsignal.csv");
+  ofstream output4("impulseresponse.csv");
+  ofstream output5("inputsignal.csv");
 
   double outputsignal = 0;
   double currenttime = 0;
 
 //  int p = 0.66666*Target_Signal.size();
-  //int p = twothirdsprotocol*Target_Signal.size();
+  int p = twothirdsprotocol*Target_Signal.size();
+
+  p =0;
+
   //time to test.
-  int p = 0;
   cout << p << endl;
   cout << Target_Signal.size() << endl;
 
@@ -673,7 +690,14 @@ void Simulation::Output_Signal_And_MSE()
     //cout << Learning_Weights[j] << endl;
     //cout << LM(i,j) << endl;
     if(i==p) output2 << Learning_Weights[j] << endl;
+
+    output4 << LM(i,j) << ",";
+
   }
+
+  output4 << endl;
+
+
 
   Output_Signal.push_back(outputsignal);
   currenttime = t0 + i*dt;
@@ -682,6 +706,8 @@ void Simulation::Output_Signal_And_MSE()
   output << endl;
   output3 <<currenttime <<"," << Target_Signal.at(i);
   output3 << endl;
+  output5 << currenttime <<"," << outputsignal;
+  output5 << endl;
   outputsignal = 0;
   }
 
@@ -888,8 +914,10 @@ void Simulation::Initialize_Springs()
 
   double x0;
   double y0;
+  double z0;
   double x1;
   double y1;
+  double z1;
   double wout;
 
   int arraysubscript1=0;
@@ -912,6 +940,8 @@ void Simulation::Initialize_Springs()
       x1 = n[arraysubscript2].X_Position();
       y0 = n[arraysubscript1].Y_Position();
       y1 = n[arraysubscript2].Y_Position();
+      z0 = n[arraysubscript1].Z_Position();
+      z1 = n[arraysubscript2].Z_Position();
 
       //These spring and damping coefficients are not giving different values
       k1 = log10(Uniform(initial_log_uniform, final_log_uniform));
@@ -924,7 +954,7 @@ void Simulation::Initialize_Springs()
       ofs5 <<  k3 << endl;
       ofs6 <<  d3  << endl;
 
-      l0 = Eucl_Dist(x0, y0, x1, y1);
+      l0 = Eucl_Dist(x0, y0, z0, x1, y1, z1);
       wout = Uniform(w_out_initial, w_out_final);
 
       s.push_back(Springs(k1, d1, k3, d3, l0, arraysubscript1, arraysubscript2, wout));
