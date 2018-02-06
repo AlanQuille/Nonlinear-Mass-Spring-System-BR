@@ -45,6 +45,9 @@ private:
  //If this function is activated than the node is input node
 	void Input_Node(double ux, double uy, double win);
 
+  //Return node
+	bool IsInputNode();
+
   //Whether the node is fixed or not. In the reservoir computer the left and right node are fixed
 	void FixedNode();
 

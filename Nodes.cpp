@@ -17,6 +17,14 @@ void Nodes::Input_Node(double ux, double uy, double win)
   this->win = win;
 }
 
+bool Nodes::IsInputNode()
+{
+  if(input_node==1) return 1;
+  else return 0;
+}
+
+
+
 void Nodes::FixedNode()
 {
   fixednode = 1;

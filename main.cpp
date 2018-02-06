@@ -76,7 +76,7 @@ int main(int argc, char** argv)
 
 
   data.N =15;
-  data.ux=1;
+  data.ux=0;
   data.uy= 0;
   data.input_connectivity = 0.2;
   //data.w_in_initial = -1;
@@ -113,7 +113,7 @@ int main(int argc, char** argv)
 
 
 
-    Simulation sim(data, Volterra);
+    Simulation sim(data, Volterra, Input_Signal);
     sim.Output_Signal_And_MSE();
 
     stop_time = clock();

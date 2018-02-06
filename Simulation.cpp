@@ -15,7 +15,7 @@ using namespace std;
 using namespace Eigen;
 
 
-Simulation::Simulation(InitialDataValues &data, vector<double> &TS)
+Simulation::Simulation(InitialDataValues &data, vector<double> &TS, vector<double> &IS)
 {
 
   //rand(); rand(); rand();
@@ -348,6 +348,11 @@ void Simulation::Execute_In_Time()
        Fy_nodeb = -Y_Comp(Fsum, theta);
        Fy_nodea = Y_Comp(Fsum, theta);
        }
+
+       //Update for input signal.
+       if(n[nodea].IsInputNode()==1) Fx_nodea+= Uniform(w_in_initial, w_in_final) * Input_Signal[i];
+       if(n[nodeb].IsInputNode()==1) Fx_nodeb+= Uniform(w_in_initial, w_in_final) * Input_Signal[i];
+
 
 
        n[nodea].Change_Position(Fx_nodea, Fy_nodea, dt);

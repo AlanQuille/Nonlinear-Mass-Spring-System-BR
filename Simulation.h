@@ -100,17 +100,20 @@ private:
 //This is the target signal for learning
 	vector<double> Target_Signal;
 
+ //Input signal for system to be simulated.
+	vector<double> Input_Signal;
+
 	//LearningMatrix for learning weight multiplication
 	MatrixXd LM;
 
 	//MatrixXD TempMat
-MatrixXd TempMat;
+  MatrixXd TempMat;
 
 
 public:
 
   //Default constructor
-  Simulation(InitialDataValues &data, vector<double> &Target_Signal);
+  Simulation(InitialDataValues &data, vector<double> &Target_Signal, vector<double> &Input_Signal);
 
   //This is an overloaded default constructor. This is not randomly initialized mass spring system, this is a determined one.
 	Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Lvx, vector<double> &Lvy);
