@@ -75,7 +75,7 @@ int main(int argc, char** argv)
   cout <<"Size of new signal is: "<< Input_Signal.size();
 
 
-  data.N =15;
+  data.N =25;
   data.ux=0;
   data.uy= 0;
   data.input_connectivity = 0.2;

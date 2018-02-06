@@ -360,8 +360,6 @@ void Simulation::Execute_In_Time()
        if(n[nodea].Return_Input_Node()==1) Fx_nodea += n[nodea].Return_Win()*Input_Signal[i];
        if(n[nodeb].Return_Input_Node()==1) Fx_nodeb += n[nodeb].Return_Win()*Input_Signal[i];
 
-       nodea1 = n[nodea].Return_Input_Node();
-       nodeb1 = n[nodeb].Return_Input_Node();
 
 
        n[nodea].Change_Position(Fx_nodea, Fy_nodea, dt);
@@ -386,7 +384,12 @@ void Simulation::Execute_In_Time()
 
 
        s[j].Change_Length_And_Velocity(dt, l);
+
        Fsum = 0;
+       Fx_nodea =0;
+       Fx_nodeb =0;
+       Fy_nodea =0;
+       Fy_nodeb =0;
 
       }
       outputsignal = 0;
@@ -394,7 +397,7 @@ void Simulation::Execute_In_Time()
 
     TempMat = LearningMatrix;
 
-    TempMat.transposeInPlace();
+   TempMat.transposeInPlace();
 
     //cout <<TempMat;
 
@@ -409,7 +412,7 @@ void Simulation::Execute_In_Time()
      //  LearningMatrix= LearningMatrix * TargetSignal;
        Populate_Learning_Weights(TempMat);
 
-  //  LM = LearningMatrix;
+//    LM = LearningMatrix;
   //  Moore_Penrose_Pseudoinverse(LearningMatrix);
   //  LearningMatrix= LearningMatrix * TargetSignal;
   //  Populate_Learning_Weights(LearningMatrix);
@@ -614,7 +617,7 @@ void Simulation::Output_Signal_And_MSE()
   for(int j=0; j<LM.cols(); j++)
   {
     outputsignal += Learning_Weights[j] * LM(i, j);
-    if(i==0) output2 << Learning_Weights[j] << endl;
+  //  if(i==0) output2 << Learning_Weights[j] << endl;
   }
 
   Output_Signal.push_back(outputsignal);
