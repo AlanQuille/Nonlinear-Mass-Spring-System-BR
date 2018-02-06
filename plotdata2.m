@@ -9,11 +9,11 @@ length(test6)
 stem(test3);
 
 %plot(test5)
-%plot(test6)
+plot(test6)
 
 %plot(test6)
 %plot(test4(:,1), test4(:,2), test2(:,1), test2(:,2))
-plot(test2(:,1), test2(:,2))
+%plot(test2(:,1), test2(:,2))
 %plot(test4(:,1), test4(:,2))
 
 
