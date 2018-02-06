@@ -46,7 +46,10 @@ private:
 	void Input_Node(double ux, double uy, double win);
 
   //Return node
-	bool IsInputNode();
+	bool Return_Input_Node();
+
+  //Return win
+	bool Return_Win();
 
   //Whether the node is fixed or not. In the reservoir computer the left and right node are fixed
 	void FixedNode();

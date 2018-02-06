@@ -46,6 +46,7 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &TS, vector<doubl
   this->maxtimesteps = ((data.tmax - data.t0)/data.dt);
 
   Target_Signal = TS;
+  Input_Signal = IS;
 
   bool learning_phase = 0;
   //Learning phase
@@ -253,6 +254,7 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
     for(int i=0; i<N; i++)
     {
       win = Uniform(w_in_initial, w_in_final);
+      BeforeRand = Uniform(0,1);
   //    cout <<"win is: "<< win << endl;
   //    win -= offset;
       cout <<"win is: "<< win << endl;
@@ -308,13 +310,18 @@ void Simulation::Execute_In_Time()
 
   outputsignal = 0;
 
+  double uniform1 = 0;
+  double uniform2 = 0;
+
+  bool nodea1;
+  bool nodeb1;
+
   for(int i=1; i<maxtimesteps; i++)
   {
 
   for(int j=0;  j<s.size(); j++)
     {
        s[j].ForceEq(Fsum);
-       ofs3 << i*dt<<"," <<Fsum << endl;
 
        nodea = s[j].Nodea();
        nodeb = s[j].Nodeb();
@@ -350,9 +357,11 @@ void Simulation::Execute_In_Time()
        }
 
        //Update for input signal.
-       if(n[nodea].IsInputNode()==1) Fx_nodea+= Uniform(w_in_initial, w_in_final) * Input_Signal[i];
-       if(n[nodeb].IsInputNode()==1) Fx_nodeb+= Uniform(w_in_initial, w_in_final) * Input_Signal[i];
+       if(n[nodea].Return_Input_Node()==1) Fx_nodea += n[nodea].Return_Win()*Input_Signal[i];
+       if(n[nodeb].Return_Input_Node()==1) Fx_nodeb += n[nodeb].Return_Win()*Input_Signal[i];
 
+       nodea1 = n[nodea].Return_Input_Node();
+       nodeb1 = n[nodeb].Return_Input_Node();
 
 
        n[nodea].Change_Position(Fx_nodea, Fy_nodea, dt);
@@ -361,15 +370,10 @@ void Simulation::Execute_In_Time()
        x0 = n[nodea].X_Position();
        x1 = n[nodeb].X_Position();
 
-       ofs <<dt*i <<","<< x0;
-       ofs2 <<dt*i <<"," << x1;
-
 
        y0 = n[nodea].Y_Position();
        y1 = n[nodeb].Y_Position();
 
-       ofs <<"," << y0 << endl;
-       ofs2 <<"," << y1 << endl;
 
        //Be very careful with the lengths here.
        l = Eucl_Dist(x0, y0, x1, y1);
@@ -383,14 +387,32 @@ void Simulation::Execute_In_Time()
 
        s[j].Change_Length_And_Velocity(dt, l);
        Fsum = 0;
+
       }
       outputsignal = 0;
     }
 
-    LM = LearningMatrix;
-    Moore_Penrose_Pseudoinverse(LearningMatrix);
-    LearningMatrix= LearningMatrix * TargetSignal;
-    Populate_Learning_Weights(LearningMatrix);
+    TempMat = LearningMatrix;
+
+    TempMat.transposeInPlace();
+
+    //cout <<TempMat;
+
+
+
+       TempMat =  ((TempMat*LearningMatrix).inverse())*TempMat;
+       TempMat = TempMat*TargetSignal;
+
+       //Populate the learning matrix and get weights
+       LM = LearningMatrix;
+       //Moore_Penrose_Pseudoinverse(LearningMatrix);
+     //  LearningMatrix= LearningMatrix * TargetSignal;
+       Populate_Learning_Weights(TempMat);
+
+  //  LM = LearningMatrix;
+  //  Moore_Penrose_Pseudoinverse(LearningMatrix);
+  //  LearningMatrix= LearningMatrix * TargetSignal;
+  //  Populate_Learning_Weights(LearningMatrix);
 }
 
 void Simulation::Execute_In_Time_2()
@@ -410,6 +432,10 @@ void Simulation::Execute_In_Time_2()
   double x1 = 0;
   double y0 = 0;
   double y1 = 0;
+
+  bool nodea1;
+  bool nodeb1;
+
 
   ofstream ofs("Node1.csv");
   ofstream ofs2("Node2.csv");
@@ -483,6 +509,13 @@ void Simulation::Execute_In_Time_2()
        Fy_nodea = Y_Comp(Fsum, theta);
        }
 
+       nodea1 = n[nodea].Return_Input_Node();
+       nodeb1 = n[nodeb].Return_Input_Node();
+
+
+
+
+
 
        n[nodea].Change_Position(Fx_nodea, Fy_nodea, dt);
        n[nodeb].Change_Position(Fx_nodeb, Fy_nodeb, dt);
@@ -513,6 +546,10 @@ void Simulation::Execute_In_Time_2()
        s[j].Change_Length_And_Velocity(dt, l);
        Fsum = 0;
       }
+
+      cout << nodea1 << endl;
+      cout << nodeb1 << endl;
+
       outputsignal = 0;
     }
 

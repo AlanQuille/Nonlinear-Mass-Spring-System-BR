@@ -17,12 +17,15 @@ void Nodes::Input_Node(double ux, double uy, double win)
   this->win = win;
 }
 
-bool Nodes::IsInputNode()
+bool Nodes::Return_Input_Node()
 {
-  if(input_node==1) return 1;
-  else return 0;
+  return input_node;
 }
 
+bool Nodes::Return_Win()
+{
+  return win;
+}
 
 
 void Nodes::FixedNode()
