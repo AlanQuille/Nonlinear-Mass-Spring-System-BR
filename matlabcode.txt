@@ -1,0 +1,14 @@
+hold on
+
+for i=1:999
+s = num2str(i*0.001);
+if(mod(10,i)==0)
+    s =strcat(s, "0");
+end
+s = strcat(k, ".csv");
+test = csvread(s);
+x = [test(:,1),test(:,3)];
+y = [test(:,2),test(:,4)];
+plot(x,y,'-o','MarkerSize',10, 'MarkerEdgeColor','red');
+clear test;
+end

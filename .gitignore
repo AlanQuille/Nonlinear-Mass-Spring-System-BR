@@ -7,7 +7,10 @@ Delaunay.hpp.gch
 Simulation.hpp.gch
 Nodes.hpp.gch
 Springs.hpp.gch
-
-
-
-
+.~lock.Node1.csv#
+.~lock.Node2.csv#
+.~lock.d1output.csv#
+Badcoefficients.csv
+*.csv
+wtf.txt
+wtf2.txt
