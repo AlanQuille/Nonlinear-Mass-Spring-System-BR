@@ -2,7 +2,7 @@
 #include "Springs.h"
 using namespace std;
 
-Springs::Springs(double k1, double d1, double k3, double d3, double l0, int nodea, int nodeb, double wout)
+Springs::Springs(double k1, double k3, double d1, double d3, double l0, int nodea, int nodeb, double wout)
 {
     this->l0=l0;
     this->x1 = 0;

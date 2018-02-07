@@ -30,6 +30,7 @@ bool Nodes::Return_Win()
 
 void Nodes::FixedNode()
 {
+    // Todo: shouldn't that be this->fixednode = 1??
   fixednode = 1;
 }
 

@@ -48,7 +48,7 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &TS, vector<doubl
   Target_Signal = TS;
   Input_Signal = IS;
 
-  bool learning_phase = 0;
+//  bool learning_phase = 0;
   //Learning phase
   Initialize_Nodes(range0x, range1x, range0y, range1y);
   Delaunay_Triangulation_and_Spring_Creation();
@@ -138,10 +138,10 @@ void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_pe
   double d3;
 
   double x0;
-  double x1;
+//  double x1;
 
   double y0;
-  double y1;
+//  double y1;
 
   double l0;
   double wout;
@@ -310,11 +310,11 @@ void Simulation::Execute_In_Time()
 
   outputsignal = 0;
 
-  double uniform1 = 0;
-  double uniform2 = 0;
+    // double uniform1 = 0;
+    // double uniform2 = 0;
 
-  bool nodea1;
-  bool nodeb1;
+    //bool nodea1;
+    // bool nodeb1;
 
   for(int i=1; i<maxtimesteps; i++)
   {
