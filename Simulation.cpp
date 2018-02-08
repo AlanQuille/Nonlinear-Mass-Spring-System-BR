@@ -1031,7 +1031,7 @@ DynamicalSystems::DynamicalSystems(double t0, double tmax, double dt)
 
 void DynamicalSystems::SineWave(vector<double> &Sine_Wave)
 {
-  double currenttime =0;
+  //double currenttime =0;
   for(int i =0; i<maxtimesteps; i++)
   {
      Sine_Wave.push_back(sin(t0+i*dt));
