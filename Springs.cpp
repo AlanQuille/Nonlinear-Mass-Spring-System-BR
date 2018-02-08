@@ -20,7 +20,7 @@ Springs::Springs(double k1, double k3, double d1, double d3, double l0, int node
     //The initial x1 = l0 - l0 =0, and initial spring velocity = 0
 };
 
-void Springs::ForceEq(double &Fsum)
+void Springs::Update_Force(double &Fsum)
 {
     p=k3*x1*x1*x1 + k1*x1;
     q=d3*x2*x2*x2 + d1*x2;
@@ -28,7 +28,7 @@ void Springs::ForceEq(double &Fsum)
     Fsum = x2force;
 };
 
-void Springs::Change_Length_And_Velocity(double &dt, double &l)
+void Springs::Update_Spring_State(double &dt, double &l)
 {
     double x1new = l-l0;
     x2 = ((x1new - x1)/dt);
@@ -38,7 +38,7 @@ void Springs::Change_Length_And_Velocity(double &dt, double &l)
 
 
 
-double Springs::Return_Original_Length()
+double Springs::Return_Initial_Length()
 {
     return l0;
 };
@@ -51,12 +51,12 @@ void Springs::Output()
     cout <<"Length of spring at rest is: " << l0 << endl;
 }
 
-double Springs::Nodea()
+int Springs::Nodea()
 {
     return nodea;
 }
 
-double Springs::Nodeb()
+int Springs::Nodeb()
 {
     return nodeb;
 }
@@ -66,22 +66,22 @@ double Springs::Output_Weight()
 return wout;
 }
 
-double Springs::Outputk1()
+double Springs::get_k1()
 {
 return k1;
 }
 
-double Springs::Outputk3()
+double Springs::get_k3()
 {
 return k3;
 }
 
-double Springs::Outputd1()
+double Springs::get_d1()
 {
 return d1;
 }
 
-double Springs::Outputd3()
+double Springs::get_d3()
 {
 return d3;
 }

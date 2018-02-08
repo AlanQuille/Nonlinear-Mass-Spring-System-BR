@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 
   cout << "Test " << endl;
 
-    
+
   // Todo: I think it would be useful to define class for reading in files from csv
   // there are plenty of these out there, e.g. https://github.com/iofish/CSV/blob/master/csv.h
   ifstream file ( "volterra.csv" ); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
@@ -58,7 +58,7 @@ int main(int argc, char** argv)
   //  cout <<Volterra.at(i) << endl;
   }
 
-    
+
   // TODO:  again best to have that encapsulated in a class - makes the code much cleaner and we will use this code a lot
   ifstream file2 ("inputsignal.csv"); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
     string value2;  // Todo: naming value2 and file2 is quite cryptic.
@@ -82,42 +82,35 @@ int main(int argc, char** argv)
 
   // setting parameters for simulation
   data.N =25;
+
   data.ux=0;
   data.uy= 0;
-  data.input_connectivity = 0.2;
+
+  data.input_connectivity_percentage = 0.2;
   //data.w_in_initial = -1;
-  data.w_in_initial = -1;
-  data.w_in_final = 1;
-  data.w_out_initial = -1;
-  data.w_out_final = 1;
+  data.input_weight_smallest_value = -1;
+  data.input_weight_largest_value = 1;
+
   //range-doubled, was fooling around with something, didn't change  back. Will change later.
-  data.range0x = 0;
-  data.range1x = 10;
-  data.range0y = 0;
-  data.range1y = 10;
-  data.initial_log_uniform = 1;
-  data.final_log_uniform = 10;
-  data.initial_uniform = 100;
-  data.final_uniform = 200;
+  data.smallest_x_position = 0;
+  data.largest_x_position = 10;
+  data.smallest_y_position  = 0;
+  data.largest_y_position = 10;
+
+  data.log_uniform_smallest_value = 1;
+  data.log_uniform_largest_value  = 10;
+  data.uniform_smallest_value = 100;
+  data.uniform_largest_value= 200;
+
   data.t0 = 0;
   data.tmax = 5;
   //  data.tmax = 1;
   data.dt = 0.001;
 
 
-
-    vector<double> LotkaX;  // It's not the Lotka-Volterra system!!
-    vector<double> LotkaY;
     vector<double> Sine_Wave;
 
-    DynamicalSystems sys1(data.t0, data.tmax, data.dt);  // sys1 is not a good variable name
-
-    sys1.LotkaVolterra(LotkaX, LotkaY);
-  //  sys1.SineWave(Sine_Wave);
-
-    
-
-    Simulation sim(data, Volterra, Input_Signal);
+    Simulation sim(data, Input_Signal, Volterra);
     sim.Output_Signal_And_MSE();   // Todo: what is that doing? Naming is confusing.
 
 

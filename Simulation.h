@@ -11,20 +11,22 @@ struct InitialDataValues
 	double N;   // number of Nodes
 	double ux;
 	double uy;
-	double input_connectivity;  // [0,1] percentage of nodes that receive input
-	double w_in_initial;
-    double w_in_final;      // todo: ?? What is that? Name might be misleading
-	double w_out_initial;
-	double w_out_final;     // todo: ?? What is that? Name might be misleading
-	double range0x;     // range0x ?? name is not very descriptive (same for the others below)
-	double range1x;
-	double range0y;
-	double range1y;
-	double initial_log_uniform;     // ??
-	double final_log_uniform;       // ??
-	double initial_uniform;         // ??
-	double final_uniform;           // ??
-    double t0;
+	double input_connectivity_percentage;  // [0,1] percentage of nodes that receive input
+	double input_weight_smallest_value;
+  double input_weight_largest_value;      // todo: ?? What is that? Name might be misleading
+
+	double smallest_x_position;     // range0x ?? name is not very descriptive (same for the others below)
+	double largest_x_position;
+	double smallest_y_position;
+	double largest_y_position;
+
+	double log_uniform_smallest_value;    // ??
+	double log_uniform_largest_value;     // ??
+
+	double uniform_smallest_value;      // ??
+	double uniform_largest_value;          // ??
+
+  double t0;
 	double tmax;
 	double dt;  // time step in seconds
 };
@@ -33,7 +35,8 @@ struct InitialDataValues
 // I would have thought Voleterra would be a derived class from DynamicalSystem
 // Also, is the name DynamicalSystem descriptive? At the end it seems to be only a container of data
 // Would it be better called DataSet or something along these lines?
-class DynamicalSystems
+
+class DataSet
 {
 private:
   double t0;
@@ -42,11 +45,7 @@ private:
 	int maxtimesteps;
 public:
 	//This loads in the initial values for the signal, t0, tmax and dt
-	DynamicalSystems(double t0, double tmax, double dt);
-
-	//This is the LotkaVolterra System
-    // Todo: We don't deal with Lotka-Volterra systems!!! 
-	void LotkaVolterra(vector<double> &LVx, vector<double> &LVy);
+	DataSet(double t0, double tmax, double dt);
 
 	//A simple sinewave to test target signal;
 	void SineWave(vector<double> &SineWave);
@@ -60,7 +59,7 @@ class Simulation
     private:
         //No of mass points
         int N;
-        double input_connectivity;
+        double input_connectivity_percentage;
         int total_input_nodes;
         vector<Nodes> n;
         vector<Springs> s;
@@ -69,14 +68,14 @@ class Simulation
         vector<double> NodeList;
         vector<double> EdgeNodeList;
 
-        double w_out_initial;
-        double w_out_final;
-        double w_in_initial;
-        double w_in_final;
-        double initial_log_uniform;
-        double final_log_uniform;
-        double initial_uniform;
-        double final_uniform;
+				double log_uniform_smallest_value;    // ??
+				double log_uniform_largest_value;     // ??
+				double uniform_smallest_value;      // ??
+				double uniform_largest_value;          // ??
+
+				double input_weight_smallest_value;
+				double input_weight_largest_value;
+
         double t0;
         double tmax;
         double dt;
@@ -86,10 +85,10 @@ class Simulation
         bool input_node;
 
         //Ranges for the delaunay triangulation
-        double range0x;
-        double range0y;
-        double range1x;
-        double range1y;
+				double smallest_x_position;     // range0x ?? name is not very descriptive (same for the others below)
+				double largest_x_position;
+				double smallest_y_position;
+				double largest_y_position;
 
         //These are constant horizontal forces on the input nodes. If this changes so each input node receives a unique force we will have to modify the code
         // Todo: Better to call them Fx and Fy
@@ -122,11 +121,11 @@ class Simulation
     public:
 
         //Default constructor
-    // Todo: It would be more logical to have first the input signal and then the target signal!! 
-        Simulation(InitialDataValues &data, vector<double> &Target_Signal, vector<double> &Input_Signal);
+    // Todo: It would be more logical to have first the input signal and then the target signal!!
+        Simulation(InitialDataValues &data, vector<double> &Input_Signal, vector<double> &Target_Signal);
 
         //This is an overloaded default constructor. This is not randomly initialized mass spring system, this is a determined one.
-        Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Lvx, vector<double> &Lvy);
+        Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Input_Signal, vector<double> &Target_Signal);
 
         //This creates the nodes for the reservoir computer implementation
         void Initialize_Nodes(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data);
@@ -136,12 +135,8 @@ class Simulation
 
         //This changes position of springs and nodes dynamically in time.
     // Todo: Name is not ideal. Better would be to call it update() or similar
-        void Execute_In_Time();
+        void Update();
 
-        //Overloaded Execute_in_Time, will use this for 3D
-    // Todo: Why call it 2 when it's in 3D. Also, best would be to either derive the Simulation class for 3D or to make
-    // rewrite Execute_In_Time to work with 2D and 3D
-        void Execute_In_Time_2();
 
         //This does the delaunay triangulation for the two dimensional case and creates the springs for the reservoir computer, not the radial spider web
         void Delaunay_Triangulation_and_Spring_Creation();
@@ -151,7 +146,7 @@ class Simulation
 
         //After delaunay triangulation, how many connecting edges hence springs.
     // Todo: Should the ouput be really double and not unsigned int?
-        double Output_No_of_Edges();
+        unsigned int Output_No_of_Edges();
 
         //This outputs the spring and node positions for the reservoir computer
         void Output_Spring_And_Node_Positions();
@@ -165,9 +160,6 @@ class Simulation
         //Does the Moore-Penrose pseudoinverse from Eigen library
         void Moore_Penrose_Pseudoinverse(MatrixXd& L);
 
-        //Sine wave to test target signal.
-        // ??? Is this still used?
-        double Sine_Wave(double currenttime);
 
         //Output for Matlab plot
         void Output_For_Plot();
@@ -220,17 +212,18 @@ class Simulation
 
 
         //Remove duplicates from two dimensional vector.
-        void RemoveDuplicates(vector<vector<double>> &x);
+        void Remove_Duplicates(vector<vector<double>> &x);
 
         //Return number of springs
     // Todo: Does it return number of springs (int) or an object of class spring?
+		// Thi
         Springs Spring_Return(int i);
 
         //Return number of nodes
     //Todp: Same question here
-        Nodes NodeReturn(int i);
+        Nodes Node_Return(int i);
 
         //Return number of edges from the triangle.
     // Todo: Is there really a double neeed and not an unsigend int?
-        double Spring_List();
+        unsigned int Spring_List();
 };

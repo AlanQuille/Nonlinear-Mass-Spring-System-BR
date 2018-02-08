@@ -8,8 +8,8 @@ private:
 	double m = 1;
 	// Cartesian coordinates
     // Todo: for consitency rename to px an py (see below → pydot...etc.)
-	double x_position;
-	double y_position;
+	double px;
+	double py;
 
 	// The velocity of the nodes initially it is zero.
     int connections;
@@ -17,8 +17,10 @@ private:
 
 	// Force in x direction
     // Todo: Wouldn't it make more sense to call if fx and fy
+		//I want to keep this one consistent with your code.
+		// Fx and Fy are the total forces on the spring due to external forces such as ux, uy, mabye others.
     double ux = 0;
-	
+
     // Force in y direction
     double uy = 0;
 
@@ -43,40 +45,40 @@ private:
   public:
 
     // Todo: Naming? What does that
-    int test = 0;
 
     //Default constructor, which position the node is in
 	Nodes(double x_position, double y_position);
 
     // If this function is activated than the node is input node
+		//This function is activated when initialising the nodes. The input force and the input weights are input
     // Todo: How is this function acitvated???
 	void Input_Node(double ux, double uy, double win);
 
     // Return node
     // Todo: Better would be to call it something like "is_Input_Node()"
-	bool Return_Input_Node();
+	bool is_Input_Node();
 
     // Return win
     // Todo: How is this a boolean? The weight should be a doubel or real value
-	bool Return_Win();
+	int Return_Win();
 
     //Whether the node is fixed or not. In the reservoir computer the left and right node are fixed
     // Todo:Better "isFixedNode" or is_Fixed_Node" - be consistent Alan!
-	void FixedNode();
+	void is_Fixed_Node();
 
     //Show current position
     // Todo: Should it be get_Position()
-	void Output_Position();
+	void get_position();
 
     //Show xposition
     // Todo: Same here: get_x_Position()
-	double X_Position();
+	double get_x_position();
 
     //Show yposition
     // Todo: detto
-	double Y_Position();
+	double get_y_position();
 
 	//This is the function that incrementally changes the nodes position in the next timestep;
     // maybe instead of "change" use "update"
-	void Change_Position(double Fx, double  Fy, double  dt);
+	void Update(double Fx, double  Fy, double  dt);
 };
