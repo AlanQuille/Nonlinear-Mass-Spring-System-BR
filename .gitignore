@@ -14,5 +14,10 @@ Badcoefficients.csv
 *.csv
 wtf.txt
 wtf2.txt
+<<<<<<< HEAD
 *.csv
 *.csv
+=======
+
+*.pdf
+>>>>>>> beefdb458fab10f051c4ef777c8a2cc25256c384
