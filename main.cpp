@@ -32,10 +32,13 @@ int main(int argc, char** argv)
   vector<double> Volterra;
   vector<double> Input_Signal;
   vector<string> classData;
-  vector<string> classData2;
+  vector<string> classData2;  // Todo: ???
 
   cout << "Test " << endl;
 
+    
+  // Todo: I think it would be useful to define class for reading in files from csv
+  // there are plenty of these out there, e.g. https://github.com/iofish/CSV/blob/master/csv.h
   ifstream file ( "volterra.csv" ); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
   string value;
 
@@ -44,7 +47,7 @@ int main(int argc, char** argv)
     classData.push_back(value); //Get each line of the file as a string
   }
 
-  int s = classData.size();
+  unsigned long s = classData.size();
   double x;
   for (unsigned int i=1; i<s; ++i)
   {
@@ -55,8 +58,10 @@ int main(int argc, char** argv)
   //  cout <<Volterra.at(i) << endl;
   }
 
+    
+  // TODO:  again best to have that encapsulated in a class - makes the code much cleaner and we will use this code a lot
   ifstream file2 ("inputsignal.csv"); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
-  string value2;
+    string value2;  // Todo: naming value2 and file2 is quite cryptic.
 
   while (getline(file2, value2,'\n'))
   {
@@ -75,6 +80,7 @@ int main(int argc, char** argv)
   cout <<"Size of new signal is: "<< Input_Signal.size();
 
 
+  // setting parameters for simulation
   data.N =25;
   data.ux=0;
   data.uy= 0;
@@ -95,26 +101,25 @@ int main(int argc, char** argv)
   data.final_uniform = 200;
   data.t0 = 0;
   data.tmax = 5;
-//  data.tmax = 1;
+  //  data.tmax = 1;
   data.dt = 0.001;
 
 
 
-    vector<double> LotkaX;
+    vector<double> LotkaX;  // It's not the Lotka-Volterra system!!
     vector<double> LotkaY;
     vector<double> Sine_Wave;
 
-    DynamicalSystems sys1(data.t0, data.tmax, data.dt);
+    DynamicalSystems sys1(data.t0, data.tmax, data.dt);  // sys1 is not a good variable name
 
     sys1.LotkaVolterra(LotkaX, LotkaY);
   //  sys1.SineWave(Sine_Wave);
 
-    cout <<"WHat?" << endl;
-
-
+    
 
     Simulation sim(data, Volterra, Input_Signal);
-    sim.Output_Signal_And_MSE();
+    sim.Output_Signal_And_MSE();   // Todo: what is that doing? Naming is confusing.
+
 
     stop_time = clock();
     double difference = (1000)*((stop_time - start_time)/CLOCKS_PER_SEC);

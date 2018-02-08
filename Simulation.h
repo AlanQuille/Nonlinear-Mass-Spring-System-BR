@@ -31,6 +31,8 @@ struct InitialDataValues
 
 // Todo: YOu make a class DynamicalSystem, but then you have functions like Volterra in there
 // I would have thought Voleterra would be a derived class from DynamicalSystem
+// Also, is the name DynamicalSystem descriptive? At the end it seems to be only a container of data
+// Would it be better called DataSet or something along these lines?
 class DynamicalSystems
 {
 private:
@@ -43,11 +45,13 @@ public:
 	DynamicalSystems(double t0, double tmax, double dt);
 
 	//This is the LotkaVolterra System
+    // Todo: We don't deal with Lotka-Volterra systems!!! 
 	void LotkaVolterra(vector<double> &LVx, vector<double> &LVy);
 
 	//A simple sinewave to test target signal;
 	void SineWave(vector<double> &SineWave);
 };
+
 
 
 class Simulation
@@ -118,6 +122,7 @@ class Simulation
     public:
 
         //Default constructor
+    // Todo: It would be more logical to have first the input signal and then the target signal!! 
         Simulation(InitialDataValues &data, vector<double> &Target_Signal, vector<double> &Input_Signal);
 
         //This is an overloaded default constructor. This is not randomly initialized mass spring system, this is a determined one.
@@ -130,9 +135,12 @@ class Simulation
         void Initialize_Nodes(double range0x, double range1x, double range0y, double range1y);
 
         //This changes position of springs and nodes dynamically in time.
+    // Todo: Name is not ideal. Better would be to call it update() or similar
         void Execute_In_Time();
 
         //Overloaded Execute_in_Time, will use this for 3D
+    // Todo: Why call it 2 when it's in 3D. Also, best would be to either derive the Simulation class for 3D or to make
+    // rewrite Execute_In_Time to work with 2D and 3D
         void Execute_In_Time_2();
 
         //This does the delaunay triangulation for the two dimensional case and creates the springs for the reservoir computer, not the radial spider web
@@ -142,6 +150,7 @@ class Simulation
         void Create_EdgeNodeList();
 
         //After delaunay triangulation, how many connecting edges hence springs.
+    // Todo: Should the ouput be really double and not unsigned int?
         double Output_No_of_Edges();
 
         //This outputs the spring and node positions for the reservoir computer
@@ -157,6 +166,7 @@ class Simulation
         void Moore_Penrose_Pseudoinverse(MatrixXd& L);
 
         //Sine wave to test target signal.
+        // ??? Is this still used?
         double Sine_Wave(double currenttime);
 
         //Output for Matlab plot
@@ -213,11 +223,14 @@ class Simulation
         void RemoveDuplicates(vector<vector<double>> &x);
 
         //Return number of springs
+    // Todo: Does it return number of springs (int) or an object of class spring?
         Springs Spring_Return(int i);
 
         //Return number of nodes
+    //Todp: Same question here
         Nodes NodeReturn(int i);
 
         //Return number of edges from the triangle.
+    // Todo: Is there really a double neeed and not an unsigend int?
         double Spring_List();
 };

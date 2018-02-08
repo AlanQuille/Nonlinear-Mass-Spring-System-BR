@@ -54,6 +54,8 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &TS, vector<doubl
   Delaunay_Triangulation_and_Spring_Creation();
 }
 
+
+
 Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Lvx, vector<double> &Lvy)
 {
   this->input_connectivity = data.input_connectivity;
@@ -418,7 +420,7 @@ void Simulation::Execute_In_Time()
   //  Populate_Learning_Weights(LearningMatrix);
 }
 
-void Simulation::Execute_In_Time_2()
+void Simulation::Execute_In_Time_2()  // Todo: Which of the two Execute_in_Time function is used? To clean remove one please
 {
   double Fsum =0;
   double Fx_nodea =0;
@@ -597,6 +599,11 @@ void Simulation::Populate_Learning_Weights(MatrixXd& L)
   }
 }
 
+// Todo: The name does not tell us what this fucntion is doing
+// Also, writing data to hard disk during simualtion slow it down a lot.
+// Btw. any graphical output (even to the terminal) slows the process down a lot
+// However, you could have every 1000 points and update message to show the use the simualtion is still going
+// Btw. it is good to have a functionality to switch off any of these things by the user
 void Simulation::Output_Signal_And_MSE()
 {
 //  MatrixXd LM;
@@ -614,25 +621,27 @@ void Simulation::Output_Signal_And_MSE()
 
   for(int i=0; i<maxtimesteps; i++)
   {
-  for(int j=0; j<LM.cols(); j++)
-  {
-    outputsignal += Learning_Weights[j] * LM(i, j);
-  //  if(i==0) output2 << Learning_Weights[j] << endl;
-  }
+      for(int j=0; j<LM.cols(); j++)
+      {
+          outputsignal += Learning_Weights[j] * LM(i, j);
+          //  if(i==0) output2 << Learning_Weights[j] << endl;
+      }
 
-  Output_Signal.push_back(outputsignal);
-  currenttime = t0 + i*dt;
+      Output_Signal.push_back(outputsignal);
+      currenttime = t0 + i*dt;
 
-  output << currenttime <<"," << Output_Signal.at(i);
-  output << endl;
-  output3 <<currenttime <<"," << Target_Signal.at(i);
-  output3 << endl;
-  outputsignal = 0;
+      output << currenttime <<"," << Output_Signal.at(i);
+      output << endl;
+      output3 <<currenttime <<"," << Target_Signal.at(i);
+      output3 << endl;
+      outputsignal = 0;
   }
 
   cout <<"The mean squared error of the output signal versus the target signal is: " << MSE(Output_Signal, Target_Signal);
   cout <<endl;
-}
+}  // end simulation loop
+
+
 
 double Simulation::MSE(vector<double>& A, vector<double>& Ahat)
 {
@@ -654,40 +663,52 @@ MSE = (1/Total)*MSEsum;
 return MSE;
 }
 
+
+
 int Simulation::Random_Input_Nodes(int N)
 {
   return N*((int) rand() / (RAND_MAX));
 }
+
+
 
 double Simulation::Uniform(double M, double N)
 {
   return M + (rand() / ( RAND_MAX / (N-M) ) ) ;
 }
 
+
+
 double Simulation::Log_10_Uniform(double initial, double finalvalue)
 {
   return exp(Uniform(initial, finalvalue)/(2.302585093));
 }
+
+
 
 double Simulation::Spring_And_Damping_Coefficient_1(double initial, double finalvalue)
 {
   return Log_10_Uniform(initial, finalvalue);
 }
 
+
 double Simulation::Spring_And_Damping_Coefficient_2(double initial, double finalvalue)
 {
   return Uniform(initial, finalvalue);
 }
+
 
 double Simulation::Eucl_Dist(double x1, double y1, double x2, double y2)
 {
   return sqrt((y2-y1)*(y2-y1) + (x2-x1)*(x2-x1));
 }
 
+
 double Simulation::Angle(double x0, double x1, double y0, double y1)
 {
   return atan((y1-y0)/(x1-x0));
 }
+
 
 double Simulation::X_Comp(double vectorsum, double theta)
 {
@@ -981,6 +1002,8 @@ void Simulation::Output_For_Plot()
  }
 
 }
+
+
 Springs Simulation::Spring_Return(int i)
 {
   return s[i];
