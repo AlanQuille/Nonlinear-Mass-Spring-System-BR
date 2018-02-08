@@ -81,8 +81,12 @@ int main(int argc, char** argv)
 
 
   // setting parameters for simulation
+<<<<<<< HEAD
   data.N =25;
 
+=======
+  data.N = 25;
+>>>>>>> 0c3e96e802ad7dca06ea4b8fca8d37d1c48af347
   data.ux=0;
   data.uy= 0;
 
@@ -109,14 +113,26 @@ int main(int argc, char** argv)
 
 
     vector<double> Sine_Wave;
+<<<<<<< HEAD
 
     Simulation sim(data, Input_Signal, Volterra);
+=======
+    
+    DynamicalSystems sys1(data.t0, data.tmax, data.dt);  // sys1 is not a good variable name
+    
+    sys1.LotkaVolterra(LotkaX, LotkaY);
+    //  sys1.SineWave(Sine_Wave);
+    
+    
+    
+    Simulation sim(data, Volterra, Input_Signal);
+>>>>>>> 0c3e96e802ad7dca06ea4b8fca8d37d1c48af347
     sim.Output_Signal_And_MSE();   // Todo: what is that doing? Naming is confusing.
-
-
+    
+    
     stop_time = clock();
     double difference = (1000)*((stop_time - start_time)/CLOCKS_PER_SEC);
-
+    
     cout << "The time it took for the programme to run in total in milliseconds: ";
     cout << difference << endl;
 
