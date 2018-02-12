@@ -8,13 +8,15 @@ using namespace Eigen;
 
 struct InitialDataValues
 {
-	double N;   // number of Nodes
-	double ux;
-	double uy;
-	double input_connectivity_percentage;  // [0,1] percentage of nodes that receive input
+	int     N;   // number of Nodes
+	double ux;   // First input values in x direction
+	double uy;   // First input values in y direction
+    double input_connectivity_percentage;  // [0,1] percentage of nodes that receive input
 	double input_weight_smallest_value;
-  double input_weight_largest_value;      // todo: ?? What is that? Name might be misleading
+    double input_weight_largest_value;      // todo: ?? What is that? Name might be misleading
 
+    // Paraemter to set area where nodes can be placed in
+    // Todo: maybe change to min_x... and max... also below with probabilties
 	double smallest_x_position;     // range0x ?? name is not very descriptive (same for the others below)
 	double largest_x_position;
 	double smallest_y_position;
@@ -26,7 +28,7 @@ struct InitialDataValues
 	double uniform_smallest_value;      // ??
 	double uniform_largest_value;          // ??
 
-  double t0;
+    double t0;
 	double tmax;
 	double dt;  // time step in seconds
 };
@@ -38,17 +40,18 @@ struct InitialDataValues
 
 class DataSet
 {
-private:
-  double t0;
-	double dt;
-	double tmax;
-	int maxtimesteps;
-public:
-	//This loads in the initial values for the signal, t0, tmax and dt
-	DataSet(double t0, double tmax, double dt);
+    private:
+        double t0;
+        double dt;
+        double tmax;
+        int maxtimesteps;
+    
+    public:
+        //This loads in the initial values for the signal, t0, tmax and dt
+        DataSet(double t0, double tmax, double dt);
 
-	//A simple sinewave to test target signal;
-	void SineWave(vector<double> &SineWave);
+        //A simple sinewave to test target signal;
+        void SineWave(vector<double> &SineWave);
 };
 
 
@@ -60,21 +63,21 @@ class Simulation
         //No of mass points
         int N;
         double input_connectivity_percentage;
-        int total_input_nodes;
+        int total_input_nodes;  // Todo: still needed?
         vector<Nodes> n;
         vector<Springs> s;
-        vector< vector<double> > Loutput;
+//        vector< vector<double> > Loutput;
         vector< vector<double> > EdgeList;
         vector<double> NodeList;
         vector<double> EdgeNodeList;
 
-				double log_uniform_smallest_value;    // ??
-				double log_uniform_largest_value;     // ??
-				double uniform_smallest_value;      // ??
-				double uniform_largest_value;          // ??
+        double log_uniform_smallest_value;    // ??
+		double log_uniform_largest_value;     // ??
+        double uniform_smallest_value;      // ??
+		double uniform_largest_value;          // ??
 
-				double input_weight_smallest_value;
-				double input_weight_largest_value;
+		double input_weight_smallest_value;
+		double input_weight_largest_value;
 
         double t0;
         double tmax;
@@ -85,10 +88,10 @@ class Simulation
         bool input_node;
 
         //Ranges for the delaunay triangulation
-				double smallest_x_position;     // range0x ?? name is not very descriptive (same for the others below)
-				double largest_x_position;
-				double smallest_y_position;
-				double largest_y_position;
+        double smallest_x_position;     // range0x ?? name is not very descriptive (same for the others below)
+		double largest_x_position;
+		double smallest_y_position;
+		double largest_y_position;
 
         //These are constant horizontal forces on the input nodes. If this changes so each input node receives a unique force we will have to modify the code
         // Todo: Better to call them Fx and Fy
@@ -96,7 +99,7 @@ class Simulation
         double uy;
 
         //This is for the first phase of reservoir computing
-        bool learning_phase_over = 0;
+        //bool is_learning_phase_over = false;
 
         //This is the final function which SHOULD be like the target signal.
         vector<double> Output_Signal;
@@ -111,49 +114,52 @@ class Simulation
         vector<double> Input_Signal;
 
         //LearningMatrix for learning weight multiplication
+        // For collecting data for learning
         MatrixXd LM;
 
         //MatrixXD TempMat
-        // Todo: ??
+        // Todo: Still needed? Clean out
         MatrixXd TempMat;
 
 
     public:
 
         //Default constructor
-    // Todo: It would be more logical to have first the input signal and then the target signal!!
         Simulation(InitialDataValues &data, vector<double> &Input_Signal, vector<double> &Target_Signal);
 
         //This is an overloaded default constructor. This is not randomly initialized mass spring system, this is a determined one.
+        // Todo: Maybe derive a class for spiderweb simulation
         Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Input_Signal, vector<double> &Target_Signal);
 
         //This creates the nodes for the reservoir computer implementation
+        // Todo: Maybe derive a class for spiderweb simulation
         void Initialize_Nodes(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data);
 
         //This initializes the nodes and puts in appropriate values for the ranges and the weights
+        // Todo: change variable names here 
         void Initialize_Nodes(double range0x, double range1x, double range0y, double range1y);
 
         //This changes position of springs and nodes dynamically in time.
-    // Todo: Name is not ideal. Better would be to call it update() or similar
-        void Update();
+        // Todo: Name is not ideal. Better would be to call it update() or similar
+        void execute();
 
 
         //This does the delaunay triangulation for the two dimensional case and creates the springs for the reservoir computer, not the radial spider web
         void Delaunay_Triangulation_and_Spring_Creation();
-
+    
         //Create EdgeNodeList, defunct function don't want to get rid of it.
         void Create_EdgeNodeList();
-
+    
         //After delaunay triangulation, how many connecting edges hence springs.
-    // Todo: Should the ouput be really double and not unsigned int?
+        // Todo: Should the ouput be really double and not unsigned int?
         unsigned int Output_No_of_Edges();
-
+    
         //This outputs the spring and node positions for the reservoir computer
         void Output_Spring_And_Node_Positions();
-
+    
         //Get the triangles from the Delaunay Triangulation.
         void Get_Triangles(DelaunayTriangulation &Delaunay);
-
+    
         //Create springs for reservoir computer nonlinear mass spring system
         void Initialize_Springs();
 
@@ -191,39 +197,39 @@ class Simulation
         //Expression of log 10 uniform for spring and damping coefficients
         double Spring_And_Damping_Coefficient_1(double initial, double finalvalue);
         double Spring_And_Damping_Coefficient_2(double initial, double finalvalue);
-
+    
         //Euclidean distance between two points on x y plane, will overload for 3D
         double Eucl_Dist(double x1, double y1, double x2, double y2);
-
+    
         //Angle for line between two points.
         double Angle(double x0, double x1, double y0, double y1);
-
+    
         //X component of vector from one point to another
         double X_Comp(double vectorsum, double theta);
-
+    
         //Y component of vector from one point to another.
         double Y_Comp(double vectorsum, double theta);
-
+    
         //Sorting three input numbers.
         void Sort(int &a, int &b, int &c);
-
+    
         //Sorting two input numbers
         void Sort(int &a, int &b);
-
+    
 
         //Remove duplicates from two dimensional vector.
         void Remove_Duplicates(vector<vector<double>> &x);
 
         //Return number of springs
-    // Todo: Does it return number of springs (int) or an object of class spring?
-		// Thi
+        // Todo: Does it return number of springs (int) or an object of class spring?
+        // Thi
         Springs Spring_Return(int i);
-
+    
         //Return number of nodes
-    //Todp: Same question here
+        //Todp: Same question here
         Nodes Node_Return(int i);
-
+    
         //Return number of edges from the triangle.
-    // Todo: Is there really a double neeed and not an unsigend int?
+        // Todo: Is there really a double neeed and not an unsigend int?
         unsigned int Spring_List();
 };

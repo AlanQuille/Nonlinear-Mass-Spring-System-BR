@@ -34,7 +34,6 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
   this->uniform_largest_value = data.uniform_largest_value;
 
 
-
   this->t0 = data.t0;
   this->tmax = data.tmax;
   this->dt = data.dt;
@@ -86,12 +85,13 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
 
   Target_Signal = Lvx;
 
-  Update();
+  execute();
 //  Output_For_Plot();
 }
 
 void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_position, double smallest_y_position, double largest_y_position)
    {
+    // todo: still needed for debugging
     ofstream fixed("fixednode.txt");
  		ofstream Initialnodes("initial.txt");
 
@@ -131,8 +131,8 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
  		 fixed <<j << endl;
  		 fixed <<k << endl;
 
- 		 n[j].is_Fixed_Node();
- 		 n[k].is_Fixed_Node();
+ 		 n[j].set_Fixed_Node();
+ 		 n[k].set_Fixed_Node();
  		//Just one node for test;
  		 //Fixed the leftmost and rightmost nodes.
    }
@@ -192,7 +192,7 @@ void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_pe
 
       if(BeforeRand<=input_connectivity_percentage)
       {
-      n[k].Input_Node(data.ux, data.uy, win);
+      n[k].init_Input_Node(data.ux, data.uy, win);
       cout << endl;
       }
 
@@ -249,8 +249,8 @@ void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_pe
  }
 
 
- n[no_of_points_per_round*(rounds-1)].is_Fixed_Node();
- n[2+no_of_points_per_round*(rounds-1)].is_Fixed_Node();
+ n[no_of_points_per_round*(rounds-1)].set_Fixed_Node();
+ n[2+no_of_points_per_round*(rounds-1)].set_Fixed_Node();
 }
 
 void Simulation::Delaunay_Triangulation_and_Spring_Creation()
@@ -273,7 +273,7 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
   //    cout <<"win is: "<< win << endl;
   //    win -= offset;
       cout <<"win is: "<< win << endl;
-      if(BeforeRand<=input_connectivity_percentage) n[i].Input_Node(ux, uy, win);
+      if(BeforeRand<=input_connectivity_percentage) n[i].init_Input_Node(ux, uy, win);
       DT.AddPoint(Point(n[i].get_x_position(),n[i].get_y_position(),0));
     //  DT.AddPoint(Point(n[i].X_Position(), Point(n[i].Y_Position());
     }
@@ -281,12 +281,12 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
 
     Get_Triangles(DT);
     Initialize_Springs();
-    Update();
+    execute();
     Output_For_Plot();
 
 }
 
-void Simulation::Update()
+void Simulation::execute()
 {
   double Fsum =0;
   double Fx_nodea =0;
@@ -296,7 +296,7 @@ void Simulation::Update()
   double theta = 0;
   double l = 0;
 
-  double nodea =0;
+  double nodea = 0;
   double nodeb = 0;
 
   double x0 = 0;
@@ -304,6 +304,7 @@ void Simulation::Update()
   double y0 = 0;
   double y1 = 0;
 
+  // Todo: still needed for debugging DEBUG
   ofstream ofs("Node1.csv");
   ofstream ofs2("Node2.csv");
   ofstream ofs3("SampleForce.csv");
@@ -312,18 +313,16 @@ void Simulation::Update()
   double currentlength = 0;
 
   MatrixXd LearningMatrix(maxtimesteps, s.size());
-  MatrixXd TargetSignal(maxtimesteps, s.size());
+  MatrixXd TargetSignal(maxtimesteps, s.size()); // Todo: to fill TargetSignal matrix at init/constructor
 
   double outputsignal = 0;
   for(int j=0; j<s.size(); j++)
   {
 
-    LearningMatrix(0,j)=s[j].Return_Initial_Length();
-    TargetSignal(0,j) = Target_Signal[0];
+    LearningMatrix(0,j)=s[j].return_Initial_Length();
+      TargetSignal(0,j) = Target_Signal[0]; // Todo: Target matrix is of size #outputs x #timestep!!
   }
 
-
-  outputsignal = 0;
 
     // double uniform1 = 0;
     // double uniform2 = 0;
@@ -331,12 +330,15 @@ void Simulation::Update()
     //bool nodea1;
     // bool nodeb1;
 
+  /////////////////////////////////
+  //  SIMULATION LOOP
+  /////////////////////////////////
   for(int i=1; i<maxtimesteps; i++)
   {
 
   for(int j=0;  j<s.size(); j++)
     {
-       s[j].Update_Force(Fsum);
+       s[j].get_Force(Fsum);
 
        nodea = s[j].Nodea();
        nodeb = s[j].Nodeb();
@@ -347,17 +349,19 @@ void Simulation::Update()
        y1 = n[nodeb].get_y_position();
 
        //Change position of first node
+       // Todo: Check if "abs" is really needed
        theta = abs(Angle(x0, x1, y0, y1));
 
+        // Todo: Check if this has to be so complicated
        if(x1>x0)
        {
-       Fx_nodeb = X_Comp(Fsum, theta);
-       Fx_nodea = -X_Comp(Fsum, theta);
+           Fx_nodeb = X_Comp(Fsum, theta);
+           Fx_nodea = -X_Comp(Fsum, theta);
        }
        if(y1>y0)
        {
-       Fy_nodeb = Y_Comp(Fsum, theta);
-       Fy_nodea = -Y_Comp(Fsum, theta);
+           Fy_nodeb = Y_Comp(Fsum, theta);
+           Fy_nodea = -Y_Comp(Fsum, theta);
        }
 
        if(x0>x1)
@@ -365,15 +369,17 @@ void Simulation::Update()
        Fx_nodeb = -X_Comp(Fsum, theta);
        Fx_nodea = X_Comp(Fsum, theta);
        }
+        
        if(y0>y1)
        {
        Fy_nodeb = -Y_Comp(Fsum, theta);
        Fy_nodea = Y_Comp(Fsum, theta);
        }
 
-       //Update for input signal.
-       if(n[nodea].is_Input_Node()==1) Fx_nodea += Uniform(input_weight_smallest_value, input_weight_largest_value)*Input_Signal[i];
-       if(n[nodeb].is_Input_Node()==1) Fx_nodeb += Uniform(input_weight_smallest_value, input_weight_largest_value)*Input_Signal[i];
+       // Update for input signal.
+       // Todo: PROBLEM - adds up input force to same nodes over and over again
+       if(n[nodea].is_Input_Node()==1) Fx_nodea += n[nodea].return_Win()*Input_Signal[i];
+       if(n[nodeb].is_Input_Node()==1) Fx_nodeb += n[nodeb].return_Win()*Input_Signal[i];
 
 
 
@@ -396,10 +402,10 @@ void Simulation::Update()
 
       // cout <<"Is this running?" << endl;
        LearningMatrix(i,j) = currentlength;
-       TargetSignal(i,j) = Target_Signal[i];
+       TargetSignal(i,j) = Target_Signal[i];  // Todo: update is not needed for target signal
 
 
-       s[j].Update_Spring_State(dt, l);
+       s[j].update_Spring_State(dt, l);
 
        Fsum = 0;
        Fx_nodea =0;
@@ -539,7 +545,7 @@ double Simulation::Uniform(double M, double N)
 
 double Simulation::Log_10_Uniform(double initial, double finalvalue)
 {
-  return exp(Uniform(initial, finalvalue)/(2.302585093));
+  return exp(Uniform(initial, finalvalue)/(2.302585093 ));
 }
 
 
@@ -644,7 +650,7 @@ void Simulation::Output_Spring_And_Node_Positions()
 {
   for (int i =0; i<s.size(); i++)
   {
-    s[i].Output();
+    s[i].print_output();
   }
 }
 
@@ -704,7 +710,7 @@ void Simulation::Initialize_Springs()
       wout = 0;
 
       s.push_back(Springs(k1, d1, k3, d3, l0, arraysubscript1, arraysubscript2, wout));
-      s[i].Output();
+      s[i].print_output();
    }
 }
 

@@ -8,9 +8,9 @@ class Springs
     //Todo: natural length of each spring, i.e., distance between mass nodes as time 0. This might not be necessary to include.
     private:
 
-        double l0;  // resting lenght
+        double l0;  // resting length
         double l;   // current length.
-        double x1;  // difference between current and resting lenght, i.e., l-l0 i
+        double x1;  // difference between current and resting lenght, i.e., x1 = l-l0
         double x2 = 0; // Velocity of the spring relative to l0 (= dx1/dt)
 
         // spring constants
@@ -32,10 +32,10 @@ class Springs
         double wout;
 
         // Total force on spring
-        // Todo: Needs to be explained better
-        double x2force = 0;
-        double p;
-        double q;
+        // Todo: Clean up code
+        double F_total = 0;
+        double p; // Todo: still needed?
+        double q; // Todo: still needed?
 
 
     public:
@@ -47,24 +47,24 @@ class Springs
 
         //The equation to change the force due to the spring
         // Todo: Better name is needed, what does it do acutally? get_force? update_force, etc..
-<<<<<<< HEAD
-        void Update_Force(double &Fsum);
-=======
+
+        void get_Force(double &Fsum);
+
+    
         // This could be overloaded
-        void ForceEq(double &Fsum);
->>>>>>> 0c3e96e802ad7dca06ea4b8fca8d37d1c48af347
+        // void ForceEq(double &Fsum);
 
-        //Change the length and velocity of the spring
+
+        // Change the length and velocity of the spring
         // Todo: Maybe update_spring_state would be better
-        void Update_Spring_State(double &dt, double &l);
+        void update_Spring_State(double &dt, double &l);
 
-        //Output l0, initial length of spring without extension.
-        // TODO: Why is it called "original" length
-        //This is
-        double Return_Initial_Length();
+    
+        // get resting length l0
+        double return_Initial_Length();
 
         // Output current length of spring
-        void Output();
+        void print_output();
 
         //Output first node number
         // Todo: is a double needed? Would be an integer enough?
@@ -75,10 +75,10 @@ class Springs
         int Nodeb();
 
         //Output the output weight
-        double Output_Weight();
+        double get_Output_Weight();
 
         //Output damping and spring coefficients.
-        // Todo: get_k1, get_k3 etc..
+        // Todo: get_k1, get_k3 etc.
         double get_k1();
         double get_k3();
         double get_d1();

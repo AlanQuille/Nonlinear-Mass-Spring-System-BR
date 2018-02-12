@@ -9,10 +9,10 @@ Nodes::Nodes(double x_position, double y_position)
  }
 
 //If this function is activated than the node is input node
-void Nodes::Input_Node(double ux, double uy, double win)
+void Nodes::init_Input_Node(double ux, double uy, double win)
 {
-  this->ux = ux;
-  this->uy = uy;
+  this->F_in_x = ux;
+  this->F_in_y = uy;
   this->input_node = 1;
   this->win = win;
 }
@@ -22,18 +22,18 @@ bool Nodes::is_Input_Node()
   return input_node;
 }
 
-int Nodes::Return_Win()
+double Nodes::return_Win()
 {
   return win;
 }
 
 
-void Nodes::is_Fixed_Node()
+void Nodes::set_Fixed_Node()
 {
-  this->fixednode = 1;
+  this->fixednode = true;
 }
 
-void Nodes::get_position()
+void Nodes::print_position()
 {
   cout <<"X_position" << px << " " <<"Y_Position" << py <<" " << input_node;
 }
@@ -51,10 +51,10 @@ double Nodes::get_y_position()
 //This is the function that incrementally changes the nodes position in the next timestep;
 void Nodes::Update(double Fx, double  Fy, double  dt)
 {
-    if(fixednode ==0)
+    if(fixednode == false)
     {
-    pxdotdot= (Fx + (win*ux))/m;
-    pydotdot= (Fy/m);
+    pxdotdot = (Fx + (win*F_in_x))/m;
+    pydotdot = (Fy/m);
       //You want to calculate the velocity so that initial velocity is 0 and than calculate the corresponding change in position
     pydot += dt*pydotdot;
     py += dt*pydot;
@@ -64,7 +64,7 @@ void Nodes::Update(double Fx, double  Fy, double  dt)
     }
     else
     {
-      pxdotdot =0;
+      pxdotdot = 0;
       pxdot = 0;
     }
 }

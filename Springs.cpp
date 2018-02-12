@@ -20,31 +20,32 @@ Springs::Springs(double k1, double k3, double d1, double d3, double l0, int node
     //The initial x1 = l0 - l0 =0, and initial spring velocity = 0
 };
 
-void Springs::Update_Force(double &Fsum)
+void Springs::get_Force(double &Fsum)
 {
+    // Todo: Clean up, simplify
     p=k3*x1*x1*x1 + k1*x1;
     q=d3*x2*x2*x2 + d1*x2;
-    x2force = -p-q;
-    Fsum = x2force;
+    F_total = -p-q;
+    Fsum = F_total;
 };
 
-void Springs::Update_Spring_State(double &dt, double &l)
+void Springs::update_Spring_State(double &dt, double &l)
 {
     double x1new = l-l0;
     x2 = ((x1new - x1)/dt);
-    this->x1 = x1new;
+    this->x1 = x1new;  // Todo: Check if this-> is needed
     //RungeKutta2ndOrder(dt, x2);
 };
 
 
 
-double Springs::Return_Initial_Length()
+double Springs::return_Initial_Length()
 {
     return l0;
 };
 
 
-void Springs::Output()
+void Springs::print_output()
 {
     cout <<"Node 1 is: " << nodea << endl;
     cout <<"Node 2 is: " << nodeb << endl;
@@ -61,7 +62,7 @@ int Springs::Nodeb()
     return nodeb;
 }
 
-double Springs::Output_Weight()
+double Springs::get_Output_Weight()
 {
 return wout;
 }
