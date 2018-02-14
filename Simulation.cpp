@@ -337,8 +337,10 @@ void Simulation::execute()
   for(int i=1; i<maxtimesteps; i++)
   {
     //Each node has to be changed
-    n[nodea].zero_updatecheck();
-    n[nodeb].zero_updatecheck();
+    for(int k=0; k<n.size(); k++)
+    {
+    n[k].zero_updatecheck();
+    }
 
   for(int j=0;  j<s.size(); j++)
     {
@@ -388,13 +390,15 @@ void Simulation::execute()
        //cout <<n[nodea].return_updatecheck()<< endl;
     //   cout <<n[nodeb].return_Win() << endl;
 
-       if((!n[nodea].return_updatecheck())
+
+
+       if(!n[nodea].return_updatecheck())
        {
         n[nodea].Update(Fx_nodea, Fy_nodea, dt);
         n[nodea].change_updatecheck();
        }
 
-       if((!n[nodeb].return_updatecheck())
+       if(!n[nodeb].return_updatecheck())
        {
         n[nodeb].Update(Fx_nodeb, Fy_nodeb, dt);
         n[nodeb].change_updatecheck();

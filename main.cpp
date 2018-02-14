@@ -81,7 +81,7 @@ int main(int argc, char** argv)
 
 
   // setting parameters for simulation
-  data.N =50;
+  data.N = 25;
 
   data.ux=0;
   data.uy= 0;
