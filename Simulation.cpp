@@ -360,8 +360,6 @@ void Simulation::execute()
       s[j].update_Spring_State(dt, l);
       s[j].get_Force(Fsum);
 
-      cout << l << endl;
-
       LearningMatrix(i,j) = l;  // Todo: update is not needed for target signal
 
 
