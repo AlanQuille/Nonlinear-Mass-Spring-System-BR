@@ -317,12 +317,12 @@ void Simulation::execute()
  VectorXd TargetSignal(maxtimesteps);
 
   double outputsignal = 0;
-  for(int j=0; j<s.size(); j++)
-  {
+  //for(int j=0; j<s.size(); j++)
+  //{
 
-    LearningMatrix(0,j)=s[j].return_Initial_Length();
-    TargetSignal(0) = Target_Signal[0]; // Todo: Target matrix is of size #outputs x #timestep!!
-  }
+    //LearningMatrix(0,j)=s[j].return_Initial_Length();
+  //  TargetSignal(0) = Target_Signal[0]; // Todo: Target matrix is of size #outputs x #timestep!!
+  //}
 
 
     // double uniform1 = 0;
@@ -334,91 +334,71 @@ void Simulation::execute()
   /////////////////////////////////
   //  SIMULATION LOOP
   /////////////////////////////////
-  for(int i=1; i<maxtimesteps; i++)
+  for(int i=0; i<maxtimesteps; i++)
   {
-    //Each node has to be changed
-    n[nodea].zero_updatecheck();
-    n[nodeb].zero_updatecheck();
+
+    TargetSignal(i) = Target_Signal[i];
+
 
   for(int j=0;  j<s.size(); j++)
     {
-       s[j].get_Force(Fsum);
 
-       nodea = s[j].Nodea();
-       nodeb = s[j].Nodeb();
-
-       x0 = n[nodea].get_x_position();
-       x1 = n[nodeb].get_x_position();
-       y0 = n[nodea].get_y_position();
-       y1 = n[nodeb].get_y_position();
-
-       //Change position of first node
-       // Todo: Check if "abs" is really needed
-       theta = abs(Angle(x0, x1, y0, y1));
-
-        // Todo: Check if this has to be so complicated
-       if(x1>x0)
-       {
-           Fx_nodeb = X_Comp(Fsum, theta);
-           Fx_nodea = -X_Comp(Fsum, theta);
-       }
-       if(y1>y0)
-       {
-           Fy_nodeb = Y_Comp(Fsum, theta);
-           Fy_nodea = -Y_Comp(Fsum, theta);
-       }
-
-       if(x0>x1)
-       {
-       Fx_nodeb = -X_Comp(Fsum, theta);
-       Fx_nodea = X_Comp(Fsum, theta);
-       }
-
-       if(y0>y1)
-       {
-       Fy_nodeb = -Y_Comp(Fsum, theta);
-       Fy_nodea = Y_Comp(Fsum, theta);
-       }
-
-       // Update for input signal.
-       // Todo: PROBLEM - adds up input force to same nodes over and over again
-       Fx_nodea += n[nodea].return_Win()*Input_Signal[i];
-       Fx_nodeb += n[nodeb].return_Win()*Input_Signal[i];
-
-       //cout <<n[nodea].return_updatecheck()<< endl;
-    //   cout <<n[nodeb].return_Win() << endl;
-
-       if((!n[nodea].return_updatecheck())
-       {
-        n[nodea].Update(Fx_nodea, Fy_nodea, dt);
-        n[nodea].change_updatecheck();
-       }
-
-       if((!n[nodeb].return_updatecheck())
-       {
-        n[nodeb].Update(Fx_nodeb, Fy_nodeb, dt);
-        n[nodeb].change_updatecheck();
-       }
-
-       x0 = n[nodea].get_x_position();
-       x1 = n[nodeb].get_x_position();
-
-       y0 = n[nodea].get_y_position();
-       y1 = n[nodeb].get_y_position();
+      nodea = s[j].Nodea();
+      nodeb = s[j].Nodeb();
 
 
-       //Be very careful with the lengths here.
-       l = Eucl_Dist(x0, y0, x1, y1);
-       currentlength = l;
+      x0 = n[nodea].get_x_position();
+      x1 = n[nodeb].get_x_position();
+
+      y0 = n[nodea].get_y_position();
+      y1 = n[nodeb].get_y_position();
+
+
+      l = Eucl_Dist(x0, y0, x1, y1);
+      theta = abs(Angle(x0, x1, y0, y1));
+
+      s[j].update_Spring_State(dt, l);
+      s[j].get_Force(Fsum);
+
+      cout << l << endl;
+
+      LearningMatrix(i,j) = l;  // Todo: update is not needed for target signal
+
+
+      if(x1>x0)
+      {
+          Fx_nodeb = X_Comp(Fsum, theta);
+          Fx_nodea = -X_Comp(Fsum, theta);
+      }
+
+      if(y1>y0)
+      {
+          Fy_nodeb = Y_Comp(Fsum, theta);
+          Fy_nodea = -Y_Comp(Fsum, theta);
+      }
+
+      if(x0>x1)
+      {
+      Fx_nodeb = -X_Comp(Fsum, theta);
+      Fx_nodea = X_Comp(Fsum, theta);
+      }
+
+      if(y0>y1)
+      {
+      Fy_nodeb = -Y_Comp(Fsum, theta);
+      Fy_nodea = Y_Comp(Fsum, theta);
+      }
 
 
 
-      // cout <<"Is this running?" << endl;
-       LearningMatrix(i,j) = currentlength;
-       TargetSignal(i) = Target_Signal[i];  // Todo: update is not needed for target signal
+         n[nodea].Input_Force(Fx_nodea, Fy_nodea);
+         n[nodeb].Input_Force(Fx_nodeb, Fy_nodeb);
+
+      //   l = Eucl_Dist(x0, y0, x1, y1);
+        // theta = abs(Angle(x0, x1, y0, y1));
 
 
-       s[j].update_Spring_State(dt, l);
+
 
        Fsum = 0;
        Fx_nodea =0;
@@ -426,11 +406,40 @@ void Simulation::execute()
        Fy_nodea =0;
        Fy_nodeb =0;
 
+
+      // s[j].update_Spring_State(dt, l);
+
+
       }
+
+      for(int k=0; k<n.size(); k++)
+      {
+        //This puts in the forces due to the input force
+        n[k].Input_Force(n[k].return_Win()*Input_Signal[i], 0);
+        //Update force on node due to dt
+        n[k].Update(dt);
+        //At the end of every timestep, the net force should be zero
+        n[k].Zero_Force();
+      }
+
+
 
 
       outputsignal = 0;
     }
+
+  //  for(int k=0; k<n.size(); k++)
+  //  {
+  //    Fx_nodea = n[k].return_Win()*Input_Signal[i];
+  ////    Fx_nodeb += n[k].return_Win()*Input_Signal[i];
+    //  n[k].Update(Fx_nodea, 0, dt);
+
+      //cout << Fx_nodea<< endl;
+
+    //  Fx_nodea =0;
+
+    //  n[k].zero_updatecheck();
+  //  }
 
   //  TempMat = LearningMatrix;
 

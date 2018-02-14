@@ -49,24 +49,37 @@ double Nodes::get_y_position()
 }
 
 //This is the function that incrementally changes the nodes position in the next timestep;
-void Nodes::Update(double Fx, double  Fy, double  dt)
+
+void Nodes::Input_Force(double Fx, double Fy)
 {
-    if(fixednode == false)
-    {
-    pxdotdot = (Fx + (win*F_in_x))/m;
-    pydotdot = (Fy/m);
+  if(fixednode == false)
+  {
+    F_in_x += Fx;
+    F_in_y += Fy;
+  }
+  else
+  {
+    F_in_x = 0;
+    F_in_y = 0;
+  }
+}
+
+void Nodes::Zero_Force()
+{
+  F_in_x = 0;
+  F_in_y = 0;
+}
+
+void Nodes::Update(double dt)
+{
+    pxdotdot = (F_in_x)/m;
+    pydotdot = (F_in_y)/m;
       //You want to calculate the velocity so that initial velocity is 0 and than calculate the corresponding change in position
     pydot += dt*pydotdot;
     py += dt*pydot;
 
     pxdot += dt*pxdotdot;
     px += dt*pxdot;
-    }
-    else
-    {
-      pxdotdot = 0;
-      pxdot = 0;
-    }
 }
 
 void Nodes::change_updatecheck()
