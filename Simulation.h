@@ -11,9 +11,9 @@ struct InitialDataValues
 	int     N;   // number of Nodes
 	double ux;   // First input values in x direction
 	double uy;   // First input values in y direction
-    double input_connectivity_percentage;  // [0,1] percentage of nodes that receive input
+  double input_connectivity_percentage;  // [0,1] percentage of nodes that receive input
 	double input_weight_smallest_value;
-    double input_weight_largest_value;      // todo: ?? What is that? Name might be misleading
+  double input_weight_largest_value;      // todo: ?? What is that? Name might be misleading
 
     // Paraemter to set area where nodes can be placed in
     // Todo: maybe change to min_x... and max... also below with probabilties
@@ -28,7 +28,7 @@ struct InitialDataValues
 	double uniform_smallest_value;      // ??
 	double uniform_largest_value;          // ??
 
-    double t0;
+  double t0;
 	double tmax;
 	double dt;  // time step in seconds
 };
@@ -45,7 +45,7 @@ class DataSet
         double dt;
         double tmax;
         int maxtimesteps;
-    
+
     public:
         //This loads in the initial values for the signal, t0, tmax and dt
         DataSet(double t0, double tmax, double dt);
@@ -136,7 +136,7 @@ class Simulation
         void Initialize_Nodes(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data);
 
         //This initializes the nodes and puts in appropriate values for the ranges and the weights
-        // Todo: change variable names here 
+        // Todo: change variable names here
         void Initialize_Nodes(double range0x, double range1x, double range0y, double range1y);
 
         //This changes position of springs and nodes dynamically in time.
@@ -146,20 +146,20 @@ class Simulation
 
         //This does the delaunay triangulation for the two dimensional case and creates the springs for the reservoir computer, not the radial spider web
         void Delaunay_Triangulation_and_Spring_Creation();
-    
+
         //Create EdgeNodeList, defunct function don't want to get rid of it.
         void Create_EdgeNodeList();
-    
+
         //After delaunay triangulation, how many connecting edges hence springs.
         // Todo: Should the ouput be really double and not unsigned int?
         unsigned int Output_No_of_Edges();
-    
+
         //This outputs the spring and node positions for the reservoir computer
         void Output_Spring_And_Node_Positions();
-    
+
         //Get the triangles from the Delaunay Triangulation.
         void Get_Triangles(DelaunayTriangulation &Delaunay);
-    
+
         //Create springs for reservoir computer nonlinear mass spring system
         void Initialize_Springs();
 
@@ -197,25 +197,25 @@ class Simulation
         //Expression of log 10 uniform for spring and damping coefficients
         double Spring_And_Damping_Coefficient_1(double initial, double finalvalue);
         double Spring_And_Damping_Coefficient_2(double initial, double finalvalue);
-    
+
         //Euclidean distance between two points on x y plane, will overload for 3D
         double Eucl_Dist(double x1, double y1, double x2, double y2);
-    
+
         //Angle for line between two points.
         double Angle(double x0, double x1, double y0, double y1);
-    
+
         //X component of vector from one point to another
         double X_Comp(double vectorsum, double theta);
-    
+
         //Y component of vector from one point to another.
         double Y_Comp(double vectorsum, double theta);
-    
+
         //Sorting three input numbers.
         void Sort(int &a, int &b, int &c);
-    
+
         //Sorting two input numbers
         void Sort(int &a, int &b);
-    
+
 
         //Remove duplicates from two dimensional vector.
         void Remove_Duplicates(vector<vector<double>> &x);
@@ -224,11 +224,11 @@ class Simulation
         // Todo: Does it return number of springs (int) or an object of class spring?
         // Thi
         Springs Spring_Return(int i);
-    
+
         //Return number of nodes
         //Todp: Same question here
         Nodes Node_Return(int i);
-    
+
         //Return number of edges from the triangle.
         // Todo: Is there really a double neeed and not an unsigend int?
         unsigned int Spring_List();

@@ -68,3 +68,18 @@ void Nodes::Update(double Fx, double  Fy, double  dt)
       pxdot = 0;
     }
 }
+
+void Nodes::change_updatecheck()
+{
+    updatecheck = 1;
+}
+
+bool Nodes::return_updatecheck()
+{
+    return updatecheck;
+}
+
+void Nodes::zero_updatecheck()
+{
+   updatecheck = 0;
+}

@@ -313,14 +313,15 @@ void Simulation::execute()
   double currentlength = 0;
 
   MatrixXd LearningMatrix(maxtimesteps, s.size());
-  MatrixXd TargetSignal(maxtimesteps, s.size()); // Todo: to fill TargetSignal matrix at init/constructor
+//  MatrixXd TargetSignal(maxtimesteps, s.size()); // Todo: to fill TargetSignal matrix at init/constructor
+ VectorXd TargetSignal(maxtimesteps);
 
   double outputsignal = 0;
   for(int j=0; j<s.size(); j++)
   {
 
     LearningMatrix(0,j)=s[j].return_Initial_Length();
-      TargetSignal(0,j) = Target_Signal[0]; // Todo: Target matrix is of size #outputs x #timestep!!
+    TargetSignal(0) = Target_Signal[0]; // Todo: Target matrix is of size #outputs x #timestep!!
   }
 
 
@@ -335,6 +336,9 @@ void Simulation::execute()
   /////////////////////////////////
   for(int i=1; i<maxtimesteps; i++)
   {
+    //Each node has to be changed
+    n[nodea].zero_updatecheck();
+    n[nodeb].zero_updatecheck();
 
   for(int j=0;  j<s.size(); j++)
     {
@@ -369,7 +373,7 @@ void Simulation::execute()
        Fx_nodeb = -X_Comp(Fsum, theta);
        Fx_nodea = X_Comp(Fsum, theta);
        }
-        
+
        if(y0>y1)
        {
        Fy_nodeb = -Y_Comp(Fsum, theta);
@@ -378,17 +382,26 @@ void Simulation::execute()
 
        // Update for input signal.
        // Todo: PROBLEM - adds up input force to same nodes over and over again
-       if(n[nodea].is_Input_Node()==1) Fx_nodea += n[nodea].return_Win()*Input_Signal[i];
-       if(n[nodeb].is_Input_Node()==1) Fx_nodeb += n[nodeb].return_Win()*Input_Signal[i];
+       Fx_nodea += n[nodea].return_Win()*Input_Signal[i];
+       Fx_nodeb += n[nodeb].return_Win()*Input_Signal[i];
 
+       //cout <<n[nodea].return_updatecheck()<< endl;
+    //   cout <<n[nodeb].return_Win() << endl;
 
+       if((!n[nodea].return_updatecheck())
+       {
+        n[nodea].Update(Fx_nodea, Fy_nodea, dt);
+        n[nodea].change_updatecheck();
+       }
 
-       n[nodea].Update(Fx_nodea, Fy_nodea, dt);
-       n[nodeb].Update(Fx_nodeb, Fy_nodeb, dt);
+       if((!n[nodeb].return_updatecheck())
+       {
+        n[nodeb].Update(Fx_nodeb, Fy_nodeb, dt);
+        n[nodeb].change_updatecheck();
+       }
 
        x0 = n[nodea].get_x_position();
        x1 = n[nodeb].get_x_position();
-
 
        y0 = n[nodea].get_y_position();
        y1 = n[nodeb].get_y_position();
@@ -402,7 +415,7 @@ void Simulation::execute()
 
       // cout <<"Is this running?" << endl;
        LearningMatrix(i,j) = currentlength;
-       TargetSignal(i,j) = Target_Signal[i];  // Todo: update is not needed for target signal
+       TargetSignal(i) = Target_Signal[i];  // Todo: update is not needed for target signal
 
 
        s[j].update_Spring_State(dt, l);
@@ -414,30 +427,32 @@ void Simulation::execute()
        Fy_nodeb =0;
 
       }
+
+
       outputsignal = 0;
     }
 
-    TempMat = LearningMatrix;
+  //  TempMat = LearningMatrix;
 
-   TempMat.transposeInPlace();
+  // TempMat.transposeInPlace();
 
     //cout <<TempMat;
 
 
 
-       TempMat =  ((TempMat*LearningMatrix).inverse())*TempMat;
-       TempMat = TempMat*TargetSignal;
+      // TempMat =  ((TempMat*LearningMatrix).inverse())*TempMat;
+    //   TempMat = TempMat*TargetSignal;
 
        //Populate the learning matrix and get weights
-       LM = LearningMatrix;
+    //   LM = LearningMatrix;
        //Moore_Penrose_Pseudoinverse(LearningMatrix);
      //  LearningMatrix= LearningMatrix * TargetSignal;
-       Populate_Learning_Weights(TempMat);
+    //   Populate_Learning_Weights(TempMat);
 
-//    LM = LearningMatrix;
-  //  Moore_Penrose_Pseudoinverse(LearningMatrix);
-  //  LearningMatrix= LearningMatrix * TargetSignal;
-  //  Populate_Learning_Weights(LearningMatrix);
+    LM = LearningMatrix;
+    Moore_Penrose_Pseudoinverse(LearningMatrix);
+    LearningMatrix= LearningMatrix * TargetSignal;
+    Populate_Learning_Weights(LearningMatrix);
 }
 
 void Simulation::Moore_Penrose_Pseudoinverse(MatrixXd& L)
