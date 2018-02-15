@@ -304,6 +304,12 @@ void Simulation::execute()
   double y0 = 0;
   double y1 = 0;
 
+  double vector_x = 0;
+  double vector_y = 0;
+
+  double alpha = 0;
+  double gamma = 0;
+
   // Todo: still needed for debugging DEBUG
   ofstream ofs("Node1.csv");
   ofstream ofs2("Node2.csv");
@@ -353,49 +359,31 @@ void Simulation::execute()
       y0 = n[nodea].get_y_position();
       y1 = n[nodeb].get_y_position();
 
+      vector_x = x1 - x0;
+      vector_y = y1 - y0;
 
       l = Eucl_Dist(x0, y0, x1, y1);
-      theta = abs(Angle(x0, x1, y0, y1));
+    //  theta = Angle(x0, x1, y0, y1);
+      alpha = vector_x/l;
+      gamma = vector_y/l;
 
       s[j].update_Spring_State(dt, l);
       s[j].get_Force(Fsum);
 
       LearningMatrix(i,j) = l;  // Todo: update is not needed for target signal
 
+      Fx_nodeb = Fsum*alpha;
+      Fx_nodea = -Fx_nodeb;
 
-      if(x1>x0)
-      {
-          Fx_nodeb = X_Comp(Fsum, theta);
-          Fx_nodea = -X_Comp(Fsum, theta);
-      }
-
-      if(y1>y0)
-      {
-          Fy_nodeb = Y_Comp(Fsum, theta);
-          Fy_nodea = -Y_Comp(Fsum, theta);
-      }
-
-      if(x0>x1)
-      {
-      Fx_nodeb = -X_Comp(Fsum, theta);
-      Fx_nodea = X_Comp(Fsum, theta);
-      }
-
-      if(y0>y1)
-      {
-      Fy_nodeb = -Y_Comp(Fsum, theta);
-      Fy_nodea = Y_Comp(Fsum, theta);
-      }
+      Fy_nodeb = Fsum*gamma;
+      Fy_nodea = -Fy_nodeb;
 
 
-
-         n[nodea].Input_Force(Fx_nodea, Fy_nodea);
-         n[nodeb].Input_Force(Fx_nodeb, Fy_nodeb);
+      n[nodea].Input_Force(Fx_nodea, Fy_nodea);
+      n[nodeb].Input_Force(Fx_nodeb, Fy_nodeb);
 
       //   l = Eucl_Dist(x0, y0, x1, y1);
         // theta = abs(Angle(x0, x1, y0, y1));
-
-
 
 
        Fsum = 0;
