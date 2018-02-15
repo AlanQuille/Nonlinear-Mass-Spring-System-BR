@@ -8,32 +8,36 @@ using namespace Eigen;
 
 struct InitialDataValues
 {
-	int     N;   // number of Nodes
-	double ux;   // First input values in x direction
-	double uy;   // First input values in y direction
-  double input_connectivity_percentage;  // [0,1] percentage of nodes that receive input
-	double input_weight_smallest_value;
-  double input_weight_largest_value;      // todo: ?? What is that? Name might be misleading
-
-    // Paraemter to set area where nodes can be placed in
+    int     N;   // number of Nodes
+    double ux;   // First input values in x direction  TODO: Really needed?
+    double uy;   // First input values in y direction
+    
+    double input_connectivity_percentage;  // [0,1] percentage of nodes that receive input
+    // lower and upper range for input weights
+    double min_input_weight;
+    double max_input_weight;
+    
+    // Parameters to set area where nodes can be placed in
     // Todo: maybe change to min_x... and max... also below with probabilties
-	double smallest_x_position;     // range0x ?? name is not very descriptive (same for the others below)
-	double largest_x_position;
-	double smallest_y_position;
-	double largest_y_position;
-
-	double log_uniform_smallest_value;    // ??
-	double log_uniform_largest_value;     // ??
-
-	double uniform_smallest_value;      // ??
-	double uniform_largest_value;          // ??
-
-  double t0;
-	double tmax;
-	double dt;  // time step in seconds
+    double min_x_position;     // range0x ?? name is not very descriptive (same for the others below)
+    double max_x_position;
+    double min_y_position;
+    double max_y_position;
+    
+    // lower and upper limits for log-uniform distribution
+    double min_log_uniform;
+    double max_log_uniform;
+    
+    // lower and upper limits for uniform distribution
+    double min_uniform;
+    double max_uniform;
+    
+    double t0;      // time for first time step [s]
+    double tmax;    // maximum time step [s]
+    double dt;      // time step in seconds
 };
 
-// Todo: YOu make a class DynamicalSystem, but then you have functions like Volterra in there
+// Todo: You make a class DynamicalSystem or class DynSysData, but then you have functions like Volterra in there
 // I would have thought Voleterra would be a derived class from DynamicalSystem
 // Also, is the name DynamicalSystem descriptive? At the end it seems to be only a container of data
 // Would it be better called DataSet or something along these lines?
@@ -60,16 +64,14 @@ class Simulation
 {
 
     private:
-        //No of mass points
-        int N;
+        int N;                                  // Number of mass points
         double input_connectivity_percentage;
-        int total_input_nodes;  // Todo: still needed?
-        vector<Nodes> n;
-        vector<Springs> s;
-//        vector< vector<double> > Loutput;
-        vector< vector<double> > EdgeList;
-        vector<double> NodeList;
-        vector<double> EdgeNodeList;
+        int num_input_nodes;    // Number of input nodes
+        vector<Nodes> n;        // List of all nodes
+        vector<Springs> s;      // List of all springs
+        vector< vector<double> > EdgeList;   // Todo: Is that really part of Simulation class -
+        vector<double> NodeList;             // Todo: Is that really part of Simulation class -
+        vector<double> EdgeNodeList;         // Todo: Is that really part of Simulation class -
 
         double log_uniform_smallest_value;    // ??
 		double log_uniform_largest_value;     // ??

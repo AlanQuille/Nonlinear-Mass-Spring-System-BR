@@ -25,8 +25,7 @@ unsigned long long rdtsc()
 
 int main(int argc, char** argv)
 {
-    
-    // ways to get current directory
+// ways to get current directory
 //    ostringstream fullpath;
 //    fullpath << argv[0]; // add current working path
 //    cout <<"pwd: " << argv[0] << endl;
@@ -94,30 +93,30 @@ int main(int argc, char** argv)
     
     
     // setting parameters for simulation
-    data.N = 50;
-    
+    // This should be possible to read in from a text file
+    data.N = 20;
     data.ux=0;
     data.uy= 0;
     
     data.input_connectivity_percentage = 1;
     //data.w_in_initial = -1;
-    data.input_weight_smallest_value = -1;
-    data.input_weight_largest_value = 1;
+    data.min_input_weight = -1;
+    data.max_input_weight = 1;
     
     //range-doubled, was fooling around with something, didn't change  back. Will change later.
-    data.smallest_x_position = 0;
-    data.largest_x_position = 10;
-    data.smallest_y_position  = 0;
-    data.largest_y_position = 10;
+    // Todo: Please change that!
+    data.min_x_position = 0;
+    data.max_x_position = 10;
+    data.min_y_position  = 0;
+    data.max_y_position = 10;
     
-    data.log_uniform_smallest_value = 1;
-    data.log_uniform_largest_value  = 10;
-    data.uniform_smallest_value = 100;
-    data.uniform_largest_value= 200;
+    data.min_log_uniform = 1;
+    data.max_log_uniform  = 10;
+    data.min_uniform = 100;
+    data.max_uniform= 200;
     
     data.t0 = 0;
     data.tmax = 5;
-    //  data.tmax = 1;
     data.dt = 0.001;
     
     
