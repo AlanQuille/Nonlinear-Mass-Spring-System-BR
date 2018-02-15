@@ -350,7 +350,7 @@ void Simulation::execute()
   //for(int i=0; i<maxtimesteps; i++)
   for(int i =0; i<maxtimesteps; i++)
   {
-
+      cout << "Time step " << i << endl;
     TargetSignal(i) = Target_Signal[i];
 
 
