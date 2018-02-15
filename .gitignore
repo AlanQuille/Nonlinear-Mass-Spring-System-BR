@@ -21,3 +21,11 @@ wtf2.txt
 
 *.pdf
 >>>>>>> beefdb458fab10f051c4ef777c8a2cc25256c384
+
+DerivedData/
+
+Index/
+
+Build/
+
+SpiderWebSimulation
