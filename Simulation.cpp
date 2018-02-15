@@ -8,6 +8,7 @@
 #include "Simulation.h"
 #include "Eigen/Dense"
 #include "Eigen/QR"
+#include "Eigen/SVD"
 #include <sstream>
 #include <fstream>
 #include <string>
@@ -282,7 +283,7 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
     Get_Triangles(DT);
     Initialize_Springs();
     execute();
-    Output_For_Plot();
+//    Output_For_Plot();
 
 }
 
@@ -318,7 +319,13 @@ void Simulation::execute()
 
   double currentlength = 0;
 
-  MatrixXd LearningMatrix(maxtimesteps, s.size());
+//  MatrixXd LearningMatrix(maxtimesteps, s.size());
+
+//maxtimesteps = 20000;
+ MatrixXd LearningMatrix(maxtimesteps, s.size());
+  MatrixXd LearningMatrix1(maxtimesteps, s.size());
+  MatrixXd LearningMatrix2(maxtimesteps, s.size());
+  MatrixXd LearningMatrix3(maxtimesteps, s.size());
 //  MatrixXd TargetSignal(maxtimesteps, s.size()); // Todo: to fill TargetSignal matrix at init/constructor
  VectorXd TargetSignal(maxtimesteps);
 
@@ -340,7 +347,8 @@ void Simulation::execute()
   /////////////////////////////////
   //  SIMULATION LOOP
   /////////////////////////////////
-  for(int i=0; i<maxtimesteps; i++)
+  //for(int i=0; i<maxtimesteps; i++)
+  for(int i =0; i<maxtimesteps; i++)
   {
 
     TargetSignal(i) = Target_Signal[i];
@@ -407,47 +415,74 @@ void Simulation::execute()
         //At the end of every timestep, the net force should be zero
         n[k].Zero_Force();
       }
-
-
-
-
-      outputsignal = 0;
     }
+      // LM = LearningMatrix;
+    //   HouseholderQR<MatrixXd> qr(LearningMatrix);
+    //   MatrixXd Q = qr.householderQ();
+    //   MatrixXd R = qr.matrixQR().triangularView<Upper>();
+    //   MatrixXd Aleft = ((R.transpose() * R).inverse() * R.transpose()) * Q.transpose();
+      // cout << Aleft * LM << endl;
+      // cout << endl;
 
-  //  for(int k=0; k<n.size(); k++)
-  //  {
-  //    Fx_nodea = n[k].return_Win()*Input_Signal[i];
-  ////    Fx_nodeb += n[k].return_Win()*Input_Signal[i];
-    //  n[k].Update(Fx_nodea, 0, dt);
+      // Moore_Penrose_Pseudoinverse(LearningMatrix);
+      // cout << LearningMatrix * LM;
 
-      //cout << Fx_nodea<< endl;
+       LM = LearningMatrix;
+       //BDCSVD<MatrixXd> bdc_svd(LearningMatrix);
+       JacobiSVD<MatrixXd> svd(LM, ComputeThinU | ComputeThinV);
+    //   cout << svd.computeU() << endl;
+    //   cout << svd.computeV() << endl;
+    //   cout << svd.singularValues() << endl;
+       //cout << endl << svd.matrixU() << endl;
 
-    //  Fx_nodea =0;
-
-    //  n[k].zero_updatecheck();
-  //  }
-
-  //  TempMat = LearningMatrix;
-
-  // TempMat.transposeInPlace();
-
-    //cout <<TempMat;
+       MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
+       MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
 
 
+      // cout << endl << Cp * TargetSignal << endl;
 
-      // TempMat =  ((TempMat*LearningMatrix).inverse())*TempMat;
-    //   TempMat = TempMat*TargetSignal;
+      //  Moore_Penrose_Pseudoinverse(LearningMatrix);
 
-       //Populate the learning matrix and get weights
+      //  cout << endl << LearningMatrix * TargetSignal << endl;
+
+
+
+
+
+
+
+
     //   LM = LearningMatrix;
-       //Moore_Penrose_Pseudoinverse(LearningMatrix);
-     //  LearningMatrix= LearningMatrix * TargetSignal;
-    //   Populate_Learning_Weights(TempMat);
 
-    LM = LearningMatrix;
-    Moore_Penrose_Pseudoinverse(LearningMatrix);
-    LearningMatrix= LearningMatrix * TargetSignal;
-    Populate_Learning_Weights(LearningMatrix);
+
+       //left inverse should equal moore penrose pseudoinverse
+      // cout <<  ((LearningMatrix.transpose() * LearningMatrix).inverse() * LearningMatrix.transpose());
+    ///   cout << endl;
+    //   cout << endl;
+
+    //   Moore_Penrose_Pseudoinverse(LM);
+    //   cout << LearningMatrix * LM;
+    //   LearningMatrix.transposeInPlace();
+      // LearningMatrix1 = LearningMatrix.transpose();
+      // LearningMatrix2 = (LearningMatrix1*LM);
+    //   LearningMatrix3 = LearningMatrix2.inverse();
+    //   TempMat = LearningMatrix2 * LearningMatrix3;
+
+      // cout << TempMat;
+      // TempMat = TempMat.inverse();
+    //   TempMat = TempMat*TempMat.inverse();
+      // cout << LM*TempMat;
+    //   TempMat = LearningMatrix*TargetSignal;
+    //   cout << TempMat;
+       //Populate_Learning_Weights(TempMat);
+
+    //  LM = LearningMatrix;
+  //    Moore_Penrose_Pseudoinverse(LearningMatrix);
+    //  LearningMatrix= LearningMatrix * TargetSignal;
+      Cp = Cp * TargetSignal;
+
+    //  cout << original - LearningMatrix << endl;
+       Populate_Learning_Weights(Cp);
 }
 
 void Simulation::Moore_Penrose_Pseudoinverse(MatrixXd& L)
@@ -485,6 +520,7 @@ void Simulation::Output_Signal_And_MSE()
 
 //  LM = Return_Learning_Matrix();
 //  LW = Return_Learning_Weights();
+
 
   ofstream output("outputsignal.csv");
   ofstream output2("learningweights.csv");

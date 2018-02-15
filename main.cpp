@@ -81,12 +81,12 @@ int main(int argc, char** argv)
 
 
   // setting parameters for simulation
-  data.N = 25;
+  data.N = 50;
 
   data.ux=0;
   data.uy= 0;
 
-  data.input_connectivity_percentage = 1;
+  data.input_connectivity_percentage = 0.2;
   //data.w_in_initial = -1;
   data.input_weight_smallest_value = -1;
   data.input_weight_largest_value = 1;
@@ -103,7 +103,7 @@ int main(int argc, char** argv)
   data.uniform_largest_value= 200;
 
   data.t0 = 0;
-  data.tmax = 5;
+  data.tmax =50;
   //  data.tmax = 1;
   data.dt = 0.001;
 
