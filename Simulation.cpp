@@ -19,31 +19,31 @@ using namespace Eigen;
 Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<double> &TS)
 {
 
-  //rand(); rand(); rand();
+  // read out all the data from the data structure
   this->N = data.N;
-  //Step 2: The positions of the nodes were initialized and 20% of the nodes are connected to the input.
+  
   this->input_connectivity_percentage = data.input_connectivity_percentage;
-  this->total_input_nodes = (data.input_connectivity_percentage)*N;
+  this->num_input_nodes = (data.input_connectivity_percentage)*N;
 
-  this->input_weight_smallest_value = data.input_weight_smallest_value;
-  this->input_weight_largest_value = data.input_weight_largest_value;
+  this->input_weight_smallest_value = data.min_input_weight;
+  this->input_weight_largest_value = data.max_input_weight;
 
-  this->log_uniform_smallest_value=  data.log_uniform_smallest_value;
-  this->log_uniform_largest_value = data.log_uniform_largest_value;
+  this->log_uniform_smallest_value=  data.min_log_uniform;
+  this->log_uniform_largest_value = data.max_log_uniform;
 
-  this->uniform_smallest_value= data.uniform_smallest_value;
-  this->uniform_largest_value = data.uniform_largest_value;
+  this->uniform_smallest_value= data.min_uniform;
+  this->uniform_largest_value = data.max_uniform;
 
 
   this->t0 = data.t0;
   this->tmax = data.tmax;
   this->dt = data.dt;
 
-  this->smallest_x_position = data.smallest_x_position;
-  this->smallest_y_position = data.smallest_y_position;
+  this->smallest_x_position = data.min_x_position;
+  this->smallest_y_position = data.min_y_position;
 
-  this->largest_x_position = data.largest_x_position;
-  this->largest_y_position = data.largest_y_position;
+  this->largest_x_position = data.max_x_position;
+  this->largest_y_position = data.max_y_position;
 
   this->ux = data.ux;
   this->uy = data.uy;
@@ -64,17 +64,17 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
 Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Lvx, vector<double> &Lvy)
 {
   this->input_connectivity_percentage = data.input_connectivity_percentage;
-  this->total_input_nodes = (data.input_connectivity_percentage)*rounds*no_of_points_per_round;
+  this->num_input_nodes = (data.input_connectivity_percentage)*rounds*no_of_points_per_round;
 
   this->N = data.N;
   //Step 2: The positions of the nodes were initialized and 20% of the nodes are connected to the input.
-  this->input_weight_smallest_value = data.input_weight_smallest_value;
-  this->input_weight_largest_value = data.input_weight_largest_value;
+  this->input_weight_smallest_value = data.min_input_weight;
+  this->input_weight_largest_value = data.max_input_weight;
 
-  this->smallest_x_position = data.smallest_x_position;     // smallest_x_position ?? name is not very descriptive (same for the others below)
-  this->largest_x_position = data.largest_x_position;
-  this->smallest_y_position=data.smallest_y_position;
-  this->largest_y_position = data.largest_y_position;
+  this->smallest_x_position = data.min_x_position;     // smallest_x_position ?? name is not very descriptive (same for the others below)
+  this->largest_x_position = data.max_x_position;
+  this->smallest_y_position=data.min_y_position;
+  this->largest_y_position = data.max_y_position;
 
   //Learning phase
   Initialize_Nodes(radius, rounds, no_of_points_per_round, data);
@@ -180,7 +180,7 @@ void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_pe
       //THIS IS NOT GOOD CODING PRACTICE. FIX IT.
       //FIX IT
       //FIX IT
-      win = Uniform(data.input_weight_smallest_value, data.input_weight_largest_value);
+      win = Uniform(data.min_input_weight, data.max_input_weight);
       cout << win << endl;
 
        /*
@@ -199,10 +199,10 @@ void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_pe
 
       if(i>0)
       {
-      k1 = log10(Uniform(data.log_uniform_smallest_value, data.log_uniform_largest_value));
-      d1 = log10(Uniform(data.log_uniform_smallest_value, data.log_uniform_largest_value));
-      k3 = Uniform(data.uniform_smallest_value, data.uniform_largest_value);
-      d3 = Uniform(data.uniform_smallest_value, data.uniform_largest_value);
+      k1 = log10(Uniform(data.min_log_uniform, data.max_log_uniform));
+      d1 = log10(Uniform(data.min_log_uniform, data.max_log_uniform));
+      k3 = Uniform(data.min_uniform, data.max_uniform);
+      d3 = Uniform(data.min_uniform, data.max_uniform);
 
       l0 = Eucl_Dist(x0, y0, x_position, y_position);
     //  wout = Uniform(data.w_out_initial, data.w_out_final);
@@ -214,10 +214,10 @@ void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_pe
       //For radial pattern.
       if(j>0)
       {
-      k1 = log10(Uniform(data.log_uniform_smallest_value, data.log_uniform_largest_value));
-      d1 = log10(Uniform(data.log_uniform_smallest_value, data.log_uniform_largest_value));
-      k3 = Uniform(data.uniform_smallest_value, data.uniform_largest_value);
-      d3 = Uniform(data.uniform_smallest_value, data.uniform_largest_value);
+      k1 = log10(Uniform(data.min_log_uniform, data.max_log_uniform));
+      d1 = log10(Uniform(data.min_log_uniform, data.max_log_uniform));
+      k3 = Uniform(data.min_uniform, data.max_uniform);
+      d3 = Uniform(data.min_uniform, data.max_uniform);
 
       l0 = Eucl_Dist(x0, y0, x_position, y_position);
     //  wout = Uniform(data.w_out_initial, data.w_out_final);
@@ -234,10 +234,10 @@ void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_pe
    x_position = (j+1)*radius*cos((0));
    y_position = (j+1)*radius*sin((0));
 
-   k1 = log10(Uniform(data.log_uniform_smallest_value, data.log_uniform_largest_value));
-   d1 = log10(Uniform(data.log_uniform_smallest_value, data.log_uniform_largest_value));
-   k3 = Uniform(data.uniform_smallest_value, data.uniform_largest_value);
-   d3 = Uniform(data.uniform_smallest_value, data.uniform_largest_value);
+   k1 = log10(Uniform(data.min_log_uniform, data.max_log_uniform));
+   d1 = log10(Uniform(data.min_log_uniform, data.max_log_uniform));
+   k3 = Uniform(data.min_uniform, data.max_uniform);
+   d3 = Uniform(data.min_uniform, data.max_uniform);
    l0 = Eucl_Dist(x0, y0, x_position, y_position);
   // wout = Uniform(data.w_out_initial, data.w_out_final);
   //Temporarily remove
@@ -294,7 +294,6 @@ void Simulation::execute()
   double Fy_nodea =0;
   double Fx_nodeb =0;
   double Fy_nodeb =0;
-  double theta = 0;
   double l = 0;
 
   double nodea = 0;
@@ -317,7 +316,6 @@ void Simulation::execute()
   ofstream ofs3("SampleForce.csv");
   ofstream bad("Badcoefficients.csv");
 
-  double currentlength = 0;
 
 //  MatrixXd LearningMatrix(maxtimesteps, s.size());
 
@@ -347,6 +345,7 @@ void Simulation::execute()
   /////////////////////////////////
   //  SIMULATION LOOP
   /////////////////////////////////
+<<<<<<< HEAD
   //for(int i=0; i<maxtimesteps; i++)
   for(int i =0; i<maxtimesteps; i++)
   {
@@ -423,6 +422,75 @@ void Simulation::execute()
     //   MatrixXd Aleft = ((R.transpose() * R).inverse() * R.transpose()) * Q.transpose();
       // cout << Aleft * LM << endl;
       // cout << endl;
+=======
+    for(int i=0; i<maxtimesteps; i++)
+    {
+        cout << "Time step " << i << endl;
+        TargetSignal(i) = Target_Signal[i];
+        
+        
+        for(int j=0;  j<s.size(); j++)
+        {
+            
+            nodea = s[j].Nodea();
+            nodeb = s[j].Nodeb();
+            
+            
+            x0 = n[nodea].get_x_position();
+            x1 = n[nodeb].get_x_position();
+            
+            y0 = n[nodea].get_y_position();
+            y1 = n[nodeb].get_y_position();
+            
+            vector_x = x1 - x0;
+            vector_y = y1 - y0;
+            
+            l = Eucl_Dist(x0, y0, x1, y1);
+            //  theta = Angle(x0, x1, y0, y1);
+            alpha = vector_x/l;
+            gamma = vector_y/l;
+            
+            s[j].update_Spring_State(dt, l);
+            s[j].get_Force(Fsum);
+            
+            LearningMatrix(i,j) = l;  // Todo: update is not needed for target signal
+            
+            Fx_nodeb = Fsum*alpha;
+            Fx_nodea = -Fx_nodeb;
+            
+            Fy_nodeb = Fsum*gamma;
+            Fy_nodea = -Fy_nodeb;
+            
+            
+            n[nodea].Input_Force(Fx_nodea, Fy_nodea);
+            n[nodeb].Input_Force(Fx_nodeb, Fy_nodeb);
+            
+            //   l = Eucl_Dist(x0, y0, x1, y1);
+            // theta = abs(Angle(x0, x1, y0, y1));
+            
+            
+            Fsum = 0;
+            Fx_nodea =0;
+            Fx_nodeb =0;
+            Fy_nodea =0;
+            Fy_nodeb =0;
+            
+            
+            // s[j].update_Spring_State(dt, l);
+            
+            
+        }
+        
+        for(int k=0; k<n.size(); k++)
+        {
+            //This puts in the forces due to the input force
+            n[k].Input_Force(n[k].return_Win()*Input_Signal[i], 0);
+            //Update force on node due to dt
+            n[k].Update(dt);
+            //At the end of every timestep, the net force should be zero
+            n[k].Zero_Force();
+        }
+>>>>>>> 44676917c62afcd4765d75510be32855d129d2f6
 
       // Moore_Penrose_Pseudoinverse(LearningMatrix);
       // cout << LearningMatrix * LM;
@@ -453,6 +521,7 @@ void Simulation::execute()
 
 
     //   LM = LearningMatrix;
+<<<<<<< HEAD
 
 
        //left inverse should equal moore penrose pseudoinverse
@@ -483,6 +552,26 @@ void Simulation::execute()
 
     //  cout << original - LearningMatrix << endl;
        Populate_Learning_Weights(Cp);
+=======
+       //Moore_Penrose_Pseudoinverse(LearningMatrix);
+     //  LearningMatrix= LearningMatrix * TargetSignal;
+    //   Populate_Learning_Weights(TempMat);
+    
+    
+    LM = LearningMatrix;
+    JacobiSVD<MatrixXd> svd(LM, ComputeThinU | ComputeThinV);
+    MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
+    MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
+    
+    Cp = Cp * TargetSignal;
+    
+    Populate_Learning_Weights(Cp);
+
+//    LM = LearningMatrix;
+//    Moore_Penrose_Pseudoinverse(LearningMatrix);
+//    LearningMatrix= LearningMatrix * TargetSignal;
+//    Populate_Learning_Weights(LearningMatrix);
+>>>>>>> 44676917c62afcd4765d75510be32855d129d2f6
 }
 
 void Simulation::Moore_Penrose_Pseudoinverse(MatrixXd& L)
@@ -702,7 +791,7 @@ void Simulation::Output_Spring_And_Node_Positions()
 
 void Simulation::Initialize_Springs()
 {
-  cout <<"The number of edges for: " <<N << " mass points is: " << EdgeList.size() << endl;
+  //cout <<"The number of edges for: " <<N << " mass points is: " << EdgeList.size() << endl;
   //cout <<"The number of unduplicated edges should be " << EdgeList.size() << endl;
   //Spring and damping coefficients
 
@@ -721,10 +810,10 @@ void Simulation::Initialize_Springs()
   int arraysubscript1=0;
   int arraysubscript2=0;
 
-  ofstream ofs3("k1output.csv");
-  ofstream ofs4("d1output.csv");
-  ofstream ofs5("k3output.csv");
-  ofstream ofs6("d3output.csv");
+    ofstream ofs3("k1output.csv");  // Todo: ofs3, etc. is really bad!
+    ofstream ofs4("d1output.csv");
+    ofstream ofs5("k3output.csv");
+    ofstream ofs6("d3output.csv");
 
 
   for(int i=0; i<EdgeList.size(); i++)
@@ -940,7 +1029,6 @@ DataSet::DataSet(double t0, double tmax, double dt)
 
 void DataSet::SineWave(vector<double> &Sine_Wave)
 {
-  //double currenttime =0;
   for(int i =0; i<maxtimesteps; i++)
   {
      Sine_Wave.push_back(sin(t0+i*dt));
