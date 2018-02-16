@@ -441,11 +441,21 @@ void Simulation::execute()
        //Moore_Penrose_Pseudoinverse(LearningMatrix);
      //  LearningMatrix= LearningMatrix * TargetSignal;
     //   Populate_Learning_Weights(TempMat);
-
+    
+    
     LM = LearningMatrix;
-    Moore_Penrose_Pseudoinverse(LearningMatrix);
-    LearningMatrix= LearningMatrix * TargetSignal;
-    Populate_Learning_Weights(LearningMatrix);
+    JacobiSVD<MatrixXd> svd(LM, ComputeThinU | ComputeThinV);
+    MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
+    MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
+    
+    Cp = Cp * TargetSignal;
+    
+    Populate_Learning_Weights(Cp);
+
+//    LM = LearningMatrix;
+//    Moore_Penrose_Pseudoinverse(LearningMatrix);
+//    LearningMatrix= LearningMatrix * TargetSignal;
+//    Populate_Learning_Weights(LearningMatrix);
 }
 
 void Simulation::Moore_Penrose_Pseudoinverse(MatrixXd& L)
