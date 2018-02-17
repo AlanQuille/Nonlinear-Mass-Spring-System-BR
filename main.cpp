@@ -197,7 +197,7 @@ int main(int argc, char** argv)
 
     // setting parameters for simulation
     // This should be possible to read in from a text file
-    data.N = 30;
+    data.N = 50;
     data.ux=0;
     data.uy= 0;
 
