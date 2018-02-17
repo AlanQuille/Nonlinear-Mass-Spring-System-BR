@@ -2,7 +2,7 @@
 
 
 CC      = g++
-CXXLAGS = -Wall -Wa,-mbig-obj -std=gnu++11 -w
+CXXLAGS = -Wall -std=gnu++11 -w
 
 #add -O3 -Wa,-mbig-obj if using BDCSVD eigen class
 all:: main

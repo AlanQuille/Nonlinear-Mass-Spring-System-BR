@@ -190,10 +190,14 @@ int main(int argc, char** argv)
     cout <<"Size of input signal is: "<< Input.size() << endl;
     cout <<"Size of target signal is: "<< Volterra.size() << endl;
 
+    double wash_out_time = 20000;
+    double learning_time = 200000;
+    double learning_time_test = 15000;
+
 
     // setting parameters for simulation
     // This should be possible to read in from a text file
-    data.N = 50;
+    data.N = 30;
     data.ux=0;
     data.uy= 0;
 
@@ -201,9 +205,6 @@ int main(int argc, char** argv)
     //data.w_in_initial = -1;
     data.min_input_weight = -1;
     data.max_input_weight = 1;
-
-    //range-doubled, was fooling around with something, didn't change  back. Will change later.
-    // Todo: Please change that!
     data.min_x_position = 0;
     data.max_x_position = 10;
     data.min_y_position  = 0;
@@ -214,14 +215,14 @@ int main(int argc, char** argv)
     data.min_uniform = 100;
     data.max_uniform= 200;
 
-    data.t0 = 0;
-    data.tmax = 10;
     data.dt = 0.001;
+    data.t0 = wash_out_time*data.dt;
+    data.tmax = (wash_out_time+learning_time+learning_time_test)*data.dt;
 
 
     vector<double> Sine_Wave;
 
-    Simulation sim(data, Volterra, Input);
+    Simulation sim(data, Volterra, Input, wash_out_time, learning_time, learning_time_test);
     cout <<"The number of nodes is: " << data.N << endl;
     cout <<"The number of springs is: " << sim.Spring_List() << endl;
 

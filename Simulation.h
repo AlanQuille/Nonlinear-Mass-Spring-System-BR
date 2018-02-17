@@ -11,30 +11,31 @@ struct InitialDataValues
     int     N;   // number of Nodes
     double ux;   // First input values in x direction  TODO: Really needed?
     double uy;   // First input values in y direction
-    
+
     double input_connectivity_percentage;  // [0,1] percentage of nodes that receive input
     // lower and upper range for input weights
     double min_input_weight;
     double max_input_weight;
-    
+
     // Parameters to set area where nodes can be placed in
     // Todo: maybe change to min_x... and max... also below with probabilties
     double min_x_position;     // range0x ?? name is not very descriptive (same for the others below)
     double max_x_position;
     double min_y_position;
     double max_y_position;
-    
+
     // lower and upper limits for log-uniform distribution
     double min_log_uniform;
     double max_log_uniform;
-    
+
     // lower and upper limits for uniform distribution
     double min_uniform;
     double max_uniform;
-    
+
     double t0;      // time for first time step [s]
     double tmax;    // maximum time step [s]
     double dt;      // time step in seconds
+
 };
 
 // Todo: You make a class DynamicalSystem or class DynSysData, but then you have functions like Volterra in there
@@ -74,16 +75,21 @@ class Simulation
         vector<double> EdgeNodeList;         // Todo: Is that really part of Simulation class -
 
         double log_uniform_smallest_value;    // ??
-		double log_uniform_largest_value;     // ??
+		    double log_uniform_largest_value;     // ??
         double uniform_smallest_value;      // ??
-		double uniform_largest_value;          // ??
+	    	double uniform_largest_value;          // ??
 
-		double input_weight_smallest_value;
-		double input_weight_largest_value;
+		    double input_weight_smallest_value;
+	    	double input_weight_largest_value;
 
         double t0;
         double tmax;
         double dt;
+
+        //These time variables are for the washout, learning phase and test data for the weights calcualated in learning phase.
+        int wash_out_time;
+        int learning_time;
+        int learning_time_test;
 
         int maxtimesteps;
 
@@ -91,9 +97,9 @@ class Simulation
 
         //Ranges for the delaunay triangulation
         double smallest_x_position;     // range0x ?? name is not very descriptive (same for the others below)
-		double largest_x_position;
-		double smallest_y_position;
-		double largest_y_position;
+	    	double largest_x_position;
+	    	double smallest_y_position;
+	     	double largest_y_position;
 
         //These are constant horizontal forces on the input nodes. If this changes so each input node receives a unique force we will have to modify the code
         // Todo: Better to call them Fx and Fy
@@ -119,15 +125,10 @@ class Simulation
         // For collecting data for learning
         MatrixXd LM;
 
-        //MatrixXD TempMat
-        // Todo: Still needed? Clean out
-        MatrixXd TempMat;
-
-
     public:
 
         //Default constructor
-        Simulation(InitialDataValues &data, vector<double> &Input_Signal, vector<double> &Target_Signal);
+        Simulation(InitialDataValues &data, vector<double> &Input_Signal, vector<double> &Target_Signal, int wash_out_time, int learning_time, int learning_time_test);
 
         //This is an overloaded default constructor. This is not randomly initialized mass spring system, this is a determined one.
         // Todo: Maybe derive a class for spiderweb simulation

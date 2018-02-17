@@ -17,7 +17,7 @@ using namespace std;
 using namespace Eigen;
 
 
-Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<double> &TS)
+Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test)
 {
 
   // read out all the data from the data structure
@@ -49,7 +49,12 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
   this->ux = data.ux;
   this->uy = data.uy;
 
-  this->maxtimesteps = ((data.tmax - data.t0)/data.dt);
+
+  this->wash_out_time = wash_out_time;
+  this->learning_time = learning_time;
+  this->learning_time_test = learning_time_test;
+
+  this->maxtimesteps = wash_out_time + learning_time + learning_time_test;
 
   Target_Signal = TS;
   Input_Signal = IS;
@@ -320,13 +325,18 @@ void Simulation::execute()
 
 //  MatrixXd LearningMatrix(maxtimesteps, s.size());
 
-//maxtimesteps = 20000;
- MatrixXd LearningMatrix(maxtimesteps, s.size());
-  MatrixXd LearningMatrix1(maxtimesteps, s.size());
-  MatrixXd LearningMatrix2(maxtimesteps, s.size());
-  MatrixXd LearningMatrix3(maxtimesteps, s.size());
+
+//Matrix for entire run
+  MatrixXd LearningMatrix(maxtimesteps, s.size());
+ //Matrix for learning phase
+  MatrixXd LearningMatrix1(learning_time, s.size());
+  //MatrixXd LearningMatrix2(maxtimesteps, s.size());
+//  MatrixXd LearningMatrix3(maxtimesteps, s.size());
 //  MatrixXd TargetSignal(maxtimesteps, s.size()); // Todo: to fill TargetSignal matrix at init/constructor
- VectorXd TargetSignal(maxtimesteps);
+//Target signal for entire run
+  VectorXd TargetSignal(maxtimesteps);
+ //Target Signal for learning_phase
+  VectorXd TargetSignal1(learning_time);
 
   double outputsignal = 0;
   //for(int j=0; j<s.size(); j++)
@@ -353,6 +363,7 @@ void Simulation::execute()
     {
     //    cout << "Time step " << i << endl;
         TargetSignal(i) = Target_Signal[i];
+        if(i>=wash_out_time && i<(learning_time+wash_out_time)) TargetSignal1(i-wash_out_time) = Target_Signal[i];
 
 
         for(int j=0;  j<s.size(); j++)
@@ -380,6 +391,7 @@ void Simulation::execute()
             s[j].get_Force(Fsum);
 
             LearningMatrix(i,j) = l;  // Todo: update is not needed for target signal
+            if(i>=wash_out_time && i<(learning_time+wash_out_time)) LearningMatrix1(i-wash_out_time, j) = l;
 
             Fx_nodeb = Fsum*alpha;
             Fx_nodea = -Fx_nodeb;
@@ -417,24 +429,29 @@ void Simulation::execute()
             n[k].Zero_Force();
         }
       }
+      //Jacobian singular value decomposition for Moore Penrose pseudoinverse
+      LM = LearningMatrix;
+      JacobiSVD<MatrixXd> svd(LearningMatrix, ComputeThinU | ComputeThinV);
+      MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
+    //  MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
+      Cp = Cp * TargetSignal;
+      Populate_Learning_Weights(Cp);
+
+
+
+
+
+
 /*
-    LM = LearningMatrix;
-    JacobiSVD<MatrixXd> svd(LM, ComputeThinU | ComputeThinV);
-    MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
-    MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
-    Cp = Cp * TargetSignal;
-    Populate_Learning_Weights(Cp);
-*/
-
-
-
       LM = LearningMatrix;
       BDCSVD<MatrixXd> svd(LM, ComputeThinU | ComputeThinV);
       MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
       MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
       Cp = Cp * TargetSignal;
       Populate_Learning_Weights(Cp);
-      
+      */
+
+
 
 
 
@@ -490,10 +507,14 @@ void Simulation::Output_Signal_And_MSE()
   double outputsignal = 0;
   double currenttime = 0;
 
-  for(int i=0; i<maxtimesteps; i++)
+
+
+//  for(int i=0; i<learning_time_test; i++)
+    for(int i = 0; i<maxtimesteps; i++)
   {
       for(int j=0; j<LM.cols(); j++)
       {
+      //    outputsignal += Learning_Weights[j] * LM(i+wash_out_time+learning_time, j);
           outputsignal += Learning_Weights[j] * LM(i, j);
           //  if(i==0) output2 << Learning_Weights[j] << endl;
       }
