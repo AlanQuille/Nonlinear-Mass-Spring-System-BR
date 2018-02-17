@@ -221,7 +221,7 @@ int main(int argc, char** argv)
 
     vector<double> Sine_Wave;
 
-    Simulation sim(data, Input, Volterra);
+    Simulation sim(data, Volterra, Input);
     cout <<"The number of nodes is: " << data.N << endl;
     cout <<"The number of springs is: " << sim.Spring_List() << endl;
 
