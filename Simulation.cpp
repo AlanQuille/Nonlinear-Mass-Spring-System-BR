@@ -9,6 +9,7 @@
 #include "Eigen/Dense"
 #include "Eigen/QR"
 #include "Eigen/SVD"
+#include "Eigen/LU"
 #include <sstream>
 #include <fstream>
 #include <string>
@@ -21,7 +22,7 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
 
   // read out all the data from the data structure
   this->N = data.N;
-  
+
   this->input_connectivity_percentage = data.input_connectivity_percentage;
   this->num_input_nodes = (data.input_connectivity_percentage)*N;
 
@@ -345,142 +346,67 @@ void Simulation::execute()
   /////////////////////////////////
   //  SIMULATION LOOP
   /////////////////////////////////
-<<<<<<< HEAD
+//<<<<<<< HEAD
   //for(int i=0; i<maxtimesteps; i++)
-  for(int i =0; i<maxtimesteps; i++)
-  {
-      cout << "Time step " << i << endl;
-    TargetSignal(i) = Target_Signal[i];
-
-
-  for(int j=0;  j<s.size(); j++)
-    {
-
-      nodea = s[j].Nodea();
-      nodeb = s[j].Nodeb();
-
-
-      x0 = n[nodea].get_x_position();
-      x1 = n[nodeb].get_x_position();
-
-      y0 = n[nodea].get_y_position();
-      y1 = n[nodeb].get_y_position();
-
-      vector_x = x1 - x0;
-      vector_y = y1 - y0;
-
-      l = Eucl_Dist(x0, y0, x1, y1);
-    //  theta = Angle(x0, x1, y0, y1);
-      alpha = vector_x/l;
-      gamma = vector_y/l;
-
-      s[j].update_Spring_State(dt, l);
-      s[j].get_Force(Fsum);
-
-      LearningMatrix(i,j) = l;  // Todo: update is not needed for target signal
-
-      Fx_nodeb = Fsum*alpha;
-      Fx_nodea = -Fx_nodeb;
-
-      Fy_nodeb = Fsum*gamma;
-      Fy_nodea = -Fy_nodeb;
-
-
-      n[nodea].Input_Force(Fx_nodea, Fy_nodea);
-      n[nodeb].Input_Force(Fx_nodeb, Fy_nodeb);
-
-      //   l = Eucl_Dist(x0, y0, x1, y1);
-        // theta = abs(Angle(x0, x1, y0, y1));
-
-
-       Fsum = 0;
-       Fx_nodea =0;
-       Fx_nodeb =0;
-       Fy_nodea =0;
-       Fy_nodeb =0;
-
-
-      // s[j].update_Spring_State(dt, l);
-
-
-      }
-
-      for(int k=0; k<n.size(); k++)
-      {
-        //This puts in the forces due to the input force
-        n[k].Input_Force(n[k].return_Win()*Input_Signal[i], 0);
-        //Update force on node due to dt
-        n[k].Update(dt);
-        //At the end of every timestep, the net force should be zero
-        n[k].Zero_Force();
-      }
-    }
-      // LM = LearningMatrix;
-    //   HouseholderQR<MatrixXd> qr(LearningMatrix);
-    //   MatrixXd Q = qr.householderQ();
-    //   MatrixXd R = qr.matrixQR().triangularView<Upper>();
-    //   MatrixXd Aleft = ((R.transpose() * R).inverse() * R.transpose()) * Q.transpose();
-      // cout << Aleft * LM << endl;
-      // cout << endl;
-=======
+//=======
     for(int i=0; i<maxtimesteps; i++)
     {
-        cout << "Time step " << i << endl;
+    //    cout << "Time step " << i << endl;
         TargetSignal(i) = Target_Signal[i];
-        
-        
+
+
         for(int j=0;  j<s.size(); j++)
         {
-            
+
             nodea = s[j].Nodea();
             nodeb = s[j].Nodeb();
-            
-            
+
+
             x0 = n[nodea].get_x_position();
             x1 = n[nodeb].get_x_position();
-            
+
             y0 = n[nodea].get_y_position();
             y1 = n[nodeb].get_y_position();
-            
+
             vector_x = x1 - x0;
             vector_y = y1 - y0;
-            
+
             l = Eucl_Dist(x0, y0, x1, y1);
             //  theta = Angle(x0, x1, y0, y1);
             alpha = vector_x/l;
             gamma = vector_y/l;
-            
+
             s[j].update_Spring_State(dt, l);
             s[j].get_Force(Fsum);
-            
+
             LearningMatrix(i,j) = l;  // Todo: update is not needed for target signal
-            
+
             Fx_nodeb = Fsum*alpha;
             Fx_nodea = -Fx_nodeb;
-            
+
             Fy_nodeb = Fsum*gamma;
             Fy_nodea = -Fy_nodeb;
-            
-            
+
+
             n[nodea].Input_Force(Fx_nodea, Fy_nodea);
             n[nodeb].Input_Force(Fx_nodeb, Fy_nodeb);
-            
+
             //   l = Eucl_Dist(x0, y0, x1, y1);
             // theta = abs(Angle(x0, x1, y0, y1));
-            
-            
+
+
             Fsum = 0;
             Fx_nodea =0;
             Fx_nodeb =0;
             Fy_nodea =0;
             Fy_nodeb =0;
-            
-            
+
+
             // s[j].update_Spring_State(dt, l);
-            
-            
+
+
         }
-        
+
         for(int k=0; k<n.size(); k++)
         {
             //This puts in the forces due to the input force
@@ -490,88 +416,33 @@ void Simulation::execute()
             //At the end of every timestep, the net force should be zero
             n[k].Zero_Force();
         }
->>>>>>> 44676917c62afcd4765d75510be32855d129d2f6
-
-      // Moore_Penrose_Pseudoinverse(LearningMatrix);
-      // cout << LearningMatrix * LM;
-
-       LM = LearningMatrix;
-       //BDCSVD<MatrixXd> bdc_svd(LearningMatrix);
-       JacobiSVD<MatrixXd> svd(LM, ComputeThinU | ComputeThinV);
-    //   cout << svd.computeU() << endl;
-    //   cout << svd.computeV() << endl;
-    //   cout << svd.singularValues() << endl;
-       //cout << endl << svd.matrixU() << endl;
-
-       MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
-       MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
-
-
-      // cout << endl << Cp * TargetSignal << endl;
-
-      //  Moore_Penrose_Pseudoinverse(LearningMatrix);
-
-      //  cout << endl << LearningMatrix * TargetSignal << endl;
-
-
-
-
-
-
-
-
-    //   LM = LearningMatrix;
-<<<<<<< HEAD
-
-
-       //left inverse should equal moore penrose pseudoinverse
-      // cout <<  ((LearningMatrix.transpose() * LearningMatrix).inverse() * LearningMatrix.transpose());
-    ///   cout << endl;
-    //   cout << endl;
-
-    //   Moore_Penrose_Pseudoinverse(LM);
-    //   cout << LearningMatrix * LM;
-    //   LearningMatrix.transposeInPlace();
-      // LearningMatrix1 = LearningMatrix.transpose();
-      // LearningMatrix2 = (LearningMatrix1*LM);
-    //   LearningMatrix3 = LearningMatrix2.inverse();
-    //   TempMat = LearningMatrix2 * LearningMatrix3;
-
-      // cout << TempMat;
-      // TempMat = TempMat.inverse();
-    //   TempMat = TempMat*TempMat.inverse();
-      // cout << LM*TempMat;
-    //   TempMat = LearningMatrix*TargetSignal;
-    //   cout << TempMat;
-       //Populate_Learning_Weights(TempMat);
-
-    //  LM = LearningMatrix;
-  //    Moore_Penrose_Pseudoinverse(LearningMatrix);
-    //  LearningMatrix= LearningMatrix * TargetSignal;
-      Cp = Cp * TargetSignal;
-
-    //  cout << original - LearningMatrix << endl;
-       Populate_Learning_Weights(Cp);
-=======
-       //Moore_Penrose_Pseudoinverse(LearningMatrix);
-     //  LearningMatrix= LearningMatrix * TargetSignal;
-    //   Populate_Learning_Weights(TempMat);
-    
-    
+      }
+/*
     LM = LearningMatrix;
     JacobiSVD<MatrixXd> svd(LM, ComputeThinU | ComputeThinV);
     MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
     MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
-    
     Cp = Cp * TargetSignal;
-    
     Populate_Learning_Weights(Cp);
+    */
 
-//    LM = LearningMatrix;
+
+
+      LM = LearningMatrix;
+      BDCSVD<MatrixXd> svd(LM, ComputeThinU | ComputeThinV);
+      MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
+      MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
+      Cp = Cp * TargetSignal;
+      Populate_Learning_Weights(Cp);
+
+
+
+
+
+    //     LM = LearningMatrix;
 //    Moore_Penrose_Pseudoinverse(LearningMatrix);
 //    LearningMatrix= LearningMatrix * TargetSignal;
 //    Populate_Learning_Weights(LearningMatrix);
->>>>>>> 44676917c62afcd4765d75510be32855d129d2f6
 }
 
 void Simulation::Moore_Penrose_Pseudoinverse(MatrixXd& L)
