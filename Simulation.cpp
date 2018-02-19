@@ -344,13 +344,6 @@ void Simulation::execute()
   VectorXd TargetSignal1(learning_time);
 
   double outputsignal = 0;
-  //for(int j=0; j<s.size(); j++)
-  //{
-
-    //LearningMatrix(0,j)=s[j].return_Initial_Length();
-  //  TargetSignal(0) = Target_Signal[0]; // Todo: Target matrix is of size #outputs x #timestep!!
-  //}
-
 
     // double uniform1 = 0;
     // double uniform2 = 0;
@@ -373,7 +366,7 @@ void Simulation::execute()
 
         for(int j=0;  j<s.size(); j++)
         {
-
+            if(i==0) LearningMatrix(0,j)=s[j].return_Initial_Length();
             nodea = s[j].Nodea();
             nodeb = s[j].Nodeb();
 
@@ -435,26 +428,47 @@ void Simulation::execute()
         }
       }
       //Jacobian singular value decomposition for Moore Penrose pseudoinverse
+
       LM = LearningMatrix;
-      JacobiSVD<MatrixXd> svd(LearningMatrix, ComputeThinU | ComputeThinV);
-      MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
+  //    JacobiSVD<MatrixXd> svd(LearningMatrix, ComputeThinU | ComputeThinV);
+  //    MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
     //  MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
-      Cp = Cp * TargetSignal;
-      Populate_Learning_Weights(Cp);
+    //  Cp = Cp * TargetSignal;
+  //    Populate_Learning_Weights(Cp);
+
+
+
+    //  LM = LearningMatrix;
+    //  MatrixXd LeftInverse = ((LearningMatrix.transpose()*LearningMatrix).inverse())*LearningMatrix.transpose();
+    //  LeftInverse = LeftInverse * TargetSignal;
+      //Populate_Learning_Weights(LeftInverse);
+
+
+
+     //left inverse
+
+  //    LM = LearningMatrix;
+  //    MatrixXd LeftInverse = ((LearningMatrix.transpose()*LearningMatrix).inverse())*LearningMatrix.transpose();
+  //    LeftInverse = LeftInverse * TargetSignal;
+  //    Populate_Learning_Weights(LeftInverse);
 
 
 
 
 
 
-/*
-      LM = LearningMatrix;
-      BDCSVD<MatrixXd> svd(LM, ComputeThinU | ComputeThinV);
-      MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
-      MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
-      Cp = Cp * TargetSignal;
-      Populate_Learning_Weights(Cp);
-      */
+
+
+
+        //SVF decomp using fast method
+    //  LM = LearningMatrix;
+    //  BDCSVD<MatrixXd> svd(LM, ComputeThinU | ComputeThinV);
+  //    MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
+    //  MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
+    //  Cp = Cp * TargetSignal;
+    //  Populate_Learning_Weights(Cp);
+
+
 
 
 
@@ -505,37 +519,46 @@ void Simulation::Output_Signal_And_MSE()
 //  LW = Return_Learning_Weights();
 
 
-  ofstream output("outputsignal.csv");
-  ofstream output2("learningweights.csv");
+//  ofstream output("outputsignal.csv");
+//  ofstream output2("learningweights.csv");
   ofstream output3("targetsignal.csv");
+  ofstream output4("learningmatrix.csv");
 
   double outputsignal = 0;
   double currenttime = 0;
 
+  //double outputLM = 0;
 
 
-  for(int i=0; i<learning_time_test; i++)
-  //  for(int i = 0; i<maxtimesteps; i++)
+
+//  for(int i=0; i<learning_time_test; i++)
+   for(int i = 0; i<maxtimesteps; i++)
   {
       for(int j=0; j<LM.cols(); j++)
       {
-          outputsignal += Learning_Weights[j] * LM(i+wash_out_time+learning_time, j);
-          //outputsignal += Learning_Weights[j] * LM(i, j);
+        //  outputsignal += Learning_Weights[j] * LM(i+wash_out_time+learning_time, j);
+      //    outputsignal += Learning_Weights[j] * LM(i, j);
+          //  outputLM =  LM(i, j);
+            output4 <<LM(i, j) <<",";
           //  if(i==0) output2 << Learning_Weights[j] << endl;
+
       }
 
-      Output_Signal.push_back(outputsignal);
-      currenttime = t0 + i*dt;
+      output4 <<endl;
 
-      output << currenttime <<"," << Output_Signal.at(i);
-      output << endl;
+
+    //  Output_Signal.push_back(outputsignal);
+    //  currenttime = t0 + i*dt;
+
+    //  output << currenttime <<"," << Output_Signal.at(i);
+      //output << endl;
       output3 <<currenttime <<"," << Target_Signal.at(i);
       output3 << endl;
       outputsignal = 0;
   }
 
-  cout <<"The mean squared error of the output signal versus the target signal is: " << MSE(Output_Signal, Target_Signal);
-  cout <<endl;
+  //cout <<"The mean squared error of the output signal versus the target signal is: " << MSE(Output_Signal, Target_Signal);
+  //cout <<endl;
 }  // end simulation loop
 
 
@@ -606,13 +629,9 @@ double Simulation::Rand_In_Range_Exp_k3()
 
 double Simulation::Rand_In_Range_Exp_d3()
 {
-  cout << "min is:" << min_d3 << endl;
-  cout << "max is:" << max_d3 << endl;
 
   double log10min = log10(min_d3);
   double log10max = log10(max_d3);
-  cout << log10min << endl;
-  cout << log10max << endl;
   double return_value = ((log10max-log10min)*Uniform(0,1))+log10min;
   return pow(10, return_value);
 }
