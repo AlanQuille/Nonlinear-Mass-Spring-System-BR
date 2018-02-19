@@ -42,9 +42,13 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
 
   this-> min_k1 = data.min_k1;
   this-> min_k3 = data.min_k3;
-
   this-> min_d1 = data.min_d1;
   this-> min_d3 = data.min_d3;
+
+  this-> max_k1 = data.max_k1;
+  this-> max_k3 = data.max_k3;
+  this-> max_d1 = data.max_d1;
+  this-> max_d3 = data.max_d3;
 
   this->ux = data.ux;
   this->uy = data.uy;
@@ -510,13 +514,13 @@ void Simulation::Output_Signal_And_MSE()
 
 
 
-//  for(int i=0; i<learning_time_test; i++)
-    for(int i = 0; i<maxtimesteps; i++)
+  for(int i=0; i<learning_time_test; i++)
+  //  for(int i = 0; i<maxtimesteps; i++)
   {
       for(int j=0; j<LM.cols(); j++)
       {
-      //    outputsignal += Learning_Weights[j] * LM(i+wash_out_time+learning_time, j);
-          outputsignal += Learning_Weights[j] * LM(i, j);
+          outputsignal += Learning_Weights[j] * LM(i+wash_out_time+learning_time, j);
+          //outputsignal += Learning_Weights[j] * LM(i, j);
           //  if(i==0) output2 << Learning_Weights[j] << endl;
       }
 
@@ -556,6 +560,62 @@ MSE = (1/Total)*MSEsum;
 return MSE;
 }
 
+double Simulation::Rand_In_Range_Exp_k1()
+{
+  cout << "min is:" << min_k1 << endl;
+  cout << "max is:" << max_k1 << endl;
+
+  double log10min = log10(min_k1);
+  double log10max = log10(max_k1);
+
+  cout << log10min << endl;
+  cout << log10max << endl;
+
+  double return_value = ((log10max-log10min)*Uniform(0,1))+log10min;
+  return pow(10, return_value);
+}
+
+double Simulation::Rand_In_Range_Exp_d1()
+{
+  cout << "min is:" << min_d1 << endl;
+  cout << "max is:" << max_d1 << endl;
+
+  double log10min = log10(min_d1);
+  double log10max = log10(max_d1);
+
+  cout << log10min << endl;
+  cout << log10max << endl;
+
+  double return_value = ((log10max-log10min)*Uniform(0,1))+log10min;
+  return pow(10, return_value);;
+}
+
+double Simulation::Rand_In_Range_Exp_k3()
+{
+  cout << "min is:" << min_k3 << endl;
+  cout << "max is:" << max_k3 << endl;
+
+  double log10min = log10(min_k3);
+  double log10max = log10(max_k3);
+
+  cout << log10min << endl;
+  cout << log10max << endl;
+  double return_value = ((log10max-log10min)*Uniform(0,1))+log10min;
+  return pow(10, return_value);
+}
+
+double Simulation::Rand_In_Range_Exp_d3()
+{
+  cout << "min is:" << min_d3 << endl;
+  cout << "max is:" << max_d3 << endl;
+
+  double log10min = log10(min_d3);
+  double log10max = log10(max_d3);
+  cout << log10min << endl;
+  cout << log10max << endl;
+  double return_value = ((log10max-log10min)*Uniform(0,1))+log10min;
+  return pow(10, return_value);
+}
 
 
 int Simulation::Random_Input_Nodes(int N)
@@ -723,15 +783,16 @@ void Simulation::Initialize_Springs()
       y1 = n[arraysubscript2].get_y_position();
 
       //These spring and damping coefficients are not giving different values
-      k1 = log10(Uniform(min_k1, max_k1));
-      d1 = log10(Uniform(min_d1, max_d1));
-      k3 = log10(Uniform(min_k3, max_k3));
-      d3 = log10(Uniform(min_d3, max_d3));
+      k1 = Rand_In_Range_Exp_k1();
+      d1 = Rand_In_Range_Exp_d1();
+      k3 = Rand_In_Range_Exp_k3();
+      d3 = Rand_In_Range_Exp_d3();
 
-      ofs3 <<  k1 << endl;
-      ofs4 <<  d1 << endl;
-      ofs5 <<  k3 << endl;
-      ofs6 <<  d3  << endl;
+
+      cout<< "k1 is: "  <<k1 <<  endl;
+      cout << "d1 is: " <<d1 << endl;
+      cout <<  "k3 is: " <<k3 << endl;
+      cout <<  "d3 is: "  <<d3 << endl;
 
       l0 = Eucl_Dist(x0, y0, x1, y1);
       //Initial value for the output weights. I believe this was never used.
@@ -742,6 +803,7 @@ void Simulation::Initialize_Springs()
       s[i].print_output();
    }
 }
+
 
 void Simulation::Get_Triangles(DelaunayTriangulation &Delaunay)
 {

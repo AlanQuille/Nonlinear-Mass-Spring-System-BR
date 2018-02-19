@@ -114,7 +114,7 @@ class Simulation
         double min_k1;
         double max_k1;
         double min_d1;
-        double max_d1; 
+        double max_d1;
 
         //This is for the first phase of reservoir computing
         //bool is_learning_phase_over = false;
@@ -156,6 +156,17 @@ class Simulation
         // Todo: Name is not ideal. Better would be to call it update() or similar
         void execute();
 
+        //Range in Range, required.
+        double Rand_In_Range_Exp_k1();
+
+        //Range in Range, required.
+        double Rand_In_Range_Exp_k3();
+
+        //Range in Range, required.
+        double Rand_In_Range_Exp_d1();
+
+        //Range in Range, required.
+        double Rand_In_Range_Exp_d3();
 
         //This does the delaunay triangulation for the two dimensional case and creates the springs for the reservoir computer, not the radial spider web
         void Delaunay_Triangulation_and_Spring_Creation();
