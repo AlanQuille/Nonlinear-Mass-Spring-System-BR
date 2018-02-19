@@ -29,12 +29,6 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
   this->input_weight_smallest_value = data.min_input_weight;
   this->input_weight_largest_value = data.max_input_weight;
 
-  this->log_uniform_smallest_value=  data.min_log_uniform;
-  this->log_uniform_largest_value = data.max_log_uniform;
-
-  this->uniform_smallest_value= data.min_uniform;
-  this->uniform_largest_value = data.max_uniform;
-
 
   this->t0 = data.t0;
   this->tmax = data.tmax;
@@ -46,9 +40,14 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
   this->largest_x_position = data.max_x_position;
   this->largest_y_position = data.max_y_position;
 
+  this-> min_k1 = data.min_k1;
+  this-> min_k3 = data.min_k3;
+
+  this-> min_d1 = data.min_d1;
+  this-> min_d3 = data.min_d3;
+
   this->ux = data.ux;
   this->uy = data.uy;
-
 
   this->wash_out_time = wash_out_time;
   this->learning_time = learning_time;
@@ -205,10 +204,11 @@ void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_pe
 
       if(i>0)
       {
-      k1 = log10(Uniform(data.min_log_uniform, data.max_log_uniform));
-      d1 = log10(Uniform(data.min_log_uniform, data.max_log_uniform));
-      k3 = Uniform(data.min_uniform, data.max_uniform);
-      d3 = Uniform(data.min_uniform, data.max_uniform);
+        //This has to be done from main, this is not good here.
+      k1 = log10(Uniform(data.min_k1, data.max_k1));
+      d1 = log10(Uniform(data.min_d1, data.max_d1));
+      k3 = log10(Uniform(data.min_k3, data.max_k3));
+      d3 = log10(Uniform(data.min_d1, data.max_d1));
 
       l0 = Eucl_Dist(x0, y0, x_position, y_position);
     //  wout = Uniform(data.w_out_initial, data.w_out_final);
@@ -220,10 +220,10 @@ void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_pe
       //For radial pattern.
       if(j>0)
       {
-      k1 = log10(Uniform(data.min_log_uniform, data.max_log_uniform));
-      d1 = log10(Uniform(data.min_log_uniform, data.max_log_uniform));
-      k3 = Uniform(data.min_uniform, data.max_uniform);
-      d3 = Uniform(data.min_uniform, data.max_uniform);
+        k1 = log10(Uniform(data.min_k1, data.max_k1));
+        d1 = log10(Uniform(data.min_d1, data.max_d1));
+        k3 = log10(Uniform(data.min_k3, data.max_k3));
+        d3 = log10(Uniform(data.min_d3, data.max_d3));
 
       l0 = Eucl_Dist(x0, y0, x_position, y_position);
     //  wout = Uniform(data.w_out_initial, data.w_out_final);
@@ -240,10 +240,10 @@ void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_pe
    x_position = (j+1)*radius*cos((0));
    y_position = (j+1)*radius*sin((0));
 
-   k1 = log10(Uniform(data.min_log_uniform, data.max_log_uniform));
-   d1 = log10(Uniform(data.min_log_uniform, data.max_log_uniform));
-   k3 = Uniform(data.min_uniform, data.max_uniform);
-   d3 = Uniform(data.min_uniform, data.max_uniform);
+   k1 = log10(Uniform(data.min_k1, data.max_k1));
+   d1 = log10(Uniform(data.min_d1, data.max_d1));
+   k3 = log10(Uniform(data.min_k3, data.max_k3));
+   d3 = log10(Uniform(data.min_d3, data.max_d3));
    l0 = Eucl_Dist(x0, y0, x_position, y_position);
   // wout = Uniform(data.w_out_initial, data.w_out_final);
   //Temporarily remove
@@ -292,6 +292,7 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
 //    Output_For_Plot();
 
 }
+
 
 void Simulation::execute()
 {
@@ -722,10 +723,10 @@ void Simulation::Initialize_Springs()
       y1 = n[arraysubscript2].get_y_position();
 
       //These spring and damping coefficients are not giving different values
-      k1 = log10(Uniform(log_uniform_smallest_value, log_uniform_largest_value));
-      d1 = log10(Uniform(log_uniform_smallest_value,log_uniform_largest_value));
-      k3 = Uniform(uniform_smallest_value, uniform_largest_value);
-      d3 = Uniform(uniform_smallest_value, uniform_largest_value);
+      k1 = log10(Uniform(min_k1, max_k1));
+      d1 = log10(Uniform(min_d1, max_d1));
+      k3 = log10(Uniform(min_k3, max_k3));
+      d3 = log10(Uniform(min_d3, max_d3));
 
       ofs3 <<  k1 << endl;
       ofs4 <<  d1 << endl;

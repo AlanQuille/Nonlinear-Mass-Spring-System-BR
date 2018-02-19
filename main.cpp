@@ -210,10 +210,17 @@ int main(int argc, char** argv)
     data.min_y_position  = 0;
     data.max_y_position = 10;
 
-    data.min_log_uniform = 1;
-    data.max_log_uniform  = 10;
-    data.min_uniform = 100;
-    data.max_uniform= 200;
+    data.min_k3 = 1;
+    data.max_k3  = 100;
+    data.min_d3 = 1;
+    data.max_d3  = 100;
+
+    data.min_k1 = 1;
+    data.max_k1  = 200;
+    data.min_d1 = 1;
+    data.max_d1  = 200;
+
+
 
     data.dt = 0.001;
     data.t0 = wash_out_time*data.dt;

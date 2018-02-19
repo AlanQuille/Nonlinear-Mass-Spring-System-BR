@@ -24,18 +24,22 @@ struct InitialDataValues
     double min_y_position;
     double max_y_position;
 
-    // lower and upper limits for log-uniform distribution
-    double min_log_uniform;
-    double max_log_uniform;
 
-    // lower and upper limits for uniform distribution
-    double min_uniform;
-    double max_uniform;
 
     double t0;      // time for first time step [s]
     double tmax;    // maximum time step [s]
     double dt;      // time step in seconds
 
+    //The min and max values for k1, k3, d1, d3 values, either log uniform or uniform depending.
+    double min_k3;
+    double max_k3;
+    double min_d3;
+    double max_d3;
+
+    double min_k1;
+    double max_k1;
+    double min_d1;
+    double max_d1;
 };
 
 // Todo: You make a class DynamicalSystem or class DynSysData, but then you have functions like Volterra in there
@@ -74,11 +78,6 @@ class Simulation
         vector<double> NodeList;             // Todo: Is that really part of Simulation class -
         vector<double> EdgeNodeList;         // Todo: Is that really part of Simulation class -
 
-        double log_uniform_smallest_value;    // ??
-		    double log_uniform_largest_value;     // ??
-        double uniform_smallest_value;      // ??
-	    	double uniform_largest_value;          // ??
-
 		    double input_weight_smallest_value;
 	    	double input_weight_largest_value;
 
@@ -105,6 +104,17 @@ class Simulation
         // Todo: Better to call them Fx and Fy
         double ux;
         double uy;
+
+        //min and max k1 and k3 value
+        double min_k3;
+        double max_k3;
+        double min_d3;
+        double max_d3;
+
+        double min_k1;
+        double max_k1;
+        double min_d1;
+        double max_d1; 
 
         //This is for the first phase of reservoir computing
         //bool is_learning_phase_over = false;
