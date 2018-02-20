@@ -224,7 +224,7 @@ int main(int argc, char** argv)
 
     data.dt = 0.001;
     data.t0 = wash_out_time*data.dt;
-    data.tmax = (wash_out_time+learning_time+learning_time_test)*data.dt;
+    data.tmax = 0.1*(wash_out_time+learning_time+learning_time_test)*data.dt;
 
 
     vector<double> Sine_Wave;
