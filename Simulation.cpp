@@ -142,7 +142,7 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
  		 fixed <<k << endl;
 
  		 n[j].set_Fixed_Node();
- 		// n[k].set_Fixed_Node();
+ 		 n[k].set_Fixed_Node();
  		//Just one node for test;
  		 //Fixed the leftmost and rightmost nodes.
    }
@@ -426,7 +426,7 @@ void Simulation::execute()
           for(int k=0; k<n.size(); k++)
           {
               //This puts in the forces due to the input force
-              if(i==0) n[k].Input_Force(1000, 0);
+              if(i==0) n[k].Input_Force(100, 0);
               //Update force on node due to dt
               n[k].Update(dt);
               //Zero force
@@ -532,6 +532,7 @@ void Simulation::Output_Signal_And_MSE()
 //  ofstream output2("learningweights.csv");
   ofstream output3("targetsignal.csv");
   ofstream output4("learningmatrix.csv");
+  ofstream output5("inputsignalcheck.csv");
 
   double outputsignal = 0;
   double currenttime = 0;
@@ -563,6 +564,7 @@ void Simulation::Output_Signal_And_MSE()
       //output << endl;
       output3 <<currenttime <<"," << Target_Signal.at(i);
       output3 << endl;
+      output5 <<currenttime <<"," << Input_Signal.at(i);
       outputsignal = 0;
   }
 
