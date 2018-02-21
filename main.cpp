@@ -147,7 +147,7 @@ int main(int argc, char** argv)
     // Todo: I think it would be useful to define class for reading in files from csv, maybe best even encapsulated in a class
     // there are plenty of these out there
   //  ifstream file_Input ( "/Users/hh14185/Leverhulme_Trust_Proposal_spider_web/Xcode/Nonlinear-Mass-Spring-System-BR/input.csv" );
-    ifstream file_Input ( "inputsignal.csv" );
+    ifstream file_Input ( "Data/inputsignal.csv" );
     string tmp;
 
     while (getline(file_Input, tmp,'\n'))
@@ -170,7 +170,7 @@ int main(int argc, char** argv)
     //  ifstream file2 ("inputsignal.csv"); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
 
   //  ifstream file_Volterra ("/Users/hh14185/Leverhulme_Trust_Proposal_spider_web/Xcode/Nonlinear-Mass-Spring-System-BR/volterra.csv");
-      ifstream file_Volterra ("volterra.csv");
+      ifstream file_Volterra ("Data/volterra.csv");
 
     while (getline(file_Volterra, tmp,'\n'))
     {
@@ -197,7 +197,7 @@ int main(int argc, char** argv)
 
     // setting parameters for simulation
     // This should be possible to read in from a text file
-    data.N = 50;
+    data.N = 2;
     data.ux=0;
     data.uy= 0;
 
@@ -224,10 +224,12 @@ int main(int argc, char** argv)
 
     data.dt = 0.001;
     data.t0 = wash_out_time*data.dt;
-    data.tmax = 0.1*(wash_out_time+learning_time+learning_time_test)*data.dt;
+    data.tmax = (wash_out_time+learning_time+learning_time_test)*data.dt;
 
 
     vector<double> Sine_Wave;
+
+    cout << "Initial Input is: "<< Input[0] << endl;
 
     Simulation sim(data, Volterra, Input, wash_out_time, learning_time, learning_time_test);
     cout <<"The number of nodes is: " << data.N << endl;

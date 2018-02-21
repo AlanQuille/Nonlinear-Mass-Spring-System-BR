@@ -10,8 +10,8 @@ private:
 	double m = 1;
 
 	// Cartesian coordinates
-	double px;
-	double py;
+	  double px;
+	  double py;
 
     // Velocity
     double pxdot = 0;

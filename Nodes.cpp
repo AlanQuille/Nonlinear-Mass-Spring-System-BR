@@ -15,6 +15,7 @@ void Nodes::init_Input_Node(double ux, double uy, double win)
   this->F_in_y = uy;
   this->input_node = 1;
   this->win = win;
+  cout <<"win is: " << win;
 }
 
 bool Nodes::is_Input_Node()
@@ -56,11 +57,6 @@ void Nodes::Input_Force(double Fx, double Fy)
   {
     F_in_x += Fx;
     F_in_y += Fy;
-  }
-  else
-  {
-    F_in_x = 0;
-    F_in_y = 0;
   }
 }
 

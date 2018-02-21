@@ -142,7 +142,7 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
  		 fixed <<k << endl;
 
  		 n[j].set_Fixed_Node();
- 		 n[k].set_Fixed_Node();
+ 		// n[k].set_Fixed_Node();
  		//Just one node for test;
  		 //Fixed the leftmost and rightmost nodes.
    }
@@ -281,10 +281,10 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
     {
       win = Uniform(input_weight_smallest_value, input_weight_largest_value);
       BeforeRand = Uniform(0,1);
-  //    cout <<"win is: "<< win << endl;
+      if(BeforeRand<input_connectivity_percentage) win = Uniform(input_weight_smallest_value, input_weight_largest_value);
+      else win = 0;
   //    win -= offset;
-      cout <<"win is: "<< win << endl;
-      if(BeforeRand<=input_connectivity_percentage) n[i].init_Input_Node(ux, uy, win);
+      n[i].init_Input_Node(ux, uy, win);
       DT.AddPoint(Point(n[i].get_x_position(),n[i].get_y_position(),0));
     //  DT.AddPoint(Point(n[i].X_Position(), Point(n[i].Y_Position());
     }
@@ -334,14 +334,14 @@ void Simulation::execute()
 //Matrix for entire run
   MatrixXd LearningMatrix(maxtimesteps, s.size());
  //Matrix for learning phase
-  MatrixXd LearningMatrix1(learning_time, s.size());
+//  MatrixXd LearningMatrix1(learning_time, s.size());
   //MatrixXd LearningMatrix2(maxtimesteps, s.size());
 //  MatrixXd LearningMatrix3(maxtimesteps, s.size());
 //  MatrixXd TargetSignal(maxtimesteps, s.size()); // Todo: to fill TargetSignal matrix at init/constructor
 //Target signal for entire run
   VectorXd TargetSignal(maxtimesteps);
  //Target Signal for learning_phase
-  VectorXd TargetSignal1(learning_time);
+//  VectorXd TargetSignal1(learning_time);
 
   double outputsignal = 0;
 
@@ -357,15 +357,19 @@ void Simulation::execute()
 //<<<<<<< HEAD
   //for(int i=0; i<maxtimesteps; i++)
 //=======
-    for(int i=0; i<maxtimesteps; i++)
+
+
+   for(int i=0; i<maxtimesteps; i++)
     {
-    //    cout << "Time step " << i << endl;
+  //      cout << "Time step " << i << endl;
         TargetSignal(i) = Target_Signal[i];
-        if(i>=wash_out_time && i<(learning_time+wash_out_time)) TargetSignal1(i-wash_out_time) = Target_Signal[i];
+      ////  if(i>=wash_out_time && i<(learning_time+wash_out_time)) TargetSignal1(i-wash_out_time) = Target_Signal[i];
+
 
 
         for(int j=0;  j<s.size(); j++)
         {
+
             if(i==0) LearningMatrix(0,j)=s[j].return_Initial_Length();
             nodea = s[j].Nodea();
             nodeb = s[j].Nodeb();
@@ -389,7 +393,7 @@ void Simulation::execute()
             s[j].get_Force(Fsum);
 
             LearningMatrix(i,j) = l;  // Todo: update is not needed for target signal
-            if(i>=wash_out_time && i<(learning_time+wash_out_time)) LearningMatrix1(i-wash_out_time, j) = l;
+            //if(i>=wash_out_time && i<(learning_time+wash_out_time)) LearningMatrix1(i-wash_out_time, j) = l;
 
             Fx_nodeb = Fsum*alpha;
             Fx_nodea = -Fx_nodeb;
@@ -401,6 +405,9 @@ void Simulation::execute()
             n[nodea].Input_Force(Fx_nodea, Fy_nodea);
             n[nodeb].Input_Force(Fx_nodeb, Fy_nodeb);
 
+          //  cout <<"l is: " << l;
+          //  cout << endl;
+
             //   l = Eucl_Dist(x0, y0, x1, y1);
             // theta = abs(Angle(x0, x1, y0, y1));
 
@@ -411,22 +418,24 @@ void Simulation::execute()
             Fy_nodea =0;
             Fy_nodeb =0;
 
-
-            // s[j].update_Spring_State(dt, l);
-
-
+            // s[j].update_Spring_State(dt, l)
         }
 
-        for(int k=0; k<n.size(); k++)
-        {
-            //This puts in the forces due to the input force
-            n[k].Input_Force(n[k].return_Win()*Input_Signal[i], 0);
-            //Update force on node due to dt
-            n[k].Update(dt);
-            //At the end of every timestep, the net force should be zero
-            n[k].Zero_Force();
-        }
-      }
+        //At the end of every timestep, the net force should be zero
+
+          for(int k=0; k<n.size(); k++)
+          {
+              //This puts in the forces due to the input force
+              if(i==0) n[k].Input_Force(1000, 0);
+              //Update force on node due to dt
+              n[k].Update(dt);
+              //Zero force
+              n[k].Zero_Force();
+         }
+
+       }
+
+
       //Jacobian singular value decomposition for Moore Penrose pseudoinverse
 
       LM = LearningMatrix;
