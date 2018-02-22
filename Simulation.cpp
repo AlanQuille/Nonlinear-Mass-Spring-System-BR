@@ -426,7 +426,9 @@ void Simulation::execute()
           for(int k=0; k<n.size(); k++)
           {
               //This puts in the forces due to the input force
-              if(i==0) n[k].Input_Force(100, 0);
+              n[k].Input_Force(n[k].return_Win()*Input_Signal[i],0);
+              //This puts in the forces due to the input force
+              //n[k].Input_Force(0, return_Win();
               //Update force on node due to dt
               n[k].Update(dt);
               //Zero force
@@ -439,9 +441,9 @@ void Simulation::execute()
       //Jacobian singular value decomposition for Moore Penrose pseudoinverse
 
       LM = LearningMatrix;
-  //    JacobiSVD<MatrixXd> svd(LearningMatrix, ComputeThinU | ComputeThinV);
-  //    MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
-    //  MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
+    //  JacobiSVD<MatrixXd> svd(LearningMatrix, ComputeThinU | ComputeThinV);
+    //  MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
+  //    MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
     //  Cp = Cp * TargetSignal;
   //    Populate_Learning_Weights(Cp);
 
@@ -568,8 +570,8 @@ void Simulation::Output_Signal_And_MSE()
       outputsignal = 0;
   }
 
-  //cout <<"The mean squared error of the output signal versus the target signal is: " << MSE(Output_Signal, Target_Signal);
-  //cout <<endl;
+//  cout <<"The mean squared error of the output signal versus the target signal is: " << MSE(Output_Signal, Target_Signal);
+//  cout <<endl;
 }  // end simulation loop
 
 

@@ -197,11 +197,11 @@ int main(int argc, char** argv)
 
     // setting parameters for simulation
     // This should be possible to read in from a text file
-    data.N = 3;
+    data.N = 30;
     data.ux=0;
     data.uy= 0;
 
-    data.input_connectivity_percentage = 1;
+    data.input_connectivity_percentage = 0.2;
     //data.w_in_initial = -1;
     data.min_input_weight = -1;
     data.max_input_weight = 1;
