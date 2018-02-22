@@ -266,6 +266,7 @@ void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_pe
 
 void Simulation::Delaunay_Triangulation_and_Spring_Creation()
 {
+    //Why is that abs? Double check this.
     DelaunayTriangulation DT(abs(largest_x_position-smallest_x_position), abs(largest_y_position-smallest_y_position));
     double win = 0;
     double BeforeRand = 0;
@@ -319,7 +320,7 @@ void Simulation::execute()
   double vector_y = 0;
 
   double alpha = 0;
-  double gamma = 0;
+  double beta = 0;
 
   // Todo: still needed for debugging DEBUG
   ofstream ofs("Node1.csv");
@@ -370,7 +371,7 @@ void Simulation::execute()
         for(int j=0;  j<s.size(); j++)
         {
 
-            if(i==0) LearningMatrix(0,j)=s[j].return_Initial_Length();
+
             nodea = s[j].Nodea();
             nodeb = s[j].Nodeb();
 
@@ -387,18 +388,19 @@ void Simulation::execute()
             l = Eucl_Dist(x0, y0, x1, y1);
             //  theta = Angle(x0, x1, y0, y1);
             alpha = vector_x/l;
-            gamma = vector_y/l;
+            beta = vector_y/l;
 
             s[j].update_Spring_State(dt, l);
             s[j].get_Force(Fsum);
 
             LearningMatrix(i,j) = l;  // Todo: update is not needed for target signal
+            if(i==0) LearningMatrix(0,j)=s[j].return_Initial_Length();
             //if(i>=wash_out_time && i<(learning_time+wash_out_time)) LearningMatrix1(i-wash_out_time, j) = l;
 
             Fx_nodeb = Fsum*alpha;
             Fx_nodea = -Fx_nodeb;
 
-            Fy_nodeb = Fsum*gamma;
+            Fy_nodeb = Fsum*beta;
             Fy_nodea = -Fy_nodeb;
 
 

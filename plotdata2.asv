@@ -7,14 +7,13 @@ inputsignal =csvread("inputsignalcheck.csv");
 %test4 = csvread("outputsignal.csv");
 %test5 = csvread("inputsignal.csv");
 learningmatrix = csvread("learningmatrix.csv");
-pseudoinverse = );
+pseudoinverse = pinv(learningmatrix);
 learningweights = pseudoinverse * targetsignal(:,2);
 OutputMatrix = learningmatrix*learningweights;
 
-plot(OutputMatrix, "Color", "Blue")
+plot(OutputMatrix)
 hold on
-plot(targetsignal)
-
+plot TargetSi
 
 
 
