@@ -7,8 +7,7 @@ inputsignal =csvread("inputsignalcheck.csv");
 %test4 = csvread("outputsignal.csv");
 %test5 = csvread("inputsignal.csv");
 learningmatrix = csvread("learningmatrix.csv");
-pseudoinverse = );
-learningweights = pseudoinverse * targetsignal(:,2);
+learningweights = learningmatrix\targetsignal;
 OutputMatrix = learningmatrix*learningweights;
 
 plot(OutputMatrix, "Color", "Blue")
