@@ -116,6 +116,11 @@ class Simulation
         double min_d1;
         double max_d1;
 
+        //This is for the chaos test;
+        double k = 1.000;
+        string str ="chaoscheck.csv";
+        string str2 = "LM.csv";
+
         //This is for the first phase of reservoir computing
         //bool is_learning_phase_over = false;
 
@@ -152,7 +157,11 @@ class Simulation
         // Todo: change variable names here
         void Initialize_Nodes(double range0x, double range1x, double range0y, double range1y);
 
+        //This is for the csv files to test if there is chaos.
+        void input_Magnitude_of_Chaos_Force(double k, const std::string& input, const std::string& input2);
+
         //This changes position of springs and nodes dynamically in time.
+        void Reset_Simulation();
         // Todo: Name is not ideal. Better would be to call it update() or similar
         void execute();
 

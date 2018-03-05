@@ -9,9 +9,14 @@ private:
     // mass is 1 by default
 	double m = 1;
 
+		//Original positions
+		double original_px;
+		double original_py;
+
 	// Cartesian coordinates
 	  double px;
 	  double py;
+
 
     // Velocity
     double pxdot = 0;
@@ -51,6 +56,9 @@ private:
     // Checks if node is input node
 	bool is_Input_Node();
 
+  //Save original position in x and y of nodes.
+	void original_positions();
+
     // Return input weight w_in for the node
 	double return_Win();
 
@@ -67,6 +75,12 @@ private:
     //Show yposition
     // Todo: detto
 	double get_y_position();
+
+	double get_x_velocity();
+	double get_y_velocity();
+
+	double get_x_acceleration();
+	double get_y_acceleration();
 
 	//This is the function that incrementally changes the nodes position in the next timestep;
     // maybe instead of "change" use "update"

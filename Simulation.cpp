@@ -298,6 +298,28 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
 
 }
 
+void Simulation::input_Magnitude_of_Chaos_Force(double k, const std::string& input, const std::string& input2)
+{
+  this->k = k;
+  str = input;
+  str2 = input2;
+}
+
+void Simulation::Reset_Simulation()
+{
+  for(int i=0; i<s.size(); i++)
+  {
+    s[i].set_original_length();
+    s[i].set_x1(0);
+    s[i].set_x2(0);
+    n[s[i].Nodea()].original_positions();
+    n[s[i].Nodeb()].original_positions();
+
+    n[s[i].Nodea()].print_position();
+    //n[s[i].Nodeb()].original_positions();
+  }
+}
+
 
 void Simulation::execute()
 {
@@ -316,17 +338,42 @@ void Simulation::execute()
   double y0 = 0;
   double y1 = 0;
 
+  double k1 = 0;
+  double k3 = 0;
+  double d1 = 0;
+  double d3 = 0;
+
+  //set k3 and d3 to 0.
+
+  double x1spring = 0;
+  double x2spring = 0;
+
+  double x1new = 0;
+
   double vector_x = 0;
   double vector_y = 0;
 
   double alpha = 0;
   double beta = 0;
 
+  double theta =0;
+
+  //Input
+
+
   // Todo: still needed for debugging DEBUG
-  ofstream ofs("Node1.csv");
-  ofstream ofs2("Node2.csv");
-  ofstream ofs3("SampleForce.csv");
-  ofstream bad("Badcoefficients.csv");
+  ofstream Node1("Node1.csv");
+  ofstream Node2("Node2.csv");
+  ofstream ForceVec("SampleForce.csv");
+
+  ofstream OutputPositionsx("NodePositionsx.csv");
+  ofstream OutputVelocitiesx("NodeVelocitiesx.csv");
+  ofstream OutputAccelerationsx("NodeAccelerationsx.csv");
+
+  ofstream OutputPositionsy("NodePositionsy.csv");
+  ofstream OutputVelocitiesy("NodeVelocitiesy.csv");
+  ofstream OutputAccelerationsy("NodeAccelerationsy.csv");
+
 
 
 //  MatrixXd LearningMatrix(maxtimesteps, s.size());
@@ -360,41 +407,104 @@ void Simulation::execute()
 //=======
 
 
+//Inputs: Target Signal, nodes n, springs s
+
    for(int i=0; i<maxtimesteps; i++)
     {
   //      cout << "Time step " << i << endl;
+        //
         TargetSignal(i) = Target_Signal[i];
       ////  if(i>=wash_out_time && i<(learning_time+wash_out_time)) TargetSignal1(i-wash_out_time) = Target_Signal[i];
+    //  for(int l=0; l<s.size(); l++) n[l].Zero_Force();
 
 
 
         for(int j=0;  j<s.size(); j++)
         {
-
-
             nodea = s[j].Nodea();
             nodeb = s[j].Nodeb();
-
+            //get_node_numbers(j);
 
             x0 = n[nodea].get_x_position();
             x1 = n[nodeb].get_x_position();
 
+            //get_positions();
+
+
             y0 = n[nodea].get_y_position();
             y1 = n[nodeb].get_y_position();
+
+            //get_positions();
+
 
             vector_x = x1 - x0;
             vector_y = y1 - y0;
 
-            l = Eucl_Dist(x0, y0, x1, y1);
-            //  theta = Angle(x0, x1, y0, y1);
+            //get_x_component();
+            //get_y_component();
+
+            l = sqrt(vector_x*vector_x + vector_y*vector_y);
+
+            //get_current_length();
+
+            //Reintroduce theta temporarily
+          //  theta = atan(vector_y/vector_x);
+
+             //Reintroduce at later stage.
             alpha = vector_x/l;
             beta = vector_y/l;
 
-            s[j].update_Spring_State(dt, l);
-            s[j].get_Force(Fsum);
+            //get_direction_cosines();
+
+            //theta = atan(vector_y/vector_x);
+
+          //  cout <<"alpha minus cos theta" << alpha - cos(atan(theta)) << endl;
+          //  cout <<"beta minus sin theta" << beta - sin(atan(theta)) << endl;;
+
+
+
 
             LearningMatrix(i,j) = l;  // Todo: update is not needed for target signal
-            if(i==0) LearningMatrix(0,j)=s[j].return_Initial_Length();
+
+
+            //s[j].update_Spring_State(dt, l);
+            k1 = s[j].get_k1();
+            d1 = s[j].get_d1();
+            k3 = s[j].get_k3();
+            d3 = s[j].get_d3();
+
+          //  get_spring_coefficients();
+          //  get_damping_coefficients();
+
+            //Set k3 and d3 to 0 temporarily.
+          //  k1 = 0;
+        //    d1 = 0;
+
+            x1new = l - s[j].return_Initial_Length();
+            x1spring = s[j].return_x1();
+            x2spring = ((x1new - x1spring)/dt);
+
+            //get_x1_new(j);
+            //get_x2_new(j)
+
+
+
+          //  if(x1new == 0) cout <<"0 here." << endl;
+
+
+            s[j].set_x2(x2spring);
+            s[j].set_x1(x1new);
+
+            //End k3 and d3
+
+            Fsum =-k3*x1new*x1new*x1new - k1*x1new - d3*x2spring*x2spring*x2spring - d1*x2spring;
+        //    if(i<450 && j==0) cout <<"Fsum is: "<< Fsum << endl;
+
+
+          //  s[j].get_Force(Fsum);
+
+        //    ForceVec << Fsum << endl;
+
             //if(i>=wash_out_time && i<(learning_time+wash_out_time)) LearningMatrix1(i-wash_out_time, j) = l;
 
             Fx_nodeb = Fsum*alpha;
@@ -402,7 +512,6 @@ void Simulation::execute()
 
             Fy_nodeb = Fsum*beta;
             Fy_nodea = -Fy_nodeb;
-
 
             n[nodea].Input_Force(Fx_nodea, Fy_nodea);
             n[nodeb].Input_Force(Fx_nodeb, Fy_nodeb);
@@ -413,47 +522,66 @@ void Simulation::execute()
             //   l = Eucl_Dist(x0, y0, x1, y1);
             // theta = abs(Angle(x0, x1, y0, y1));
 
-
             Fsum = 0;
             Fx_nodea =0;
             Fx_nodeb =0;
             Fy_nodea =0;
             Fy_nodeb =0;
+            x1new = 0;
+            x2spring =0;
 
             // s[j].update_Spring_State(dt, l)
         }
 
         //At the end of every timestep, the net force should be zero
 
-          for(int k=0; k<n.size(); k++)
+          for(int l=0; l<n.size(); l++)
           {
+              //Output NodePositions and Velocity and Acceleration
+              if(l==1) OutputPositionsx << n[l].get_x_position() <<",";
+              if(l==1) OutputVelocitiesx << n[l].get_x_velocity() <<",";
+              if(l==1) OutputAccelerationsx << n[l].get_x_acceleration() <<",";
+              //Output NodePositions and Velocity and Acceleration
+              if(l==1) OutputPositionsy << n[l].get_y_position();
+              if(l==1) OutputVelocitiesy << n[l].get_y_velocity();
+              if(l==1) OutputAccelerationsy << n[l].get_y_acceleration();
+
               //This puts in the forces due to the input force
-              n[k].Input_Force(n[k].return_Win()*Input_Signal[i],0);
+              if(i>0) n[l].Input_Force(0.001, 0);
+              //if(i>0) n[l].Input_Force(0, 0);
               //This puts in the forces due to the input force
               //n[k].Input_Force(0, return_Win();
               //Update force on node due to dt
-              n[k].Update(dt);
-              //Zero force
-              n[k].Zero_Force();
+              n[l].Update(dt);
+              //Zero Force
+              n[l].Zero_Force();
          }
+
+         OutputPositionsx << endl;
+         OutputVelocitiesx << endl;
+         OutputAccelerationsx << endl;
+
+         OutputPositionsy << endl;
+         OutputVelocitiesy << endl;
+         OutputAccelerationsy << endl;
 
        }
 
 
       //Jacobian singular value decomposition for Moore Penrose pseudoinverse
 
-      LM = LearningMatrix;
-    //  JacobiSVD<MatrixXd> svd(LearningMatrix, ComputeThinU | ComputeThinV);
-    //  MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
+  //    LM = LearningMatrix;
+  //    JacobiSVD<MatrixXd> svd(LearningMatrix, ComputeThinU | ComputeThinV);
+  //    MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
   //    MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
-    //  Cp = Cp * TargetSignal;
+  //    Cp = Cp * TargetSignal;
   //    Populate_Learning_Weights(Cp);
 
 
 
-    //  LM = LearningMatrix;
+      LM = LearningMatrix;
     //  MatrixXd LeftInverse = ((LearningMatrix.transpose()*LearningMatrix).inverse())*LearningMatrix.transpose();
-    //  LeftInverse = LeftInverse * TargetSignal;
+      //LeftInverse = LeftInverse * TargetSignal;
       //Populate_Learning_Weights(LeftInverse);
 
 
@@ -514,6 +642,7 @@ void Simulation::Populate_Learning_Weights(MatrixXd& L)
 {
   for(int j=0; j<s.size(); j++)
   {
+  //  cout << L(j,0) << endl;
     Learning_Weights.push_back(L(j,0));
   }
 }
@@ -532,48 +661,70 @@ void Simulation::Output_Signal_And_MSE()
 //  LW = Return_Learning_Weights();
 
 
-//  ofstream output("outputsignal.csv");
-//  ofstream output2("learningweights.csv");
-  ofstream output3("targetsignal.csv");
-  ofstream output4("learningmatrix.csv");
-  ofstream output5("inputsignalcheck.csv");
+  ofstream outputsignal("outputsignal.csv");
+  ofstream learningweights("learningweights.csv");
+  ofstream targetsignal("targetsignal.csv");
+  //ofstream learningmatrix("learningmatrix.csv");
+  ofstream learningmatrix("learningmatrix.csv");
+  ofstream inputsignalcheck("inputsignalcheck.csv");
 
-  double outputsignal = 0;
+  ofstream chaoscheck(str);
+
+//  ofstream mse(str);
+
+  //double outputsignal = 0;
+
+  double wjej = 0;
+
+
   double currenttime = 0;
 
+
+  //For normalised LearningMatrix
+  double average = 0;
+  double std = 0;
   //double outputLM = 0;
 
+  //(learningmatrix/mean(learningmatrix) - 1 )*(1/(std(learningmatrix/mean(learningmatrix))))
 
+//Temp stop
 
 //  for(int i=0; i<learning_time_test; i++)
    for(int i = 0; i<maxtimesteps; i++)
   {
-      for(int j=0; j<LM.cols(); j++)
+      for(int j=0; j<s.size(); j++)
       {
-        //  outputsignal += Learning_Weights[j] * LM(i+wash_out_time+learning_time, j);
-      //    outputsignal += Learning_Weights[j] * LM(i, j);
-          //  outputLM =  LM(i, j);
-            output4 <<LM(i, j) <<",";
-          //  if(i==0) output2 << Learning_Weights[j] << endl;
+      //    outputsignal += Learning_Weights[j] * LM(i+wash_out_time+learning_time, j);
+        //  outputsignal += Learning_Weights[j] * LM(i, j);
+            //outputLM =  LM(i, j);
+          //  wjej += LM(i, j);
 
+            learningmatrix<<LM(i, j) <<",";
+
+        //  if(i==0) output2 << Learning_Weights[j] << endl;
       }
 
-      output4 <<endl;
+    //  chaoscheck << wjej << endl;
+    //  wjej = 0;
 
+      learningmatrix <<endl;
 
     //  Output_Signal.push_back(outputsignal);
-    //  currenttime = t0 + i*dt;
+      currenttime = t0 + i*dt;
 
     //  output << currenttime <<"," << Output_Signal.at(i);
-      //output << endl;
-      output3 <<currenttime <<"," << Target_Signal.at(i);
-      output3 << endl;
-      output5 <<currenttime <<"," << Input_Signal.at(i);
-      outputsignal = 0;
+    //  output << endl;
+      //output3 <<currenttime <<"," << Target_Signal.at(i);
+    //  output3 << endl;
+      inputsignalcheck << Input_Signal.at(i) << endl;
+      targetsignal << Target_Signal.at(i) << endl;
+    //  outputsignal = 0;
   }
 
 //  cout <<"The mean squared error of the output signal versus the target signal is: " << MSE(Output_Signal, Target_Signal);
 //  cout <<endl;
+//  mse << MSE(Output_Signal, Target_Signal);
+//  mse << endl;
 }  // end simulation loop
 
 
@@ -798,10 +949,11 @@ void Simulation::Initialize_Springs()
   int arraysubscript1=0;
   int arraysubscript2=0;
 
-    ofstream ofs3("k1output.csv");  // Todo: ofs3, etc. is really bad!
-    ofstream ofs4("d1output.csv");
-    ofstream ofs5("k3output.csv");
-    ofstream ofs6("d3output.csv");
+    ofstream k1output("k1output.csv");  // Todo: ofs3, etc. is really bad!
+    ofstream d1output("d1output.csv");
+    ofstream k3output("k3output.csv");
+    ofstream d3output("d3output.csv");
+    ofstream originallengthoutput("originallengthoutput.csv");
 
 
   for(int i=0; i<EdgeList.size(); i++)
@@ -822,19 +974,21 @@ void Simulation::Initialize_Springs()
       k3 = Rand_In_Range_Exp_k3();
       d3 = Rand_In_Range_Exp_d3();
 
-
-      cout<< "k1 is: "  <<k1 <<  endl;
-      cout << "d1 is: " <<d1 << endl;
-      cout <<  "k3 is: " <<k3 << endl;
-      cout <<  "d3 is: "  <<d3 << endl;
+      k1output << k1 <<endl;
+      k3output << d1 <<endl;
+      d1output << k3 <<endl;
+      d3output << d3 <<endl;
 
       l0 = Eucl_Dist(x0, y0, x1, y1);
+      originallengthoutput << l0 << endl;
       //Initial value for the output weights. I believe this was never used.
       //wout = Uniform(input_weight_smallest_value, input_weight_largest_value);
       wout = 0;
 
       s.push_back(Springs(k1, d1, k3, d3, l0, arraysubscript1, arraysubscript2, wout));
       s[i].print_output();
+
+      cout <<"Edgelist is: " << EdgeList.size() << endl;
    }
 }
 

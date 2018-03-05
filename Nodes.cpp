@@ -6,6 +6,9 @@ Nodes::Nodes(double x_position, double y_position)
  {
   this->px = x_position;
   this->py = y_position;
+
+  this->original_px = x_position;
+  this->original_py = y_position;
  }
 
 //If this function is activated than the node is input node
@@ -29,6 +32,14 @@ double Nodes::return_Win()
 }
 
 
+
+void Nodes::original_positions()
+{
+  px = original_px;
+  py = original_py;
+}
+
+
 void Nodes::set_Fixed_Node()
 {
   this->fixednode = true;
@@ -48,6 +59,27 @@ double Nodes::get_y_position()
 {
   return py;
 }
+
+double Nodes::get_x_velocity()
+{
+  return pxdot;
+}
+
+double Nodes::get_y_velocity()
+{
+  return pydot;
+}
+
+double Nodes::get_x_acceleration()
+{
+  return pxdotdot;
+}
+
+double Nodes::get_y_acceleration()
+{
+  return pydotdot;
+}
+
 
 //This is the function that incrementally changes the nodes position in the next timestep;
 
@@ -69,13 +101,23 @@ void Nodes::Zero_Force()
 void Nodes::Update(double dt)
 {
     pxdotdot = (F_in_x)/m;
+  //  cout <<"acceleration x is: " << pxdotdot << endl;
     pydotdot = (F_in_y)/m;
+  //  cout <<"acceleration y is: " << pydotdot << endl;
       //You want to calculate the velocity so that initial velocity is 0 and than calculate the corresponding change in position
     pydot += dt*pydotdot;
+  //  cout <<"velocity y is: " << pydot << endl;
     py += dt*pydot;
+  //  cout <<"position y is: " << py << endl;
 
     pxdot += dt*pxdotdot;
+  //  cout <<"velocity y is: " << pydot << endl;
     px += dt*pxdot;
+//    cout <<"position x is: " <<px << endl;
+
+    //At the end of every step, the Forces are made to be 0.
+  //  F_in_x = 0;
+  //  F_in_y = 0;
 }
 
 void Nodes::change_updatecheck()

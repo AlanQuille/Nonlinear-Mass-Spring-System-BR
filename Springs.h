@@ -50,18 +50,20 @@ class Springs
 
         void get_Force(double &Fsum);
 
-    
+
         // This could be overloaded
         // void ForceEq(double &Fsum);
 
 
         // Change the length and velocity of the spring
         // Todo: Maybe update_spring_state would be better
-        void update_Spring_State(double &dt, double &l);
+      //;  void update_Spring_State(double &dt, double &l);
 
-    
+
         // get resting length l0
         double return_Initial_Length();
+
+        void set_original_length();
 
         // Output current length of spring
         void print_output();
@@ -83,5 +85,13 @@ class Springs
         double get_k3();
         double get_d1();
         double get_d3();
+
+        //Return x1 and x2
+        double return_x1();
+        double return_x2();
+
+        //Set x1 and x2
+        void set_x1(double x1);
+        void set_x2(double x2);
 
 };

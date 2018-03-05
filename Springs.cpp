@@ -23,27 +23,46 @@ Springs::Springs(double k1, double k3, double d1, double d3, double l0, int node
 void Springs::get_Force(double &Fsum)
 {
     // Todo: Clean up, simplify
-    p=k3*x1*x1*x1 + k1*x1;
-    q=d3*x2*x2*x2 + d1*x2;
-    F_total = -p-q;
-    Fsum = F_total;
-};
-
+    Fsum = -k3*x1*x1*x1 - k1*x1 - d3*x2*x2*x2 - d1*x2;
+}
+/*
 void Springs::update_Spring_State(double &dt, double &l)
 {
-    double x1new = l-l0;
+    x1new = l-l0;
     x2 = ((x1new - x1)/dt);
-    this->x1 = x1new;  // Todo: Check if this-> is needed
-    //RungeKutta2ndOrder(dt, x2);
+    x1 = x1new;
 };
-
-
+*/
+void Springs::set_original_length()
+{
+  l = l0;
+}
 
 double Springs::return_Initial_Length()
 {
     return l0;
-};
+}
 
+
+double Springs::return_x1()
+{
+  return x1;
+}
+
+double Springs::return_x2()
+{
+  return x2;
+}
+
+void Springs::set_x1(double x1)
+{
+  this->x1 = x1;
+}
+
+void Springs::set_x2(double x2)
+{
+  this->x2 = x2;
+}
 
 void Springs::print_output()
 {

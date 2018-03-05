@@ -161,6 +161,7 @@ int main(int argc, char** argv)
     {
         size_t pos = Input_Lines[i].find(",");      // position of the end of the name of each one in the respective string
         x = stod(Input_Lines[i].substr(pos+1,Input_Lines[i].size()));
+        x = x*10;
         Volterra.push_back(x); // convert string age to a double
     }
 
@@ -183,6 +184,7 @@ int main(int argc, char** argv)
 
         size_t pos = Volterre_Lines[i].find(",");      // position of the end of the name of each one in the respective string
         x = stod(Volterre_Lines[i].substr(pos+1,Volterre_Lines[i].size()));
+        x = x*1;
         Input.push_back(x); // convert string age to a doubl
     }
 
@@ -197,7 +199,7 @@ int main(int argc, char** argv)
 
     // setting parameters for simulation
     // This should be possible to read in from a text file
-    data.N = 30;
+    data.N = 40;
     data.ux=0;
     data.uy= 0;
 
@@ -213,13 +215,18 @@ int main(int argc, char** argv)
     data.min_k3 = 1;
     data.max_k3  = 100;
     data.min_d3 = 1;
-    data.max_d3  = 100;
+    data.max_d3  = 10;
+    /*
+    data.min_k3 = 0;
+    data.max_k3  = 0;
+    data.min_d3 = 0;
+    data.max_d3  = 0;
+*/
 
     data.min_k1 = 1;
     data.max_k1  = 200;
     data.min_d1 = 1;
     data.max_d1  = 200;
-
 
 
     data.dt = 0.001;
@@ -231,11 +238,42 @@ int main(int argc, char** argv)
 
     cout << "Initial Input is: "<< Input[0] << endl;
 
-    Simulation sim(data, Volterra, Input, wash_out_time, learning_time, learning_time_test);
+
+
+  //  Simulation sim(data, Volterra, Input, wash_out_time, learning_time, learning_time_test);
+   Simulation sim(data, Volterra, Input, wash_out_time, learning_time, learning_time_test);
     cout <<"The number of nodes is: " << data.N << endl;
     cout <<"The number of springs is: " << sim.Spring_List() << endl;
-
+    sim.Output_Signal_And_MSE();
+    /*
+    sim.input_Magnitude_of_Chaos_Force(1, "chaoscheck.csv", "LM1.csv");
     sim.Output_Signal_And_MSE();   // Todo: what is that doing? Naming is confusing.
+
+    sim.input_Magnitude_of_Chaos_Force(1, "chaoscheck1.csv", "LM2.csv");
+    sim.Reset_Simulation();
+    sim.execute();
+    sim.Output_Signal_And_MSE();
+
+    sim.input_Magnitude_of_Chaos_Force(1, "chaoscheck2.csv", "LM3.csv");
+    sim.Reset_Simulation();
+    sim.execute();
+    sim.Output_Signal_And_MSE();
+
+    sim.input_Magnitude_of_Chaos_Force(1, "chaoscheck3.csv", "LM4.csv");
+    sim.Reset_Simulation();
+    sim.execute();
+    sim.Output_Signal_And_MSE();
+
+    sim.input_Magnitude_of_Chaos_Force(1, "chaoscheck4.csv", "LM5.csv");
+    sim.Reset_Simulation();
+    sim.execute();
+    sim.Output_Signal_And_MSE();
+
+    sim.input_Magnitude_of_Chaos_Force(1, "chaoscheck5.csv", "LM6.csv");
+    sim.Reset_Simulation();
+    sim.execute();
+    sim.Output_Signal_And_MSE();
+    */
 
 
 
