@@ -203,7 +203,7 @@ int main(int argc, char** argv)
     data.ux=0;
     data.uy= 0;
 
-    data.input_connectivity_percentage = 20;
+    data.input_connectivity_percentage = 100;
     //data.w_in_initial = -1;
     data.min_input_weight = -1;
     data.max_input_weight = 1;

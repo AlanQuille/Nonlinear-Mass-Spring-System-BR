@@ -438,7 +438,8 @@ void Simulation::execute()
     {
   //      cout << "Time step " << i << endl;
         //
-        TargetSignal(i) = Target_Signal[i];
+  //      TargetSignal(i) = Target_Signal[i];
+        Target_Signal[i] = sin(i*dt);
       ////  if(i>=wash_out_time && i<(learning_time+wash_out_time)) TargetSignal1(i-wash_out_time) = Target_Signal[i];
     //  for(int l=0; l<s.size(); l++) n[l].Zero_Force();
 
@@ -580,6 +581,7 @@ void Simulation::execute()
 
             //  n[l].Input_Force(1,0);
               n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
+            //  n[l].Input_Force(1,0);
           //    cout <<"Return input node" << endl;
 
               //if(i>0) n[l].Input_Force(0, 0);
