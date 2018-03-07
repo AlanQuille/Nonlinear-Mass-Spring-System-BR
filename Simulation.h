@@ -140,6 +140,12 @@ class Simulation
         // For collecting data for learning
         MatrixXd LM;
 
+        vector<vector<double>> LearningMat;
+
+
+
+
+
     public:
 
         //Default constructor

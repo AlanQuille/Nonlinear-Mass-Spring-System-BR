@@ -34,6 +34,11 @@ private:
     double F_in_x = 0;
     // Force in y direction
     double F_in_y = 0;
+
+		//Saved F_in_x
+		double F_in_x_saved = 0;
+		//Saved F_in_y
+		double F_in_y_saved = 0;
     // Weight to scale input to force
     // intitialised to 0
     double win = 0;

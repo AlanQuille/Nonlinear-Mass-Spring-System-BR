@@ -24,7 +24,7 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
   this->N = data.N;
 
   this->input_connectivity_percentage = data.input_connectivity_percentage;
-  this->num_input_nodes = (data.input_connectivity_percentage)*N;
+  this->num_input_nodes = 0.01*(data.input_connectivity_percentage)*N;
 
   this->input_weight_smallest_value = data.min_input_weight;
   this->input_weight_largest_value = data.max_input_weight;
@@ -72,7 +72,7 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
 
 Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Lvx, vector<double> &Lvy)
 {
-  this->input_connectivity_percentage = data.input_connectivity_percentage;
+  //this->input_connectivity_percentage = data.input_connectivity_percentage;
   this->num_input_nodes = (data.input_connectivity_percentage)*rounds*no_of_points_per_round;
 
   this->N = data.N;
@@ -98,6 +98,9 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
   execute();
 //  Output_For_Plot();
 }
+
+//Need this function to change input_connectivity input input_connectivity
+
 
 void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_position, double smallest_y_position, double largest_y_position)
    {
@@ -278,23 +281,38 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
   //  cout << endl << w_in_initial;
   //  cout <<endl << w_in_final;
 
+  int en = 0.01*(int)input_connectivity_percentage*N;
+  cout << en << endl << endl << endl;
+
+  int randomnum;
+
+
+
+
+
     for(int i=0; i<N; i++)
     {
       win = Uniform(input_weight_smallest_value, input_weight_largest_value);
-      BeforeRand = Uniform(0,1);
-      if(BeforeRand<input_connectivity_percentage) win = Uniform(input_weight_smallest_value, input_weight_largest_value);
-      else win = 0;
+    //  win = Uniform(input_weight_smallest_value, input_weight_largest_value);
   //    win -= offset;
-      n[i].init_Input_Node(ux, uy, win);
+     randomnum = (int)Uniform(0, N);
+      if(i<en)
+      {
+      n[randomnum].init_Input_Node(ux, uy, win);
+      cout << "Input node here." << endl;
+      cout << n[randomnum].is_Input_Node() << endl;
+      }
       DT.AddPoint(Point(n[i].get_x_position(),n[i].get_y_position(),0));
     //  DT.AddPoint(Point(n[i].X_Position(), Point(n[i].Y_Position());
     }
+
+  //  for(int i=0; i<en; i++) n[i_list[i]].init_Input_Node()
     DT.print();
 
     Get_Triangles(DT);
     Initialize_Springs();
     execute();
-//    Output_For_Plot();
+    Output_Signal_And_MSE();
 
 }
 
@@ -381,6 +399,7 @@ void Simulation::execute()
 
 //Matrix for entire run
   MatrixXd LearningMatrix(maxtimesteps, s.size());
+
  //Matrix for learning phase
 //  MatrixXd LearningMatrix1(learning_time, s.size());
   //MatrixXd LearningMatrix2(maxtimesteps, s.size());
@@ -392,6 +411,7 @@ void Simulation::execute()
 //  VectorXd TargetSignal1(learning_time);
 
   double outputsignal = 0;
+
 
     // double uniform1 = 0;
     // double uniform2 = 0;
@@ -408,6 +428,11 @@ void Simulation::execute()
 
 
 //Inputs: Target Signal, nodes n, springs s
+
+
+
+
+
 
    for(int i=0; i<maxtimesteps; i++)
     {
@@ -465,6 +490,8 @@ void Simulation::execute()
 
 
             LearningMatrix(i,j) = l;  // Todo: update is not needed for target signal
+            //vector version.
+          //  LearningMat[i][j] =l;
 
 
             //s[j].update_Spring_State(dt, l);
@@ -537,6 +564,7 @@ void Simulation::execute()
 
           for(int l=0; l<n.size(); l++)
           {
+
               //Output NodePositions and Velocity and Acceleration
               if(l==1) OutputPositionsx << n[l].get_x_position() <<",";
               if(l==1) OutputVelocitiesx << n[l].get_x_velocity() <<",";
@@ -547,7 +575,12 @@ void Simulation::execute()
               if(l==1) OutputAccelerationsy << n[l].get_y_acceleration();
 
               //This puts in the forces due to the input force
-              if(i>0) n[l].Input_Force(0.001, 0);
+              //Random number between 0 and n, say 20%
+              //n[l].Input_Force(1, 0);
+
+              n[l].Input_Force(1,0);
+          //    cout <<"Return input node" << endl;
+
               //if(i>0) n[l].Input_Force(0, 0);
               //This puts in the forces due to the input force
               //n[k].Input_Force(0, return_Win();
@@ -576,6 +609,8 @@ void Simulation::execute()
   //    MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
   //    Cp = Cp * TargetSignal;
   //    Populate_Learning_Weights(Cp);
+
+
 
 
 
@@ -679,6 +714,8 @@ void Simulation::Output_Signal_And_MSE()
 
   double currenttime = 0;
 
+  double currentvalue = 0;
+
 
   //For normalised LearningMatrix
   double average = 0;
@@ -690,6 +727,7 @@ void Simulation::Output_Signal_And_MSE()
 //Temp stop
 
 //  for(int i=0; i<learning_time_test; i++)
+cout << "Is this working " << endl;
    for(int i = 0; i<maxtimesteps; i++)
   {
       for(int j=0; j<s.size(); j++)
@@ -698,8 +736,13 @@ void Simulation::Output_Signal_And_MSE()
         //  outputsignal += Learning_Weights[j] * LM(i, j);
             //outputLM =  LM(i, j);
           //  wjej += LM(i, j);
+      //    currentvalue = LM(i,j);
+        //  cout << currentvalue << endl;
+      //    cout << LearningMat[i][j] << endl;
+      //    learningmatrix << LM(i,j) << ",";
 
-            learningmatrix<<LM(i, j) <<",";
+             learningmatrix<<LM(i, j) <<",";
+          //  learningmatrix<<LearningMat[i][j] <<",";
 
         //  if(i==0) output2 << Learning_Weights[j] << endl;
       }

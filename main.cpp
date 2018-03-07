@@ -199,11 +199,11 @@ int main(int argc, char** argv)
 
     // setting parameters for simulation
     // This should be possible to read in from a text file
-    data.N = 40;
+    data.N = 30;
     data.ux=0;
     data.uy= 0;
 
-    data.input_connectivity_percentage = 0.2;
+    data.input_connectivity_percentage = 20;
     //data.w_in_initial = -1;
     data.min_input_weight = -1;
     data.max_input_weight = 1;
@@ -215,7 +215,7 @@ int main(int argc, char** argv)
     data.min_k3 = 1;
     data.max_k3  = 100;
     data.min_d3 = 1;
-    data.max_d3  = 10;
+    data.max_d3  = 100;
     /*
     data.min_k3 = 0;
     data.max_k3  = 0;
@@ -244,7 +244,7 @@ int main(int argc, char** argv)
    Simulation sim(data, Volterra, Input, wash_out_time, learning_time, learning_time_test);
     cout <<"The number of nodes is: " << data.N << endl;
     cout <<"The number of springs is: " << sim.Spring_List() << endl;
-    sim.Output_Signal_And_MSE();
+    //sim.Output_Signal_And_MSE();
     /*
     sim.input_Magnitude_of_Chaos_Force(1, "chaoscheck.csv", "LM1.csv");
     sim.Output_Signal_And_MSE();   // Todo: what is that doing? Naming is confusing.
