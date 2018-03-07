@@ -161,7 +161,7 @@ int main(int argc, char** argv)
     {
         size_t pos = Input_Lines[i].find(",");      // position of the end of the name of each one in the respective string
         x = stod(Input_Lines[i].substr(pos+1,Input_Lines[i].size()));
-        x = x*10;
+        x = x*500;
         Volterra.push_back(x); // convert string age to a double
     }
 
@@ -199,7 +199,7 @@ int main(int argc, char** argv)
 
     // setting parameters for simulation
     // This should be possible to read in from a text file
-    data.N = 30;
+    data.N = 50;
     data.ux=0;
     data.uy= 0;
 

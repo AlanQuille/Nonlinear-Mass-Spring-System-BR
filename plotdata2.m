@@ -9,8 +9,8 @@ inputsignal =csvread("inputsignalcheck.csv");
 %test4 = csvread("outputsignal.csv");
 %test5 = csvread("inputsignal.csv");
 learningmatrix = csvread("learningmatrix.csv");
-%learningweights = learningmatrix\targetsignal;
-%OutputMatrix = learningmatrix*learningweights;
+learningweights = learningmatrix\targetsignal;
+OutputMatrix = learningmatrix*learningweights;
 
 %[m,n] = size(learningmatrix);
 % = 1 + ((learningmatrix(:,1)-mean(learningmatrix(:,1))*(std(learningmatrix(:,1)/1))))x;

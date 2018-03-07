@@ -578,7 +578,8 @@ void Simulation::execute()
               //Random number between 0 and n, say 20%
               //n[l].Input_Force(1, 0);
 
-              n[l].Input_Force(1,0);
+            //  n[l].Input_Force(1,0);
+              n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
           //    cout <<"Return input node" << endl;
 
               //if(i>0) n[l].Input_Force(0, 0);
@@ -736,12 +737,12 @@ cout << "Is this working " << endl;
         //  outputsignal += Learning_Weights[j] * LM(i, j);
             //outputLM =  LM(i, j);
           //  wjej += LM(i, j);
-      //    currentvalue = LM(i,j);
+            currentvalue = LM(i,j);
         //  cout << currentvalue << endl;
       //    cout << LearningMat[i][j] << endl;
       //    learningmatrix << LM(i,j) << ",";
 
-             learningmatrix<<LM(i, j) <<",";
+             learningmatrix<<currentvalue <<",";
           //  learningmatrix<<LearningMat[i][j] <<",";
 
         //  if(i==0) output2 << Learning_Weights[j] << endl;
