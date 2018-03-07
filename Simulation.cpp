@@ -438,8 +438,8 @@ void Simulation::execute()
     {
   //      cout << "Time step " << i << endl;
         //
-  //      TargetSignal(i) = Target_Signal[i];
-        Target_Signal[i] = sin(i*dt);
+        TargetSignal(i) = Target_Signal[i];
+    //    Target_Signal[i] = sin(i*dt);
       ////  if(i>=wash_out_time && i<(learning_time+wash_out_time)) TargetSignal1(i-wash_out_time) = Target_Signal[i];
     //  for(int l=0; l<s.size(); l++) n[l].Zero_Force();
 
