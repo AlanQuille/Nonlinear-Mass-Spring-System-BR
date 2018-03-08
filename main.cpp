@@ -161,7 +161,7 @@ int main(int argc, char** argv)
     {
         size_t pos = Input_Lines[i].find(",");      // position of the end of the name of each one in the respective string
         x = stod(Input_Lines[i].substr(pos+1,Input_Lines[i].size()));
-        x = x*500;
+        x = x*1;
         Volterra.push_back(x); // convert string age to a double
     }
 
