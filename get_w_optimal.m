@@ -3,7 +3,10 @@ clear all
 close all
 
 L = csvread('learningmatrix.csv');
-o = csvread('volterra.csv');
+inputsig = csvread('Data/inputsignal.csv');
+targetsig = csvread('Data/volterra.csv');
+%outputsignal = csvread('outputsignal.csv');
+o = csvread('targetsignal.csv');
 
 i = csvread('input.csv');
 % o = i.*2;

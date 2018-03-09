@@ -1,20 +1,20 @@
 
-for i=1:999
-s = num2str(i*0.001);
-if(length(s)==4)
-    s =strcat(s, "0");
-end
+%for i=1:999
+%s = num2str(i*0.001);
+%if(length(s)==4)
+ %   s =strcat(s, "0");
+%end
 
-if(length(s)==3)
-    s = strcat(s, "00");
-end
-s1 = strcat(s, "X.csv");
-s2 = strcat(s, "Y.csv");
-disp(s)
-test = csvread(s1);
-test2 = csvread(s2);
-x = test;
-y = test2;
+%if(length(s)==3)
+%    s = strcat(s, "00");
+%end
+%s1 = strcat(s, "X.csv");
+%s2 = strcat(s, "Y.csv");
+%disp(s)
+%test = csvread(s1);
+%test2 = csvread(s2);
+%x = test;
+%y = test2;
 
 
 %x = [5,3,1];

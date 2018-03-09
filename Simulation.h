@@ -140,6 +140,9 @@ class Simulation
         // For collecting data for learning
         MatrixXd LM;
 
+        //For testing phase.
+        vector<double> Test_Target;
+
         vector<vector<double>> LearningMat;
 
 

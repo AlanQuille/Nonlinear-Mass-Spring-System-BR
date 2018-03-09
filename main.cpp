@@ -4,6 +4,7 @@
 #include <ctime>
 #include <fstream>
 #include <chrono>
+#include <iomanip>
 #include "Simulation.cpp"
 #include "Eigen/Dense"
 #include "Eigen/QR"
@@ -147,7 +148,7 @@ int main(int argc, char** argv)
     // Todo: I think it would be useful to define class for reading in files from csv, maybe best even encapsulated in a class
     // there are plenty of these out there
   //  ifstream file_Input ( "/Users/hh14185/Leverhulme_Trust_Proposal_spider_web/Xcode/Nonlinear-Mass-Spring-System-BR/input.csv" );
-    ifstream file_Input ( "Data/inputsignal.csv" );
+    ifstream file_Input ( "Data/inputsignal.csv" ); file_Input.precision(15);
     string tmp;
 
     while (getline(file_Input, tmp,'\n'))
@@ -161,8 +162,8 @@ int main(int argc, char** argv)
     {
         size_t pos = Input_Lines[i].find(",");      // position of the end of the name of each one in the respective string
         x = stod(Input_Lines[i].substr(pos+1,Input_Lines[i].size()));
-        x = x*1;
-        Volterra.push_back(x); // convert string age to a double
+        x = x*2;
+        Input.push_back(x); // convert string age to a double
     }
 
 
@@ -185,7 +186,7 @@ int main(int argc, char** argv)
         size_t pos = Volterre_Lines[i].find(",");      // position of the end of the name of each one in the respective string
         x = stod(Volterre_Lines[i].substr(pos+1,Volterre_Lines[i].size()));
         x = x*1;
-        Input.push_back(x); // convert string age to a doubl
+        Volterra.push_back(x); // convert string age to a doubl
     }
 
 
@@ -203,7 +204,7 @@ int main(int argc, char** argv)
     data.ux=0;
     data.uy= 0;
 
-    data.input_connectivity_percentage = 100;
+    data.input_connectivity_percentage = 20;
     //data.w_in_initial = -1;
     data.min_input_weight = -1;
     data.max_input_weight = 1;
@@ -241,7 +242,7 @@ int main(int argc, char** argv)
 
 
   //  Simulation sim(data, Volterra, Input, wash_out_time, learning_time, learning_time_test);
-   Simulation sim(data, Volterra, Input, wash_out_time, learning_time, learning_time_test);
+   Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
     cout <<"The number of nodes is: " << data.N << endl;
     cout <<"The number of springs is: " << sim.Spring_List() << endl;
     //sim.Output_Signal_And_MSE();

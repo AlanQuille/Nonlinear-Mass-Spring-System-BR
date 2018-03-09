@@ -13,6 +13,7 @@
 #include <sstream>
 #include <fstream>
 #include <string>
+#include <iomanip>
 using namespace std;
 using namespace Eigen;
 
@@ -57,6 +58,7 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
   this->learning_time = learning_time;
   this->learning_time_test = learning_time_test;
 
+  //Total time
   this->maxtimesteps = wash_out_time + learning_time + learning_time_test;
 
   Target_Signal = TS;
@@ -281,6 +283,7 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
   //  cout << endl << w_in_initial;
   //  cout <<endl << w_in_final;
 
+  //This converts input connectivity percentage into proportion.
   int en = 0.01*(int)input_connectivity_percentage*N;
   cout << en << endl << endl << endl;
 
@@ -399,6 +402,8 @@ void Simulation::execute()
 
 //Matrix for entire run
   MatrixXd LearningMatrix(maxtimesteps, s.size());
+  MatrixXd LearningMatrix2(learning_time, s.size());
+  MatrixXd LearningMatrix3(learning_time_test, s.size());
 
  //Matrix for learning phase
 //  MatrixXd LearningMatrix1(learning_time, s.size());
@@ -407,6 +412,8 @@ void Simulation::execute()
 //  MatrixXd TargetSignal(maxtimesteps, s.size()); // Todo: to fill TargetSignal matrix at init/constructor
 //Target signal for entire run
   VectorXd TargetSignal(maxtimesteps);
+  MatrixXd TargetSignal2(learning_time, s.size());
+  vector<double> TargetSignal3;
  //Target Signal for learning_phase
 //  VectorXd TargetSignal1(learning_time);
 
@@ -439,6 +446,8 @@ void Simulation::execute()
   //      cout << "Time step " << i << endl;
         //
         TargetSignal(i) = Target_Signal[i];
+        if(i>=wash_out_time && i<(wash_out_time+learning_time)) TargetSignal2(i) = Target_Signal[i-wash_out_time];
+        if(i>=(wash_out_time+learning_time)) TargetSignal3.push_back(Target_Signal[i]);
     //    Target_Signal[i] = sin(i*dt);
       ////  if(i>=wash_out_time && i<(learning_time+wash_out_time)) TargetSignal1(i-wash_out_time) = Target_Signal[i];
     //  for(int l=0; l<s.size(); l++) n[l].Zero_Force();
@@ -491,6 +500,8 @@ void Simulation::execute()
 
 
             LearningMatrix(i,j) = l;  // Todo: update is not needed for target signal
+            if(i>=wash_out_time && i<(wash_out_time+learning_time)) LearningMatrix2(i-wash_out_time, j) = l;
+            if(i>=(wash_out_time+learning_time)) LearningMatrix3(i-wash_out_time-learning_time, j) = l;
             //vector version.
           //  LearningMat[i][j] =l;
 
@@ -566,15 +577,6 @@ void Simulation::execute()
           for(int l=0; l<n.size(); l++)
           {
 
-              //Output NodePositions and Velocity and Acceleration
-              if(l==1) OutputPositionsx << n[l].get_x_position() <<",";
-              if(l==1) OutputVelocitiesx << n[l].get_x_velocity() <<",";
-              if(l==1) OutputAccelerationsx << n[l].get_x_acceleration() <<",";
-              //Output NodePositions and Velocity and Acceleration
-              if(l==1) OutputPositionsy << n[l].get_y_position();
-              if(l==1) OutputVelocitiesy << n[l].get_y_velocity();
-              if(l==1) OutputAccelerationsy << n[l].get_y_acceleration();
-
               //This puts in the forces due to the input force
               //Random number between 0 and n, say 20%
               //n[l].Input_Force(1, 0);
@@ -593,34 +595,46 @@ void Simulation::execute()
               n[l].Zero_Force();
          }
 
-         OutputPositionsx << endl;
-         OutputVelocitiesx << endl;
-         OutputAccelerationsx << endl;
-
-         OutputPositionsy << endl;
-         OutputVelocitiesy << endl;
-         OutputAccelerationsy << endl;
-
        }
 
 
       //Jacobian singular value decomposition for Moore Penrose pseudoinverse
 
-  //    LM = LearningMatrix;
+      //Learning test matrix and learning target at end of signal;
+  //    LM = LearningMatrix3;
+      LM = LearningMatrix;
+      Test_Target = TargetSignal3;
+
+  //    MatrixXd LeftInverse = ((LearningMatrix.transpose()*LearningMatrix).inverse())*LearningMatrix.transpose();
+    //  LeftInverse = LeftInverse * TargetSignal;
+    //  Populate_Learning_Weights(LeftInverse);
+    //  MatrixXd LearningMatrixTranspose = LearningMatrix.transpose();
+    //  MatrixXd LeftInverse = LearningMatrix.transpose()*LearningMatrix;
+    //  LeftInverse = (LearningMatrixTranspose*LearningMatrix).inverse();
+    //  LeftInverse = LeftInverse*LearningMatrixTranspose;
+    //  cout << LeftInverse*LearningMatrix;
+    //  LeftInverse = LeftInverse * TargetSignal2;
+    //  Populate_Learning_Weights(LeftInverse);
+
+
+
   //    JacobiSVD<MatrixXd> svd(LearningMatrix, ComputeThinU | ComputeThinV);
-  //    MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
+    //  MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
   //    MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
-  //    Cp = Cp * TargetSignal;
+      //Moore_Penrose_Pseudoinverse(LearningMatrix2);
+  //    Cp = Cp *TargetSignal;
+    //  cout << Cp;
+    //  cout << endl;
   //    Populate_Learning_Weights(Cp);
 
 
 
 
 
-      LM = LearningMatrix;
-    //  MatrixXd LeftInverse = ((LearningMatrix.transpose()*LearningMatrix).inverse())*LearningMatrix.transpose();
-      //LeftInverse = LeftInverse * TargetSignal;
-      //Populate_Learning_Weights(LeftInverse);
+    //  LM = LearningMatrix3;
+  //    MatrixXd LeftInverse = ((LearningMatrix2.transpose()*LearningMatrix2).inverse())*LearningMatrix2.transpose();
+  //    LeftInverse = LeftInverse * TargetSignal2;
+  //    Populate_Learning_Weights(LeftInverse);
 
 
 
@@ -699,18 +713,18 @@ void Simulation::Output_Signal_And_MSE()
 //  LW = Return_Learning_Weights();
 
 
-  ofstream outputsignal("outputsignal.csv");
-  ofstream learningweights("learningweights.csv");
-  ofstream targetsignal("targetsignal.csv");
+  ofstream output("outputsignal.csv"); output.precision(15);
+  ofstream learningweights("learningweights.csv"); learningweights.precision(15);
+  ofstream targetsignal("targetsignal.csv");  targetsignal.precision(15);
   //ofstream learningmatrix("learningmatrix.csv");
-  ofstream learningmatrix("learningmatrix.csv");
-  ofstream inputsignalcheck("inputsignalcheck.csv");
+  ofstream learningmatrix("learningmatrix.csv");  learningmatrix.precision(15);
+  ofstream inputsignalcheck("inputsignalcheck.csv");  inputsignalcheck.precision(15);
 
   ofstream chaoscheck(str);
 
 //  ofstream mse(str);
 
-  //double outputsignal = 0;
+  double outputsignal = 0;
 
   double wjej = 0;
 
@@ -732,30 +746,30 @@ void Simulation::Output_Signal_And_MSE()
 //  for(int i=0; i<learning_time_test; i++)
 cout << "Is this working " << endl;
    for(int i = 0; i<maxtimesteps; i++)
+  // for(int i=0; i<learning_time_test; i++)
   {
       for(int j=0; j<s.size(); j++)
       {
       //    outputsignal += Learning_Weights[j] * LM(i+wash_out_time+learning_time, j);
-        //  outputsignal += Learning_Weights[j] * LM(i, j);
+        //   outputsignal += Learning_Weights[j] * LM(i, j);
             //outputLM =  LM(i, j);
           //  wjej += LM(i, j);
-            currentvalue = LM(i,j);
+          //  currentvalue = LM(i,j);
         //  cout << currentvalue << endl;
       //    cout << LearningMat[i][j] << endl;
-      //    learningmatrix << LM(i,j) << ",";
+            learningmatrix << LM(i,j) << ",";
 
-             learningmatrix<<currentvalue <<",";
           //  learningmatrix<<LearningMat[i][j] <<",";
 
         //  if(i==0) output2 << Learning_Weights[j] << endl;
       }
 
+      learningmatrix << endl;
+
     //  chaoscheck << wjej << endl;
     //  wjej = 0;
 
-      learningmatrix <<endl;
-
-    //  Output_Signal.push_back(outputsignal);
+  //    Output_Signal.push_back(outputsignal);
       currenttime = t0 + i*dt;
 
     //  output << currenttime <<"," << Output_Signal.at(i);
@@ -764,13 +778,11 @@ cout << "Is this working " << endl;
     //  output3 << endl;
       inputsignalcheck << Input_Signal.at(i) << endl;
       targetsignal << Target_Signal.at(i) << endl;
-    //  outputsignal = 0;
+      outputsignal = 0;
   }
 
-//  cout <<"The mean squared error of the output signal versus the target signal is: " << MSE(Output_Signal, Target_Signal);
+//  cout <<"The mean squared error of the output signal versus the target signal is: " << MSE(Output_Signal, Test_Target);
 //  cout <<endl;
-//  mse << MSE(Output_Signal, Target_Signal);
-//  mse << endl;
 }  // end simulation loop
 
 
