@@ -68,6 +68,11 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
   //Learning phase
   Initialize_Nodes(smallest_x_position, largest_x_position, smallest_y_position, largest_y_position);
   Delaunay_Triangulation_and_Spring_Creation();
+
+  Initialize_Springs();
+  execute();
+  Output_Signal_And_MSE();
+  Output_For_Plot();
 }
 
 
@@ -273,49 +278,31 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
 {
     //Why is that abs? Double check this.
     DelaunayTriangulation DT(abs(largest_x_position-smallest_x_position), abs(largest_y_position-smallest_y_position));
+
     double win = 0;
-    double BeforeRand = 0;
-
-    //This offset is to counteract the negativity.
-  //  double offset = abs(w_in_initial)+abs(w_in_final);
-
-  //  cout <<"offset is: " << offset;
-  //  cout << endl << w_in_initial;
-  //  cout <<endl << w_in_final;
-
-  //This converts input connectivity percentage into proportion.
-  int en = 0.01*(int)input_connectivity_percentage*N;
-  cout << en << endl << endl << endl;
-
-  int randomnum;
-
-
-
-
+    int input_node_nums = 0.01*(int)input_connectivity_percentage*N;
+    int randomnum;
 
     for(int i=0; i<N; i++)
     {
+      //Input weights for the number of input_connectivitiy nodes.
       win = Uniform(input_weight_smallest_value, input_weight_largest_value);
-    //  win = Uniform(input_weight_smallest_value, input_weight_largest_value);
-  //    win -= offset;
-     randomnum = (int)Uniform(0, N);
-      if(i<en)
+      randomnum = (int)Uniform(0, N);
+
+      if(i<input_node_nums)
       {
       n[randomnum].init_Input_Node(ux, uy, win);
       cout << "Input node here." << endl;
       cout << n[randomnum].is_Input_Node() << endl;
       }
+
       DT.AddPoint(Point(n[i].get_x_position(),n[i].get_y_position(),0));
-    //  DT.AddPoint(Point(n[i].X_Position(), Point(n[i].Y_Position());
+
     }
 
-  //  for(int i=0; i<en; i++) n[i_list[i]].init_Input_Node()
     DT.print();
 
     Get_Triangles(DT);
-    Initialize_Springs();
-    execute();
-    Output_Signal_And_MSE();
 
 }
 
@@ -364,7 +351,6 @@ void Simulation::execute()
   double d1 = 0;
   double d3 = 0;
 
-  //set k3 and d3 to 0.
 
   double x1spring = 0;
   double x2spring = 0;
@@ -396,35 +382,17 @@ void Simulation::execute()
   ofstream OutputAccelerationsy("NodeAccelerationsy.csv");
 
 
-
-//  MatrixXd LearningMatrix(maxtimesteps, s.size());
-
-
-//Matrix for entire run
+  //Learning matrix for entire run, learning phase and testing phase.
   MatrixXd LearningMatrix(maxtimesteps, s.size());
   MatrixXd LearningMatrix2(learning_time, s.size());
   MatrixXd LearningMatrix3(learning_time_test, s.size());
 
- //Matrix for learning phase
-//  MatrixXd LearningMatrix1(learning_time, s.size());
-  //MatrixXd LearningMatrix2(maxtimesteps, s.size());
-//  MatrixXd LearningMatrix3(maxtimesteps, s.size());
-//  MatrixXd TargetSignal(maxtimesteps, s.size()); // Todo: to fill TargetSignal matrix at init/constructor
-//Target signal for entire run
+  //Detto but for Target Signal
   VectorXd TargetSignal(maxtimesteps);
-  MatrixXd TargetSignal2(learning_time, s.size());
-  vector<double> TargetSignal3;
- //Target Signal for learning_phase
-//  VectorXd TargetSignal1(learning_time);
+  VectorXd TargetSignal2(learning_time, s.size());
+  VectorXd TargetSignal3(learning_time, s.size());
 
   double outputsignal = 0;
-
-
-    // double uniform1 = 0;
-    // double uniform2 = 0;
-
-    //bool nodea1;
-    // bool nodeb1;
 
   /////////////////////////////////
   //  SIMULATION LOOP
@@ -433,13 +401,8 @@ void Simulation::execute()
   //for(int i=0; i<maxtimesteps; i++)
 //=======
 
-
-//Inputs: Target Signal, nodes n, springs s
-
-
-
-
-
+//Inputs: Input SignalTarget Signal, nodes n, springs s
+//Outputs: LearningMatrix
 
    for(int i=0; i<maxtimesteps; i++)
     {
@@ -448,103 +411,45 @@ void Simulation::execute()
         TargetSignal(i) = Target_Signal[i];
         if(i>=wash_out_time && i<(wash_out_time+learning_time)) TargetSignal2(i) = Target_Signal[i-wash_out_time];
         if(i>=(wash_out_time+learning_time)) TargetSignal3.push_back(Target_Signal[i]);
-    //    Target_Signal[i] = sin(i*dt);
-      ////  if(i>=wash_out_time && i<(learning_time+wash_out_time)) TargetSignal1(i-wash_out_time) = Target_Signal[i];
-    //  for(int l=0; l<s.size(); l++) n[l].Zero_Force();
-
-
 
         for(int j=0;  j<s.size(); j++)
         {
             nodea = s[j].Nodea();
             nodeb = s[j].Nodeb();
-            //get_node_numbers(j);
 
             x0 = n[nodea].get_x_position();
             x1 = n[nodeb].get_x_position();
 
-            //get_positions();
-
-
             y0 = n[nodea].get_y_position();
             y1 = n[nodeb].get_y_position();
-
-            //get_positions();
-
 
             vector_x = x1 - x0;
             vector_y = y1 - y0;
 
-            //get_x_component();
-            //get_y_component();
-
             l = sqrt(vector_x*vector_x + vector_y*vector_y);
 
-            //get_current_length();
-
-            //Reintroduce theta temporarily
-          //  theta = atan(vector_y/vector_x);
-
-             //Reintroduce at later stage.
             alpha = vector_x/l;
             beta = vector_y/l;
-
-            //get_direction_cosines();
-
-            //theta = atan(vector_y/vector_x);
-
-          //  cout <<"alpha minus cos theta" << alpha - cos(atan(theta)) << endl;
-          //  cout <<"beta minus sin theta" << beta - sin(atan(theta)) << endl;;
-
-
 
 
             LearningMatrix(i,j) = l;  // Todo: update is not needed for target signal
             if(i>=wash_out_time && i<(wash_out_time+learning_time)) LearningMatrix2(i-wash_out_time, j) = l;
             if(i>=(wash_out_time+learning_time)) LearningMatrix3(i-wash_out_time-learning_time, j) = l;
-            //vector version.
-          //  LearningMat[i][j] =l;
 
-
-            //s[j].update_Spring_State(dt, l);
             k1 = s[j].get_k1();
             d1 = s[j].get_d1();
             k3 = s[j].get_k3();
             d3 = s[j].get_d3();
 
-          //  get_spring_coefficients();
-          //  get_damping_coefficients();
-
-            //Set k3 and d3 to 0 temporarily.
-          //  k1 = 0;
-        //    d1 = 0;
-
             x1new = l - s[j].return_Initial_Length();
             x1spring = s[j].return_x1();
             x2spring = ((x1new - x1spring)/dt);
 
-            //get_x1_new(j);
-            //get_x2_new(j)
-
-
-
-          //  if(x1new == 0) cout <<"0 here." << endl;
-
-
             s[j].set_x2(x2spring);
             s[j].set_x1(x1new);
 
-            //End k3 and d3
-
             Fsum =-k3*x1new*x1new*x1new - k1*x1new - d3*x2spring*x2spring*x2spring - d1*x2spring;
-        //    if(i<450 && j==0) cout <<"Fsum is: "<< Fsum << endl;
 
-
-          //  s[j].get_Force(Fsum);
-
-        //    ForceVec << Fsum << endl;
-
-            //if(i>=wash_out_time && i<(learning_time+wash_out_time)) LearningMatrix1(i-wash_out_time, j) = l;
 
             Fx_nodeb = Fsum*alpha;
             Fx_nodea = -Fx_nodeb;
@@ -555,11 +460,6 @@ void Simulation::execute()
             n[nodea].Input_Force(Fx_nodea, Fy_nodea);
             n[nodeb].Input_Force(Fx_nodeb, Fy_nodeb);
 
-          //  cout <<"l is: " << l;
-          //  cout << endl;
-
-            //   l = Eucl_Dist(x0, y0, x1, y1);
-            // theta = abs(Angle(x0, x1, y0, y1));
 
             Fsum = 0;
             Fx_nodea =0;
@@ -568,30 +468,17 @@ void Simulation::execute()
             Fy_nodeb =0;
             x1new = 0;
             x2spring =0;
-
-            // s[j].update_Spring_State(dt, l)
         }
 
-        //At the end of every timestep, the net force should be zero
 
           for(int l=0; l<n.size(); l++)
           {
 
-              //This puts in the forces due to the input force
-              //Random number between 0 and n, say 20%
-              //n[l].Input_Force(1, 0);
-
-            //  n[l].Input_Force(1,0);
+              //Input force to input nodes
               n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
-            //  n[l].Input_Force(1,0);
-          //    cout <<"Return input node" << endl;
-
-              //if(i>0) n[l].Input_Force(0, 0);
-              //This puts in the forces due to the input force
-              //n[k].Input_Force(0, return_Win();
-              //Update force on node due to dt
+              //Change the node position, velocity and acceleration in response.
               n[l].Update(dt);
-              //Zero Force
+              //At the end of the loop, each node has no force acting on it.
               n[l].Zero_Force();
          }
 
@@ -604,18 +491,6 @@ void Simulation::execute()
   //    LM = LearningMatrix3;
       LM = LearningMatrix;
       Test_Target = TargetSignal3;
-
-  //    MatrixXd LeftInverse = ((LearningMatrix.transpose()*LearningMatrix).inverse())*LearningMatrix.transpose();
-    //  LeftInverse = LeftInverse * TargetSignal;
-    //  Populate_Learning_Weights(LeftInverse);
-    //  MatrixXd LearningMatrixTranspose = LearningMatrix.transpose();
-    //  MatrixXd LeftInverse = LearningMatrix.transpose()*LearningMatrix;
-    //  LeftInverse = (LearningMatrixTranspose*LearningMatrix).inverse();
-    //  LeftInverse = LeftInverse*LearningMatrixTranspose;
-    //  cout << LeftInverse*LearningMatrix;
-    //  LeftInverse = LeftInverse * TargetSignal2;
-    //  Populate_Learning_Weights(LeftInverse);
-
 
 
   //    JacobiSVD<MatrixXd> svd(LearningMatrix, ComputeThinU | ComputeThinV);
@@ -1175,11 +1050,10 @@ void Simulation::Output_For_Plot()
   EdgesT <<s[s.size()-1].Nodeb()+1;
 
 
-  for(int i=0; i<maxtimesteps; i++)
- {
+//  for(int i=0; i<maxtimesteps; i++)
+// {
    str = to_string(i*dt);
   // if(i%10 == 0) str.erase(str.length()-4);
-   str.erase(str.length()-3);
    str.append("X.csv");
    ofstream nodesX(str);
 
@@ -1199,7 +1073,7 @@ void Simulation::Output_For_Plot()
     j++;
   }
 
- }
+// }
 
 }
 

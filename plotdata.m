@@ -44,4 +44,3 @@ ylim([0.4 0.45])
 pause(0.001);
 drawnow;
 axis([0 10 0 10]);
-end

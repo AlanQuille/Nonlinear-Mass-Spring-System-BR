@@ -141,12 +141,7 @@ class Simulation
         MatrixXd LM;
 
         //For testing phase.
-        vector<double> Test_Target;
-
-        vector<vector<double>> LearningMat;
-
-
-
+        VectorXd Test_Target;
 
 
     public:
