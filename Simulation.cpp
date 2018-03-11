@@ -64,14 +64,12 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
   Target_Signal = TS;
   Input_Signal = IS;
 
-//  bool learning_phase = 0;
-  //Learning phase
   Initialize_Nodes(smallest_x_position, largest_x_position, smallest_y_position, largest_y_position);
   Delaunay_Triangulation_and_Spring_Creation();
 
   Initialize_Springs();
   execute();
-  Output_Signal_And_MSE();
+  output_LearningMatrix_and_MeanSquaredError();
   Output_For_Plot();
 }
 
@@ -202,12 +200,6 @@ void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_pe
       win = Uniform(data.min_input_weight, data.max_input_weight);
       cout << win << endl;
 
-       /*
-      win = Uniform(0,2);
-      win -= 1;
-      BeforeRand = Uniform(0,1);
-      */
-
       n.push_back(node);
 
       if(BeforeRand<=input_connectivity_percentage)
@@ -301,7 +293,6 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
     }
 
     DT.print();
-
     Get_Triangles(DT);
 
 }
@@ -318,13 +309,15 @@ void Simulation::Reset_Simulation()
   for(int i=0; i<s.size(); i++)
   {
     s[i].set_original_length();
+
     s[i].set_x1(0);
     s[i].set_x2(0);
+
     n[s[i].Nodea()].original_positions();
     n[s[i].Nodeb()].original_positions();
 
     n[s[i].Nodea()].print_position();
-    //n[s[i].Nodeb()].original_positions();
+
   }
 }
 
@@ -381,7 +374,6 @@ void Simulation::execute()
   ofstream OutputVelocitiesy("NodeVelocitiesy.csv");
   ofstream OutputAccelerationsy("NodeAccelerationsy.csv");
 
-
   //Learning matrix for entire run, learning phase and testing phase.
   MatrixXd LearningMatrix(maxtimesteps, s.size());
   MatrixXd LearningMatrix2(learning_time, s.size());
@@ -389,8 +381,8 @@ void Simulation::execute()
 
   //Detto but for Target Signal
   VectorXd TargetSignal(maxtimesteps);
-  VectorXd TargetSignal2(learning_time, s.size());
-  VectorXd TargetSignal3(learning_time, s.size());
+  VectorXd TargetSignal2(learning_time);
+  VectorXd TargetSignal3(learning_time_test);
 
   double outputsignal = 0;
 
@@ -409,8 +401,8 @@ void Simulation::execute()
   //      cout << "Time step " << i << endl;
         //
         TargetSignal(i) = Target_Signal[i];
-        if(i>=wash_out_time && i<(wash_out_time+learning_time)) TargetSignal2(i) = Target_Signal[i-wash_out_time];
-        if(i>=(wash_out_time+learning_time)) TargetSignal3.push_back(Target_Signal[i]);
+        if(i>=wash_out_time && i<(wash_out_time+learning_time)) TargetSignal2(i-wash_out_time) = Target_Signal[i];
+        if(i>=(wash_out_time+learning_time)) TargetSignal3(i-wash_out_time-learning_time) = Target_Signal[i];
 
         for(int j=0;  j<s.size(); j++)
         {
@@ -490,7 +482,7 @@ void Simulation::execute()
       //Learning test matrix and learning target at end of signal;
   //    LM = LearningMatrix3;
       LM = LearningMatrix;
-      Test_Target = TargetSignal3;
+    //  Test_Target = TargetSignal3;
 
 
   //    JacobiSVD<MatrixXd> svd(LearningMatrix, ComputeThinU | ComputeThinV);
@@ -502,16 +494,10 @@ void Simulation::execute()
     //  cout << endl;
   //    Populate_Learning_Weights(Cp);
 
-
-
-
-
     //  LM = LearningMatrix3;
   //    MatrixXd LeftInverse = ((LearningMatrix2.transpose()*LearningMatrix2).inverse())*LearningMatrix2.transpose();
   //    LeftInverse = LeftInverse * TargetSignal2;
   //    Populate_Learning_Weights(LeftInverse);
-
-
 
      //left inverse
 
@@ -521,13 +507,6 @@ void Simulation::execute()
   //    Populate_Learning_Weights(LeftInverse);
 
 
-
-
-
-
-
-
-
         //SVF decomp using fast method
     //  LM = LearningMatrix;
     //  BDCSVD<MatrixXd> svd(LM, ComputeThinU | ComputeThinV);
@@ -535,13 +514,6 @@ void Simulation::execute()
     //  MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
     //  Cp = Cp * TargetSignal;
     //  Populate_Learning_Weights(Cp);
-
-
-
-
-
-
-
 
 
     //     LM = LearningMatrix;
@@ -579,44 +551,22 @@ void Simulation::Populate_Learning_Weights(MatrixXd& L)
 // Btw. any graphical output (even to the terminal) slows the process down a lot
 // However, you could have every 1000 points and update message to show the use the simualtion is still going
 // Btw. it is good to have a functionality to switch off any of these things by the user
-void Simulation::Output_Signal_And_MSE()
+void Simulation::output_LearningMatrix_and_MeanSquaredError()
 {
-//  MatrixXd LM;
-//  vector<double> LW;
-
-//  LM = Return_Learning_Matrix();
-//  LW = Return_Learning_Weights();
-
-
   ofstream output("outputsignal.csv"); output.precision(15);
   ofstream learningweights("learningweights.csv"); learningweights.precision(15);
   ofstream targetsignal("targetsignal.csv");  targetsignal.precision(15);
-  //ofstream learningmatrix("learningmatrix.csv");
   ofstream learningmatrix("learningmatrix.csv");  learningmatrix.precision(15);
   ofstream inputsignalcheck("inputsignalcheck.csv");  inputsignalcheck.precision(15);
 
   ofstream chaoscheck(str);
 
-//  ofstream mse(str);
-
   double outputsignal = 0;
-
   double wjej = 0;
-
-
   double currenttime = 0;
-
   double currentvalue = 0;
-
-
-  //For normalised LearningMatrix
   double average = 0;
   double std = 0;
-  //double outputLM = 0;
-
-  //(learningmatrix/mean(learningmatrix) - 1 )*(1/(std(learningmatrix/mean(learningmatrix))))
-
-//Temp stop
 
 //  for(int i=0; i<learning_time_test; i++)
 cout << "Is this working " << endl;
@@ -627,30 +577,11 @@ cout << "Is this working " << endl;
       {
       //    outputsignal += Learning_Weights[j] * LM(i+wash_out_time+learning_time, j);
         //   outputsignal += Learning_Weights[j] * LM(i, j);
-            //outputLM =  LM(i, j);
-          //  wjej += LM(i, j);
-          //  currentvalue = LM(i,j);
-        //  cout << currentvalue << endl;
-      //    cout << LearningMat[i][j] << endl;
             learningmatrix << LM(i,j) << ",";
-
-          //  learningmatrix<<LearningMat[i][j] <<",";
-
-        //  if(i==0) output2 << Learning_Weights[j] << endl;
       }
 
       learningmatrix << endl;
-
-    //  chaoscheck << wjej << endl;
-    //  wjej = 0;
-
-  //    Output_Signal.push_back(outputsignal);
       currenttime = t0 + i*dt;
-
-    //  output << currenttime <<"," << Output_Signal.at(i);
-    //  output << endl;
-      //output3 <<currenttime <<"," << Target_Signal.at(i);
-    //  output3 << endl;
       inputsignalcheck << Input_Signal.at(i) << endl;
       targetsignal << Target_Signal.at(i) << endl;
       outputsignal = 0;
@@ -658,7 +589,7 @@ cout << "Is this working " << endl;
 
 //  cout <<"The mean squared error of the output signal versus the target signal is: " << MSE(Output_Signal, Test_Target);
 //  cout <<endl;
-}  // end simulation loop
+}
 
 
 
@@ -1052,16 +983,17 @@ void Simulation::Output_For_Plot()
 
 //  for(int i=0; i<maxtimesteps; i++)
 // {
-   str = to_string(i*dt);
+   str = "X.csv";
   // if(i%10 == 0) str.erase(str.length()-4);
-   str.append("X.csv");
+   //str.append("X.csv");
    ofstream nodesX(str);
 
-   str2 = to_string(i*dt);
+   //str2 = to_string(i*dt);
   // if(i%10 == 0) str.erase(str.length()-4);
-   str2.erase(str.length()-5);
-   str2.append("Y.csv");
-   ofstream nodesY(str2);
+   //str2.erase(str.length()-5);
+  // str2.append("Y.csv");
+   str = "Y.csv";
+   ofstream nodesY(str);
 
   int j=0;
   while(j<n.size())

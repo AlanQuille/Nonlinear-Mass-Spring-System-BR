@@ -214,7 +214,7 @@ class Simulation
         MatrixXd& Return_Learning_Matrix();
 
         //Return Output Signal after learning phase and the mean squared error.
-        void Output_Signal_And_MSE();
+        void output_LearningMatrix_and_MeanSquaredError();
 
         //Return the weights after learning phase as a vector
         vector<double>& Return_Learning_Weights();

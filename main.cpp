@@ -112,12 +112,6 @@ int main(int argc, char** argv)
     data.max_k3  = 100;
     data.min_d3 = 1;
     data.max_d3  = 100;
-    /*
-    data.min_k3 = 0;
-    data.max_k3  = 0;
-    data.min_d3 = 0;
-    data.max_d3  = 0;
-*/
 
     data.min_k1 = 1;
     data.max_k1  = 200;
@@ -129,12 +123,9 @@ int main(int argc, char** argv)
     data.t0 = wash_out_time*data.dt;
     data.tmax = (wash_out_time+learning_time+learning_time_test)*data.dt;
 
-
     vector<double> Sine_Wave;
 
     cout << "Initial Input is: "<< Input[0] << endl;
-
-
 
   //  Simulation sim(data, Volterra, Input, wash_out_time, learning_time, learning_time_test);
    Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);

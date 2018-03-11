@@ -8,13 +8,12 @@
 %if(length(s)==3)
 %    s = strcat(s, "00");
 %end
-%s1 = strcat(s, "X.csv");
-%s2 = strcat(s, "Y.csv");
+
 %disp(s)
-%test = csvread(s1);
-%test2 = csvread(s2);
-%x = test;
-%y = test2;
+test = csvread("X.csv");
+test2 = csvread("Y.csv");
+x = test;
+y = test2;
 
 
 %x = [5,3,1];
