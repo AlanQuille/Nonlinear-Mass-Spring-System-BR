@@ -85,7 +85,7 @@ double Nodes::get_y_acceleration()
 
 void Nodes::Input_Force(double Fx, double Fy)
 {
-  if(fixednode == false && input_node == true)
+  if(fixednode == false)
   {
     F_in_x += Fx;
     F_in_y += Fy;

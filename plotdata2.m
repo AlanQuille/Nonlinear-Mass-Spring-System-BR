@@ -9,6 +9,8 @@ inputsignal =csvread("inputsignalcheck.csv");
 %test4 = csvread("outputsignal.csv");
 %test5 = csvread("inputsignal.csv");
 learningmatrix = csvread("learningmatrix.csv");
+%learningmatrix = learningmatrix(:, 1:end-1);
+
 %learningweights = learningmatrix\targetsignal;
 %OutputMatrix = learningmatrix*learningweights;
 
@@ -57,18 +59,18 @@ newmatrix = (learningmatrix - repmat(mean(learningmatrix), size(learningmatrix,1
 %xlabel("Timesteps");
 %ylabel("Sum of L matrix for all springs");
 
-NodePositionsx = csvread("NodePositionsx.csv");
-NodeVelocitiesx = csvread("NodeVelocitiesx.csv");
-NodeAccelerationsx = csvread("NodeAccelerationsx.csv");
+%NodePositionsx = csvread("NodePositionsx.csv");
+%NodeVelocitiesx = csvread("NodeVelocitiesx.csv");
+%NodeAccelerationsx = csvread("NodeAccelerationsx.csv");
 
-NodePositionsy = csvread("NodePositionsy.csv");
-NodeVelocitiesy = csvread("NodeVelocitiesy.csv");
-NodeAccelerationsy = csvread("NodeAccelerationsy.csv");
+%NodePositionsy = csvread("NodePositionsy.csv");
+%NodeVelocitiesy = csvread("NodeVelocitiesy.csv");
+%NodeAccelerationsy = csvread("NodeAccelerationsy.csv");
 
 
-plot(NodeAccelerationsx)
-hold on
-plot(NodeAccelerationsy)
+%plot(NodeAccelerationsx)
+%hold on
+%plot(NodeAccelerationsy)
 
 
 

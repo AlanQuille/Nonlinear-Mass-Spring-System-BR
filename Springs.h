@@ -10,7 +10,7 @@ class Springs
 
         double l0;  // resting length
         double l;   // current length.
-        double x1;  // difference between current and resting lenght, i.e., x1 = l-l0
+        double x1 = 0;  // difference between current and resting lenght, i.e., x1 = l-l0
         double x2 = 0; // Velocity of the spring relative to l0 (= dx1/dt)
 
         // spring constants

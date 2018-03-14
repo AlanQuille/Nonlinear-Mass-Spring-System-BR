@@ -149,6 +149,8 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
  		 fixed <<j << endl;
  		 fixed <<k << endl;
 
+     //Test to see whether the reason why you're getting those 0 springs is because of fixed nodes.
+
  		 n[j].set_Fixed_Node();
  		 n[k].set_Fixed_Node();
  		//Just one node for test;
@@ -396,6 +398,8 @@ void Simulation::execute()
 //Inputs: Input SignalTarget Signal, nodes n, springs s
 //Outputs: LearningMatrix
 
+cout << "The number of springs is: " << s.size() << endl;
+
    for(int i=0; i<maxtimesteps; i++)
     {
   //      cout << "Time step " << i << endl;
@@ -435,7 +439,9 @@ void Simulation::execute()
 
             x1new = l - s[j].return_Initial_Length();
             x1spring = s[j].return_x1();
+            //cout << "For spring" <<" " <<j <<"x1new is : "<< x1new<< endl;
             x2spring = ((x1new - x1spring)/dt);
+            //cout << "For spring" <<" " <<j <<"x2spring is : "<< x2spring<< endl;
 
             s[j].set_x2(x2spring);
             s[j].set_x1(x1new);
@@ -453,6 +459,8 @@ void Simulation::execute()
             n[nodeb].Input_Force(Fx_nodeb, Fy_nodeb);
 
 
+
+
             Fsum = 0;
             Fx_nodea =0;
             Fx_nodeb =0;
@@ -467,7 +475,8 @@ void Simulation::execute()
           {
 
               //Input force to input nodes
-              n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
+              if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
+            //  n[l].Input_Force(1,0);
               //Change the node position, velocity and acceleration in response.
               n[l].Update(dt);
               //At the end of the loop, each node has no force acting on it.
