@@ -12,12 +12,7 @@ learningmatrix = csvread("learningmatrix.csv");
 learningmatrix = learningmatrix(:, 1:end-1);
 
 learningweights2 = learningmatrix\targetsignal;
-OutputVector = learningmatrix*learningweights;
-OutputVector2 = learningmatrix*learningweights2;
-
-plot(OutputVector)
-hold on
-plot(OutputVector2)
+OutputMatrix = learningmatrix*learningweights2;
 
 %[m,n] = size(learningmatrix);
 % = 1 + ((learningmatrix(:,1)-mean(learningmatrix(:,1))*(std(learningmatrix(:,1)/1))))x;

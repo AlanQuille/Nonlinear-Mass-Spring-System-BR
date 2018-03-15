@@ -220,7 +220,7 @@ class Simulation
         vector<double>& Return_Learning_Weights();
 
         //Populate the learning matrix with weights.
-        void Populate_Learning_Weights(MatrixXd& L);
+        void Populate_Learning_Weights(VectorXd& L);
 
         //Have N random input nodes.
         int Random_Input_Nodes(int N);

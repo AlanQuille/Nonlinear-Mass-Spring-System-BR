@@ -494,14 +494,14 @@ cout << "The number of springs is: " << s.size() << endl;
     //  Test_Target = TargetSignal3;
 
 
-  //    JacobiSVD<MatrixXd> svd(LearningMatrix, ComputeThinU | ComputeThinV);
-    //  MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
+      JacobiSVD<MatrixXd> svd(LearningMatrix, ComputeThinU | ComputeThinV);
+      MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
   //    MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
       //Moore_Penrose_Pseudoinverse(LearningMatrix2);
-  //    Cp = Cp *TargetSignal;
+      VectorXd LearningWeightsVector = Cp *TargetSignal;
     //  cout << Cp;
     //  cout << endl;
-  //    Populate_Learning_Weights(Cp);
+      Populate_Learning_Weights(LearningWeightsVector);
 
     //  LM = LearningMatrix3;
   //    MatrixXd LeftInverse = ((LearningMatrix2.transpose()*LearningMatrix2).inverse())*LearningMatrix2.transpose();
@@ -510,10 +510,10 @@ cout << "The number of springs is: " << s.size() << endl;
 
      //left inverse
 
-  //    LM = LearningMatrix;
-  //    MatrixXd LeftInverse = ((LearningMatrix.transpose()*LearningMatrix).inverse())*LearningMatrix.transpose();
-  //    LeftInverse = LeftInverse * TargetSignal;
-  //    Populate_Learning_Weights(LeftInverse);
+      //LM = LearningMatrix;
+      //MatrixXd LeftInverse = ((LearningMatrix.transpose()*LearningMatrix).inverse())*LearningMatrix.transpose();
+      //VectorXd LearningWeightsVector = LeftInverse * TargetSignal;
+    //  Populate_Learning_Weights(LearningWeightsVector);
 
 
         //SVF decomp using fast method
@@ -546,12 +546,12 @@ MatrixXd& Simulation::Return_Learning_Matrix()
   return LM;
 }
 
-void Simulation::Populate_Learning_Weights(MatrixXd& L)
+void Simulation::Populate_Learning_Weights(VectorXd& L)
 {
   for(int j=0; j<s.size(); j++)
   {
   //  cout << L(j,0) << endl;
-    Learning_Weights.push_back(L(j,0));
+    Learning_Weights.push_back(L(j));
   }
 }
 
@@ -587,6 +587,11 @@ cout << "Is this working " << endl;
       //    outputsignal += Learning_Weights[j] * LM(i+wash_out_time+learning_time, j);
         //   outputsignal += Learning_Weights[j] * LM(i, j);
             learningmatrix << LM(i,j) << ",";
+            if(i==0)
+            {
+              learningweights << Learning_Weights[j];
+              learningweights << endl;
+            }
       }
 
       learningmatrix << endl;
