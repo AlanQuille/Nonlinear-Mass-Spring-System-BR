@@ -88,14 +88,14 @@ int main(int argc, char** argv)
     cout <<"Size of input signal is: "<< Input.size() << endl;
     cout <<"Size of target signal is: "<< Volterra.size() << endl;
 
-    double wash_out_time = 20000;
-    double learning_time = 200000;
+    double wash_out_time = 100000;
+    double learning_time = 135000;
     double learning_time_test = 15000;
 
 
     // setting parameters for simulation
     // This should be possible to read in from a text file
-    data.N = 20;
+    data.N = 25;
     data.ux=0;
     data.uy= 0;
 

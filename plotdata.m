@@ -16,7 +16,8 @@ x = test;
 y = test2;
 
 
-%x = [5,3,1];
+%x = [5,3,1]s
+
 %y = [1,4,2];
 %plot(x,y,'-o','MarkerSize',10, 'MarkerEdgeColor','red');
 %plot(x,y,'Layout','force')
@@ -29,9 +30,10 @@ y = test2;
 s = csvread("s.csv")
 t = csvread("t.csv")
 G = graph(s,t);
-while(numnodes(G)<length(x)) G =addnode(G, 1);
-end
+%G = addnode(G,1);
+%G = addnode(G,1);
 
+%x
 
 %x = [test(1,1) test(1,3) test(2,1)];
 %y = [test(1,2) test(1,4) test(2,2)];
@@ -41,5 +43,5 @@ plot(G,'XData',x,'YData',y);
 xlim([-0.215 -0.19])
 ylim([0.4 0.45])
 pause(0.001);
-drawnow;
+drawnow;x
 axis([0 10 0 10]);

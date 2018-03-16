@@ -494,11 +494,11 @@ cout << "The number of springs is: " << s.size() << endl;
     //  Test_Target = TargetSignal3;
 
 
-      JacobiSVD<MatrixXd> svd(LearningMatrix, ComputeThinU | ComputeThinV);
+      JacobiSVD<MatrixXd> svd(LearningMatrix2, ComputeThinU | ComputeThinV);
       MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
   //    MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
       //Moore_Penrose_Pseudoinverse(LearningMatrix2);
-      VectorXd LearningWeightsVector = Cp *TargetSignal;
+      VectorXd LearningWeightsVector = Cp *TargetSignal2;
     //  cout << Cp;
     //  cout << endl;
       Populate_Learning_Weights(LearningWeightsVector);
@@ -824,6 +824,16 @@ void Simulation::Initialize_Springs()
   double y1;
   double wout;
 
+  double dist = 0;
+  double dist2 = 0;
+  double perp_dist_new = 0;
+  //maximum possible distance for the initial value as this is a minimisation problem
+  double perp_dist_old =largest_x_position + largest_y_position;
+  double x2 = 0;
+  double y2 = 0;
+  int connect_node;
+  int connect_node2;
+
   int arraysubscript1=0;
   int arraysubscript2=0;
 
@@ -832,6 +842,9 @@ void Simulation::Initialize_Springs()
     ofstream k3output("k3output.csv");
     ofstream d3output("d3output.csv");
     ofstream originallengthoutput("originallengthoutput.csv");
+
+    vector<int> node_list;
+    vector<int> unconnected_nodes;
 
 
   for(int i=0; i<EdgeList.size(); i++)
@@ -864,11 +877,156 @@ void Simulation::Initialize_Springs()
       wout = 0;
 
       s.push_back(Springs(k1, d1, k3, d3, l0, arraysubscript1, arraysubscript2, wout));
+      node_list.push_back(s[i].Nodea());
+      node_list.push_back(s[i].Nodeb());
+    //  Sort()
       s[i].print_output();
 
       cout <<"Edgelist is: " << EdgeList.size() << endl;
    }
-}
+ //Unconnected nodes must be connected. identify them and connect them.
+   sort(node_list.begin(), node_list.end());
+   node_list.erase(unique(node_list.begin(), node_list.end()), node_list.end());
+   int i=0;
+   int j=0;
+   for(int i =0; i<node_list.size(); i++) cout << "each i" << node_list.at(i) << endl;
+   if(node_list.size()<N)
+   {
+     while(i<N)
+     {
+       cout<<"i is: " << i << endl;
+       cout<<"nodelist j is: " << node_list[j] << endl;
+
+       if(i!=node_list[j])
+       {
+         unconnected_nodes.push_back(i);
+         cout <<"Unconnected node" << endl;
+         i++;
+       }
+
+       if(i==node_list[j])
+       {
+       i++;
+       if(i<=node_list.back()) j++;
+       }
+
+     }
+
+     cout <<"The number of unconnected nodes is: " << unconnected_nodes.size() << endl;
+     cout <<"The max nodes is : " << node_list.back() << endl;
+
+    //for(int k=0; k<unconnected_nodes.size(); k++) n.erase(n.begin()+unconnected_nodes[k]);
+
+    j=0;
+    connect_node = 0;
+    connect_node2 = 0;
+
+    //Put this on back burner.
+
+
+     while(j<unconnected_nodes.size())
+     {
+        for(int i=0; i<s.size(); i++)
+        {
+
+       arraysubscript1 = s[i].Nodea();
+       arraysubscript2 = s[i].Nodea();
+
+       x0 = n[arraysubscript1].get_x_position();
+       x1 = n[arraysubscript2].get_x_position();
+       y0 = n[arraysubscript1].get_y_position();
+       y1 = n[arraysubscript2].get_y_position();
+
+       dist = Eucl_Dist(x0, y0, x1, y1);
+
+       x2 = n[unconnected_nodes[j]].get_x_position();
+       y2 = n[unconnected_nodes[j]].get_y_position();
+
+       dist2 = Eucl_Dist(x1, y1, x2, y2);
+
+       //Find perp distance to triangle formed by spring and unconneceted node
+       perp_dist_new = sqrt(0.5*dist2*dist2 - dist*dist);
+
+       if(perp_dist_new<perp_dist_old)
+         {
+       perp_dist_old = perp_dist_new;
+       connect_node = arraysubscript2;
+       connect_node2 = arraysubscript1;
+         }
+       }
+       //Add another spring
+       k1 = Rand_In_Range_Exp_k1();
+       d1 = Rand_In_Range_Exp_d1();
+       k3 = Rand_In_Range_Exp_k3();
+       d3 = Rand_In_Range_Exp_d3();
+
+       l0 = Eucl_Dist(x1, y1, x2, y2);
+       wout = 0;
+       //s.push_back(Springs(k1, d1, k3, d3, l0, connect_node, unconnected_nodes[j], wout));
+       //s.push_back(Springs(k1, d1, k3, d3, l0, connect_node2, unconnected_nodes[j], wout));
+       //Next unconnected node
+       cout << "The connecting node is: " << connect_node << endl;
+       cout << "The unconnected node is : " << unconnected_nodes[j] << endl;
+       perp_dist_old =largest_x_position + largest_y_position;
+       j++;
+     }
+
+
+   }
+
+
+// Find perpendicular distance from triangle.
+/*
+   if(unconnected_nodes.size()>=1)
+   {
+
+   while(j<unconnected_nodes.size())
+   {
+      for(int i=0; i<EdgeList.size(); i++)
+      {
+     arraysubscript1 = EdgeList[i].at(0) - 4;
+     arraysubscript2 = EdgeList[i].at(1) - 4;
+
+     x0 = n[arraysubscript1].get_x_position();
+     x1 = n[arraysubscript2].get_x_position();
+     y0 = n[arraysubscript1].get_y_position();
+     y1 = n[arraysubscript2].get_y_position();
+
+     dist = Eucl_Dist(x0, y0, x1, y1);
+
+     x2 = n[unconnected_nodes[j]].get_x_position();
+     y2 = n[unconnected_nodes[j]].get_y_position();
+
+     dist2 = Eucl_Dist(x1, y1, x2, y2);
+
+
+
+     //Find perp distance to triangle formed by spring and unconneceted node
+     perp_dist_new = sqrt(0.5*dist2*dist2 - dist*dist);
+     if(perp_dist_new<perp_dist_old)
+       {
+     perp_dist_old = perp_dist_new;
+     connect_node = arraysubscript2;
+       }
+     }
+     //Add another spring
+  //   k1 = Rand_In_Range_Exp_k1();
+  //   d1 = Rand_In_Range_Exp_d1();
+  //   k3 = Rand_In_Range_Exp_k3();
+  //   d3 = Rand_In_Range_Exp_d3();
+  //   l0 = Eucl_Dist(x1, y1, x2, y2);
+  //   wout = 0;
+//     s.push_back(Springs(k1, d1, k3, d3, l0, unconnected_nodes[j], connect_node, wout));
+     //Next unconnected node
+     cout << "The connecting node is: " << connect_node << endl;
+     cout << "The unconnected node is : " << unconnected_nodes[j] << endl;
+     perp_dist_old =largest_x_position + largest_y_position;
+     j++;
+   }
+ }
+ */
+
+   }
 
 
 void Simulation::Get_Triangles(DelaunayTriangulation &Delaunay)

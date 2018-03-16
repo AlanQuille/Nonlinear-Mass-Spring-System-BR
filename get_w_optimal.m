@@ -3,6 +3,7 @@ clear all
 close all
 
 L = csvread('learningmatrix.csv');
+L = L(:, 1:end-1);
 inputsig = csvread('Data/inputsignal.csv');
 targetsig = csvread('Data/volterra.csv');
 %outputsignal = csvread('outputsignal.csv');
@@ -23,7 +24,9 @@ L_ = L(washout+1:end,:);
 len = length(L_);
 %L_full = [L;ones(len)];
 o_ = o(washout+1:washout+len,:);
-w  = L_\o_;
+%w  = L_\o_;
+%TRY TRY TRY TRY TRY TRY TRY TRY
+w = csvread("learningweights.csv");
 figure;stem(w)
 
 y = L_*w;
