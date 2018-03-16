@@ -277,6 +277,9 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
     int input_node_nums = 0.01*(int)input_connectivity_percentage*N;
     int randomnum;
 
+    int num_of_input_nodes = 0;
+    int num_of_fixed_nodes = 0;
+
     for(int i=0; i<N; i++)
     {
       //Input weights for the number of input_connectivitiy nodes.
@@ -289,16 +292,18 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
       //If it is not a fixed node.
       while(n[randomnum].is_Fixed_Node())
       {
+        //C++ typecasting rounds down (truncates) but this is fine going from 0 to N-1.
         randomnum = (int)Uniform(0, N);
       }
       n[randomnum].is_Input_Node();
-      cout << "Input node here." << endl;
-      cout << n[randomnum].is_Input_Node() << endl;
+      num_of_input_nodes++;
       }
 
       DT.AddPoint(Point(n[i].get_x_position(),n[i].get_y_position(),0));
 
     }
+
+    cout <<"The total number of input nodes is: " << num_of_input_nodes << endl;
 
     DT.print();
     Get_Triangles(DT);
