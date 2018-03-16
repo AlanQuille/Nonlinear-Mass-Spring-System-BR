@@ -885,95 +885,6 @@ void Simulation::Initialize_Springs()
       cout <<"Edgelist is: " << EdgeList.size() << endl;
    }
  //Unconnected nodes must be connected. identify them and connect them.
-   sort(node_list.begin(), node_list.end());
-   node_list.erase(unique(node_list.begin(), node_list.end()), node_list.end());
-   int i=0;
-   int j=0;
-   for(int i =0; i<node_list.size(); i++) cout << "each i" << node_list.at(i) << endl;
-   if(node_list.size()<N)
-   {
-     while(i<N)
-     {
-       cout<<"i is: " << i << endl;
-       cout<<"nodelist j is: " << node_list[j] << endl;
-
-       if(i!=node_list[j])
-       {
-         unconnected_nodes.push_back(i);
-         cout <<"Unconnected node" << endl;
-         i++;
-       }
-
-       if(i==node_list[j])
-       {
-       i++;
-       if(i<=node_list.back()) j++;
-       }
-
-     }
-
-     cout <<"The number of unconnected nodes is: " << unconnected_nodes.size() << endl;
-     cout <<"The max nodes is : " << node_list.back() << endl;
-
-    //for(int k=0; k<unconnected_nodes.size(); k++) n.erase(n.begin()+unconnected_nodes[k]);
-
-    j=0;
-    connect_node = 0;
-    connect_node2 = 0;
-
-    //Put this on back burner.
-
-
-     while(j<unconnected_nodes.size())
-     {
-        for(int i=0; i<s.size(); i++)
-        {
-
-       arraysubscript1 = s[i].Nodea();
-       arraysubscript2 = s[i].Nodea();
-
-       x0 = n[arraysubscript1].get_x_position();
-       x1 = n[arraysubscript2].get_x_position();
-       y0 = n[arraysubscript1].get_y_position();
-       y1 = n[arraysubscript2].get_y_position();
-
-       dist = Eucl_Dist(x0, y0, x1, y1);
-
-       x2 = n[unconnected_nodes[j]].get_x_position();
-       y2 = n[unconnected_nodes[j]].get_y_position();
-
-       dist2 = Eucl_Dist(x1, y1, x2, y2);
-
-       //Find perp distance to triangle formed by spring and unconneceted node
-       perp_dist_new = sqrt(0.5*dist2*dist2 - dist*dist);
-
-       if(perp_dist_new<perp_dist_old)
-         {
-       perp_dist_old = perp_dist_new;
-       connect_node = arraysubscript2;
-       connect_node2 = arraysubscript1;
-         }
-       }
-       //Add another spring
-       k1 = Rand_In_Range_Exp_k1();
-       d1 = Rand_In_Range_Exp_d1();
-       k3 = Rand_In_Range_Exp_k3();
-       d3 = Rand_In_Range_Exp_d3();
-
-       l0 = Eucl_Dist(x1, y1, x2, y2);
-       wout = 0;
-       //s.push_back(Springs(k1, d1, k3, d3, l0, connect_node, unconnected_nodes[j], wout));
-       //s.push_back(Springs(k1, d1, k3, d3, l0, connect_node2, unconnected_nodes[j], wout));
-       //Next unconnected node
-       cout << "The connecting node is: " << connect_node << endl;
-       cout << "The unconnected node is : " << unconnected_nodes[j] << endl;
-       perp_dist_old =largest_x_position + largest_y_position;
-       j++;
-     }
-
-
-   }
-
 
 // Find perpendicular distance from triangle.
 /*
@@ -1051,22 +962,23 @@ void Simulation::Get_Triangles(DelaunayTriangulation &Delaunay)
     {
       //cout <<"Node1:" <<get<0>(e) <<" " << "Node2:"<<" " <<get<1>(e)<< endl;
       s1 << e;
-    //	cout << e << endl;
       tri.push_back(s1.str());
       tri.at(k) = tri.at(k).substr(1, tri.at(k).size()-3);
+      //cout << tri.at(k);
+      //cout << endl;
       //cout << tri.at(k) << endl;
   //		cout <<endl;
           s1.str("");
           istringstream iss(tri.at(k));
 
           iss >> node1;
-        //  cout <<"node1: " <<node1 <<endl;
+      //    cout <<"node1: " <<node1 <<endl;
           iss >>sep;
           iss >>node2;
         //  cout <<"node2: "<<node2 << endl;
           iss >>sep;
           iss >>node3;
-      //    cout <<"node3: " << node3 << endl;
+        //  cout <<"node3: " << node3 << endl;
           iss >>sep;
 
           if(node1!=0 && node1!=1 && node1!=2 && node1!=3) vertices++;
@@ -1076,8 +988,9 @@ void Simulation::Get_Triangles(DelaunayTriangulation &Delaunay)
           if(vertices ==2)
           {
       noofconnectingedges++;
-    //	cout << "Connect two nodes!: " <<node1 <<" " <<node2 <<" "<< node3 <<" ";
+      //So the smallest is first
       Sort(node1, node2, node3);
+    //  cout << "Connect two nodes 2!: " <<node1 <<" " <<node2 <<" "<< node3 << endl;
       if(node1!=0 && node1!=1 && node1!=2 && node1!=3)
       {
         NodeList.push_back(node1);
@@ -1100,12 +1013,14 @@ void Simulation::Get_Triangles(DelaunayTriangulation &Delaunay)
         if(vertices ==3)
           {
       noofconnectingedges+=2;
-      //cout << "Connect all nodes: " <<node1 <<" " <<node2 <<" "<< node3 <<" ";
       Sort(node1, node2, node3);
       if(node1!=0 && node1!=1 && node1!=2 && node1!=3)
       {
         NodeList.push_back(node1);
         NodeList.push_back(node2);
+        EdgeList.push_back(NodeList);
+        NodeList.clear();
+
         NodeList.push_back(node2);
         NodeList.push_back(node3);
         EdgeList.push_back(NodeList);
@@ -1123,8 +1038,20 @@ void Simulation::Get_Triangles(DelaunayTriangulation &Delaunay)
           vertices = 0;
       k++;
    }
+/*
+   for(int i =0; i<EdgeList.size(); i++)
+   {
+       cout << "The Edge here is: " << EdgeList[i][0] - 4<< " ";
+       cout << EdgeList[i][1] - 4;
+       cout << endl;
+   }
+   */
+
+
 
       Remove_Duplicates(EdgeList);
+
+
  //Remove Duplicates from EdgeNodeList
 }
 
