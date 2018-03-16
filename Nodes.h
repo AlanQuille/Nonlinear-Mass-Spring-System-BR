@@ -52,14 +52,17 @@ private:
 
   public:
 
-    //Default constructor, with caretesian coordinates
-    Nodes(double x_position, double y_position);
+  //Default constructor, with caretesian coordinates
+  Nodes(double x_position, double y_position);
 
-    // Function to convert Node to node that receives and an input force
+  // Function to convert Node to node that receives and an input force
 	void init_Input_Node(double ux, double uy, double win);
 
-    // Checks if node is input node
+  // Checks if node is input node
 	bool is_Input_Node();
+
+  //Returns fixed node
+	bool is_Fixed_Node();
 
   //Save original position in x and y of nodes.
 	void original_positions();

@@ -26,6 +26,11 @@ bool Nodes::is_Input_Node()
   return input_node;
 }
 
+bool Nodes::is_Fixed_Node()
+{
+  return fixednode;
+}
+
 double Nodes::return_Win()
 {
   return win;

@@ -283,9 +283,15 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
       win = Uniform(input_weight_smallest_value, input_weight_largest_value);
       randomnum = (int)Uniform(0, N);
 
+      //Make sure fixed nodes are not input nodes
       if(i<input_node_nums)
       {
-      n[randomnum].init_Input_Node(ux, uy, win);
+      //If it is not a fixed node.
+      while(n[randomnum].is_Fixed_Node())
+      {
+        randomnum = (int)Uniform(0, N);
+      }
+      n[randomnum].is_Input_Node();
       cout << "Input node here." << endl;
       cout << n[randomnum].is_Input_Node() << endl;
       }
