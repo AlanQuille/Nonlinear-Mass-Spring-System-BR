@@ -295,8 +295,10 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
         //C++ typecasting rounds down (truncates) but this is fine going from 0 to N-1.
         randomnum = (int)Uniform(0, N);
       }
-      n[randomnum].is_Input_Node();
+
+      n[randomnum].init_Input_Node(ux, uy, win);
       num_of_input_nodes++;
+      
       }
 
       DT.AddPoint(Point(n[i].get_x_position(),n[i].get_y_position(),0));
