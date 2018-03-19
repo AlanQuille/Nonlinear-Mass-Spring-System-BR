@@ -280,6 +280,8 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
     int num_of_input_nodes = 0;
     int num_of_fixed_nodes = 0;
 
+
+
     for(int i=0; i<N; i++)
     {
       //Input weights for the number of input_connectivitiy nodes.
@@ -298,8 +300,9 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
 
       n[randomnum].init_Input_Node(ux, uy, win);
       num_of_input_nodes++;
-      
+
       }
+
 
       DT.AddPoint(Point(n[i].get_x_position(),n[i].get_y_position(),0));
 
@@ -970,6 +973,8 @@ void Simulation::Get_Triangles(DelaunayTriangulation &Delaunay)
   double noofconnectingedges = 0;
 
 
+
+
   //	This takes the nodes of each triangle and parses them so only the relevant nodes a
     for(auto e: Delaunay.triangles)
     {
@@ -977,12 +982,9 @@ void Simulation::Get_Triangles(DelaunayTriangulation &Delaunay)
       s1 << e;
       tri.push_back(s1.str());
       tri.at(k) = tri.at(k).substr(1, tri.at(k).size()-3);
-      //cout << tri.at(k);
-      //cout << endl;
-      //cout << tri.at(k) << endl;
-  //		cout <<endl;
-          s1.str("");
-          istringstream iss(tri.at(k));
+
+      s1.str("");
+      istringstream iss(tri.at(k));
 
           iss >> node1;
       //    cout <<"node1: " <<node1 <<endl;
@@ -991,81 +993,40 @@ void Simulation::Get_Triangles(DelaunayTriangulation &Delaunay)
         //  cout <<"node2: "<<node2 << endl;
           iss >>sep;
           iss >>node3;
-        //  cout <<"node3: " << node3 << endl;
+
           iss >>sep;
 
-          if(node1!=0 && node1!=1 && node1!=2 && node1!=3) vertices++;
-          if(node2!=0 && node2!=1 && node2!=2 && node2!=3) vertices++;
-          if(node3!=0 && node3!=1 && node3!=2 && node3!=3) vertices++;
 
-          if(vertices ==2)
+        //  cout <<" node1: " << node1 << " node2: " <<node2 << " node3: " << node3 << endl;
+          Sort(node1, node2, node3);
+      //    cout <<"node1: " << node1 << " node2: " <<node2 << " node3: " << node3 << endl;
+
+          if(node1>3)
           {
-      noofconnectingedges++;
-      //So the smallest is first
-      Sort(node1, node2, node3);
-    //  cout << "Connect two nodes 2!: " <<node1 <<" " <<node2 <<" "<< node3 << endl;
-      if(node1!=0 && node1!=1 && node1!=2 && node1!=3)
-      {
-        NodeList.push_back(node1);
-        NodeList.push_back(node2);
-        EdgeList.push_back(NodeList);
-        NodeList.clear();
-        }
-      else if(node2!=0 && node2!=1 && node2!=2 && node2!=3)
-      {
-        NodeList.push_back(node2);
-        NodeList.push_back(node3);
-        EdgeList.push_back(NodeList);
-        NodeList.clear();
-      }
+            NodeList.push_back(node1);
+            NodeList.push_back(node2);
+            EdgeList.push_back(NodeList);
+            NodeList.clear();
 
-      //Add a spring
-    //	Springs = new Spring()
-        }
+            NodeList.push_back(node2);
+            NodeList.push_back(node3);
+            EdgeList.push_back(NodeList);
+            NodeList.clear();
+          }
 
-        if(vertices ==3)
+          else if(node2>3)
           {
-      noofconnectingedges+=2;
-      Sort(node1, node2, node3);
-      if(node1!=0 && node1!=1 && node1!=2 && node1!=3)
-      {
-        NodeList.push_back(node1);
-        NodeList.push_back(node2);
-        EdgeList.push_back(NodeList);
-        NodeList.clear();
+            NodeList.push_back(node2);
+            NodeList.push_back(node3);
+            EdgeList.push_back(NodeList);
+            NodeList.clear();
+          }
 
-        NodeList.push_back(node2);
-        NodeList.push_back(node3);
-        EdgeList.push_back(NodeList);
-        NodeList.clear();
-      }
-      else if(node2!=0 && node2!=1 && node2!=2 && node2!=3)
-      {
-        NodeList.push_back(node2);
-        NodeList.push_back(node3);
-        EdgeList.push_back(NodeList);
-        NodeList.clear();
-      }
-      //Add a spring
-        }
-          vertices = 0;
-      k++;
-   }
-/*
-   for(int i =0; i<EdgeList.size(); i++)
-   {
-       cout << "The Edge here is: " << EdgeList[i][0] - 4<< " ";
-       cout << EdgeList[i][1] - 4;
-       cout << endl;
-   }
-   */
-
-
+          k++;
+       }
 
       Remove_Duplicates(EdgeList);
 
-
- //Remove Duplicates from EdgeNodeList
 }
 
 
