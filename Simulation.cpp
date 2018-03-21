@@ -507,6 +507,8 @@ cout << "The number of springs is: " << s.size() << endl;
       //Learning test matrix and learning target at end of signal;
   //    LM = LearningMatrix3;
       LM = LearningMatrix;
+      LM2 = LearningMatrix2;
+      LM3 = LearningMatrix3;
     //  Test_Target = TargetSignal3;
 
 
@@ -581,7 +583,12 @@ void Simulation::output_LearningMatrix_and_MeanSquaredError()
   ofstream output("outputsignal.csv"); output.precision(15);
   ofstream learningweights("learningweights.csv"); learningweights.precision(15);
   ofstream targetsignal("targetsignal.csv");  targetsignal.precision(15);
+  ofstream targetsignal2("targetsignal2.csv");  targetsignal.precision(15);
+  ofstream targetsignal3("targetsignal3.csv");  targetsignal.precision(15);
+
   ofstream learningmatrix("learningmatrix.csv");  learningmatrix.precision(15);
+  ofstream learningmatrix2("learningmatrix2.csv");  learningmatrix.precision(15);
+  ofstream learningmatrix3("learningmatrix3.csv");  learningmatrix.precision(15);
   ofstream inputsignalcheck("inputsignalcheck.csv");  inputsignalcheck.precision(15);
 
   ofstream chaoscheck(str);
@@ -603,6 +610,8 @@ cout << "Is this working " << endl;
       //    outputsignal += Learning_Weights[j] * LM(i+wash_out_time+learning_time, j);
         //   outputsignal += Learning_Weights[j] * LM(i, j);
             learningmatrix << LM(i,j) << ",";
+            if(i>=wash_out_time && i<(wash_out_time+learning_time)) learningmatrix2 << LM2(i-wash_out_time,j) << ",";
+            if(i>=(wash_out_time+learning_time)) learningmatrix3 << LM3(i-wash_out_time-learning_time,j) << ",";
             if(i==0)
             {
               learningweights << Learning_Weights[j];
@@ -611,9 +620,16 @@ cout << "Is this working " << endl;
       }
 
       learningmatrix << endl;
+      learningmatrix2 << endl;
+      learningmatrix3 << endl;
+
       currenttime = t0 + i*dt;
       inputsignalcheck << Input_Signal.at(i) << endl;
+
       targetsignal << Target_Signal.at(i) << endl;
+      if(i>=wash_out_time && i<(wash_out_time+learning_time)) targetsignal2 << Target_Signal2.at(i-wash_out_time) << endl;
+      if(i>=(wash_out_time+learning_time)) targetsignal3 << Target_Signal3.at(i-wash_out_time-learning_time) << endl;
+
       outputsignal = 0;
   }
 
@@ -974,7 +990,6 @@ void Simulation::Get_Triangles(DelaunayTriangulation &Delaunay)
 
 
 
-
   //	This takes the nodes of each triangle and parses them so only the relevant nodes a
     for(auto e: Delaunay.triangles)
     {
@@ -999,10 +1014,11 @@ void Simulation::Get_Triangles(DelaunayTriangulation &Delaunay)
 
         //  cout <<" node1: " << node1 << " node2: " <<node2 << " node3: " << node3 << endl;
           Sort(node1, node2, node3);
-      //    cout <<"node1: " << node1 << " node2: " <<node2 << " node3: " << node3 << endl;
+        //  cout <<"node1: " << node1 << " node2: " <<node2 << " node3: " << node3 << endl;
+
 
           if(node1>3)
-          {
+         {
             NodeList.push_back(node1);
             NodeList.push_back(node2);
             EdgeList.push_back(NodeList);

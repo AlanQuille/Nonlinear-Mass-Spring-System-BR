@@ -2,6 +2,8 @@
 clear all
 close all
 
+addpath('');
+
 L = csvread('learningmatrix.csv');
 L = L(:, 1:end-1);
 inputsig = csvread('Data/inputsignal.csv');
@@ -15,16 +17,16 @@ i = csvread('input.csv');
 
 
 
-washout = 100000;
+washout = 60000;
 
 
 L_ = L(washout+1:end,:);
-% L_ones = ones(lenght(L_,1);
+%L_ones = ones(length(L_,1));
 
 len = length(L_);
 %L_full = [L;ones(len)];
 o_ = o(washout+1:washout+len,:);
-%w  = L_\o_;
+w1  = L_\o_;
 %TRY TRY TRY TRY TRY TRY TRY TRY
 w = csvread("learningweights.csv");
 figure;stem(w)

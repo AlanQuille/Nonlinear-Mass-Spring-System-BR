@@ -138,7 +138,10 @@ class Simulation
 
         //LearningMatrix for learning weight multiplication
         // For collecting data for learning
+        //LM is the matrix in total. Lm2 is the matrix for learning and lm3 is the final matrix.
         MatrixXd LM;
+        MatrixXd LM2;
+        MatrixXd LM3;
 
         //For testing phase.
         VectorXd Test_Target;

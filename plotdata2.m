@@ -2,6 +2,9 @@
 tic
 
 targetsignal = csvread("targetsignal.csv");
+targetsignal2 = csvread("targetsignal2.csv");
+targetsignal3 = csvread("targetsignal3.csv");
+
 inputsignal =csvread("inputsignalcheck.csv");
 %inputsignal2 =csvread("Data/inputsignal.csv");
 %test2 = test1(:,2);
@@ -9,11 +12,16 @@ learningweights = csvread("learningweights.csv");
 %test4 = csvread("outputsignal.csv");
 %test5 = csvread("inputsignal.csv");
 learningmatrix = csvread("learningmatrix.csv");
-learningmatrix = learningmatrix(:, 1:end-1);
+learningmatrix2 = csvread("learningmatrix2.csv");
+learningmatrix3 = csvread("learningmatrix3.csv");
 
-learningweights2 = learningmatrix\targetsignal;
-OutputVector = learningmatrix*learningweights;
-OutputVector2 = learningmatrix*learningweights2;
+learningmatrix = learningmatrix(:, 1:end-1);
+learningmatrix2 = learningmatrix2(:, 1:end);
+learningmatrix3 = learningmatrix3(:, 1:end);
+
+learningweights2 = learningmatrix2\targetsignal2;
+OutputVector = learningmatrix3*learningweights;
+OutputVector2 = learningmatrix3*learningweights2;
 
 plot(OutputVector)
 hold on
