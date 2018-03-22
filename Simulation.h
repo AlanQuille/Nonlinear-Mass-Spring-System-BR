@@ -143,6 +143,9 @@ class Simulation
         MatrixXd LM2;
         MatrixXd LM3;
 
+        //Output MatrixXd
+        VectorXd Output;
+
         //For testing phase.
         VectorXd Test_Target;
 

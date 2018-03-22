@@ -517,9 +517,11 @@ cout << "The number of springs is: " << s.size() << endl;
   //    MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
       //Moore_Penrose_Pseudoinverse(LearningMatrix2);
       VectorXd LearningWeightsVector = Cp *TargetSignal2;
-    //  cout << Cp;
-    //  cout << endl;
-      Populate_Learning_Weights(LearningWeightsVector);
+      Output = LearningMatrix3*LearningWeightsVector;
+
+      cout << Output(0);
+      cout << endl;
+      //Populate_Learning_Weights(LearningWeightsVector);
 
     //  LM = LearningMatrix3;
   //    MatrixXd LeftInverse = ((LearningMatrix2.transpose()*LearningMatrix2).inverse())*LearningMatrix2.transpose();
@@ -589,52 +591,73 @@ void Simulation::output_LearningMatrix_and_MeanSquaredError()
   ofstream learningmatrix("learningmatrix.csv");  learningmatrix.precision(15);
   ofstream learningmatrix2("learningmatrix2.csv");  learningmatrix.precision(15);
   ofstream learningmatrix3("learningmatrix3.csv");  learningmatrix.precision(15);
+  ofstream outputsignal("outputsignal.csv");  learningmatrix.precision(15);
+
   ofstream inputsignalcheck("inputsignalcheck.csv");  inputsignalcheck.precision(15);
 
   ofstream chaoscheck(str);
 
-  double outputsignal = 0;
+  //double outputsignal = 0;
   double wjej = 0;
   double currenttime = 0;
   double currentvalue = 0;
   double average = 0;
   double std = 0;
 
+  vector<double> Output_Signal;
+  vector<double> Test_Data;
+
+  VectorXd Target_Here(learning_time_test);
+
 //  for(int i=0; i<learning_time_test; i++)
-cout << "Is this working " << endl;
-   for(int i = 0; i<maxtimesteps; i++)
+  cout << "Is this working " << endl;
+   for(int i=0; i<maxtimesteps; i++)
   // for(int i=0; i<learning_time_test; i++)
   {
       for(int j=0; j<s.size(); j++)
       {
       //    outputsignal += Learning_Weights[j] * LM(i+wash_out_time+learning_time, j);
         //   outputsignal += Learning_Weights[j] * LM(i, j);
-            learningmatrix << LM(i,j) << ",";
-            if(i>=wash_out_time && i<(wash_out_time+learning_time)) learningmatrix2 << LM2(i-wash_out_time,j) << ",";
-            if(i>=(wash_out_time+learning_time)) learningmatrix3 << LM3(i-wash_out_time-learning_time,j) << ",";
-            if(i==0)
-            {
-              learningweights << Learning_Weights[j];
-              learningweights << endl;
-            }
+          //  learningmatrix << LM(i,j) << ",";
+            //if(i>=wash_out_time && i<(wash_out_time+learning_time)) learningmatrix2 << LM2(i-wash_out_time,j) << ",";
+            //if(i>=(wash_out_time+learning_time)) outputsignal << LM3(i-wash_out_time-learning_time,j)*Learning_Weights[j] << ",";
+        //    if(i==0) outputsignal << Output[j];
+
+        //    if(i==0)
+        //    {
+        //      learningweights << Learning_Weights[j];
+            //  learningweights << endl;
+        //    }
+
       }
 
-      learningmatrix << endl;
-      learningmatrix2 << endl;
-      learningmatrix3 << endl;
+  //    learningmatrix << endl;
+    //  learningmatrix2 << endl;
+  //    learningmatrix3 << endl;
+      if(i>=(wash_out_time+learning_time))
+      {
+        outputsignal << Output(i-wash_out_time-learning_time);
+        outputsignal << endl;
 
-      currenttime = t0 + i*dt;
-      inputsignalcheck << Input_Signal.at(i) << endl;
+        targetsignal << Target_Signal.at(i);
+        targetsignal << endl;
+        //(i-wash_out_time-learning_time) = Target_Signal.at(i);
+        Test_Data.push_back(Target_Signal.at(i));
+        Output_Signal.push_back(Output(i-wash_out_time-learning_time));
+      }
 
-      targetsignal << Target_Signal.at(i) << endl;
-      if(i>=wash_out_time && i<(wash_out_time+learning_time)) targetsignal2 << Target_Signal2.at(i-wash_out_time) << endl;
-      if(i>=(wash_out_time+learning_time)) targetsignal3 << Target_Signal3.at(i-wash_out_time-learning_time) << endl;
+    //  currenttime = t0 + i*dt;
+    //  inputsignalcheck << Input_Signal.at(i) << endl;
 
-      outputsignal = 0;
+    //  targetsignal << Target_Signal.at(i) << endl;
+    //  if(i>=wash_out_time && i<(wash_out_time+learning_time)) targetsignal2 << Target_Signal.at(i-wash_out_time) << endl;
+    //  if(i>=(wash_out_time+learning_time)) targetsignal3 << Target_Signal.at(i-wash_out_time-learning_time) << endl;
+
+    //  outputsignal = 0;
   }
 
-//  cout <<"The mean squared error of the output signal versus the target signal is: " << MSE(Output_Signal, Test_Target);
-//  cout <<endl;
+  cout <<"The mean squared error of the output signal versus the target signal is: " << MSE(Output_Signal, Test_Data);
+  cout <<endl;
 }
 
 

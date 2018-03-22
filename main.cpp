@@ -88,7 +88,7 @@ int main(int argc, char** argv)
     cout <<"Size of input signal is: "<< Input.size() << endl;
     cout <<"Size of target signal is: "<< Volterra.size() << endl;
 
-    double wash_out_time = 60000;
+    double wash_out_time = 20000;
     double learning_time = 200000;
     double learning_time_test = 15000;
 
