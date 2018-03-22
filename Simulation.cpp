@@ -614,26 +614,7 @@ void Simulation::output_LearningMatrix_and_MeanSquaredError()
    for(int i=0; i<maxtimesteps; i++)
   // for(int i=0; i<learning_time_test; i++)
   {
-      for(int j=0; j<s.size(); j++)
-      {
-      //    outputsignal += Learning_Weights[j] * LM(i+wash_out_time+learning_time, j);
-        //   outputsignal += Learning_Weights[j] * LM(i, j);
-          //  learningmatrix << LM(i,j) << ",";
-            //if(i>=wash_out_time && i<(wash_out_time+learning_time)) learningmatrix2 << LM2(i-wash_out_time,j) << ",";
-            //if(i>=(wash_out_time+learning_time)) outputsignal << LM3(i-wash_out_time-learning_time,j)*Learning_Weights[j] << ",";
-        //    if(i==0) outputsignal << Output[j];
 
-        //    if(i==0)
-        //    {
-        //      learningweights << Learning_Weights[j];
-            //  learningweights << endl;
-        //    }
-
-      }
-
-  //    learningmatrix << endl;
-    //  learningmatrix2 << endl;
-  //    learningmatrix3 << endl;
       if(i>=(wash_out_time+learning_time))
       {
         outputsignal << Output(i-wash_out_time-learning_time);
@@ -646,14 +627,6 @@ void Simulation::output_LearningMatrix_and_MeanSquaredError()
         Output_Signal.push_back(Output(i-wash_out_time-learning_time));
       }
 
-    //  currenttime = t0 + i*dt;
-    //  inputsignalcheck << Input_Signal.at(i) << endl;
-
-    //  targetsignal << Target_Signal.at(i) << endl;
-    //  if(i>=wash_out_time && i<(wash_out_time+learning_time)) targetsignal2 << Target_Signal.at(i-wash_out_time) << endl;
-    //  if(i>=(wash_out_time+learning_time)) targetsignal3 << Target_Signal.at(i-wash_out_time-learning_time) << endl;
-
-    //  outputsignal = 0;
   }
 
   cout <<"The mean squared error of the output signal versus the target signal is: " << MSE(Output_Signal, Test_Data);
