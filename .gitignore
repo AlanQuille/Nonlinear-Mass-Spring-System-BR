@@ -35,3 +35,5 @@ SpiderWebSimulation
 *.exe
 
 *.fig
+
+*.dll

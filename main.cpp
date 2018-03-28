@@ -52,6 +52,7 @@ int main(int argc, char** argv)
  *
  * Copyright 1984-2007 The MathWorks, Inc.
  */
+
 #define BUFSIZE 256
 
   MATFile *pmat;
@@ -60,7 +61,7 @@ int main(int argc, char** argv)
   myInts.push_back(1);
   myInts.push_back(2);
   printf("Accessing a STL vector: %d\n", myInts[1]);
-
+/*
   double data[9] = { 1.0, 4.0, 7.0, 2.0, 5.0, 8.0, 3.0, 6.0, 9.0 };
   const char *file = "mattest.mat";
   char str[BUFSIZE];
@@ -119,6 +120,7 @@ int main(int argc, char** argv)
    * ok, this was really intentional.) This demonstrates that
    * matPutVariable will overwrite an existing array in a MAT-file.
    */
+   /*
   memcpy((void *)(mxGetPr(pa1)), (void *)data, sizeof(data));
   status = matPutVariable(pmat, "LocalDouble", pa1);
   if (status != 0) {
@@ -127,6 +129,7 @@ int main(int argc, char** argv)
   }
 
   /* clean up */
+  /*
   mxDestroyArray(pa1);
   mxDestroyArray(pa2);
   mxDestroyArray(pa3);
@@ -139,6 +142,7 @@ int main(int argc, char** argv)
   /*
    * Re-open file and verify its contents with matGetVariable
    */
+   /*
   pmat = matOpen(file, "r");
   if (pmat == NULL) {
     printf("Error reopening file %s\n", file);
@@ -148,6 +152,7 @@ int main(int argc, char** argv)
   /*
    * Read in each array we just wrote
    */
+   /*
   pa1 = matGetVariable(pmat, "LocalDouble");
   if (pa1 == NULL) {
     printf("Error reading existing matrix LocalDouble\n");
@@ -185,6 +190,7 @@ int main(int argc, char** argv)
   }
 
   /* clean up before exit */
+  /*
   mxDestroyArray(pa1);
   mxDestroyArray(pa2);
   mxDestroyArray(pa3);
@@ -194,7 +200,7 @@ int main(int argc, char** argv)
     return(EXIT_FAILURE);
   }
   printf("Done\n");
-
+*/
 
    auto begin = std::chrono::high_resolution_clock::now();
 
