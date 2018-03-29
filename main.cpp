@@ -214,13 +214,18 @@ int main(int argc, char** argv)
     vector<string> Input_Lines;
     vector<string> Volterre_Lines;  // Todo: ???
 
+    //init path
+    string init_path("");
+
     cout << "-- Start ---------------------------------------- " << endl;
 
 
     // Todo: I think it would be useful to define class for reading in files from csv, maybe best even encapsulated in a class
     // there are plenty of these out there
   //  ifstream file_Input ( "/Users/hh14185/Leverhulme_Trust_Proposal_spider_web/Xcode/Nonlinear-Mass-Spring-System-BR/input.csv" );
-    ifstream file_Input ( "Data/inputsignal.csv" ); file_Input.precision(15);
+    string final_path("Data/inputsignal.csv");
+    final_path.insert(0, init_path);
+    ifstream file_Input (init_path); file_Input.precision(15);
     string tmp;
 
     while (getline(file_Input, tmp,'\n'))
@@ -272,7 +277,8 @@ int main(int argc, char** argv)
 
     // setting parameters for simulation
     // This should be possible to read in from a text file
-    input_data.N = 17;
+    input_data.N = 35;
+  //  input_data.N = 17;
     input_data.ux=0;
     input_data.uy= 0;
 
@@ -306,13 +312,17 @@ int main(int argc, char** argv)
     vector<double> MSE_list;
     vector<double> times;
 
+    ofstream MSE_list_out("MSE_list.txt", ofstream::out);
+    ofstream no_of_springs_out("no_of_springs.txt", ofstream::out);
+    ofstream times_out("time.txt", ofstream::out);
+
 
 
   //  Simulation sim(data, Volterra, Input, wash_out_time, learning_time, learning_time_test);
   for(int i=0; i<20; i++)
   {
     auto begin = std::chrono::high_resolution_clock::now();
-   Simulation sim(input_data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+    Simulation sim(input_data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
     cout <<"The number of nodes is: " << input_data.N << endl;
     cout <<"The number of springs is: " << sim.Spring_List() << endl;
 
@@ -326,11 +336,24 @@ int main(int argc, char** argv)
    no_of_springs.push_back(sim.Spring_List());
    MSE_list.push_back(sim.return_MSE());
    times.push_back(std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count());
+
+   MSE_list_out << MSE_list.at(i) << endl;
+   no_of_springs_out << no_of_springs.at(i) << endl;
+   times_out << times.at(i) << endl;
  }
  cout << endl;
  cout << "The mean of the MSE's is: " << accumulate( MSE_list.begin(), MSE_list.end(), 0.0)/MSE_list.size() << endl;
  cout << "The mean no of springs is: " << accumulate( no_of_springs.begin(), no_of_springs.end(), 0.0)/no_of_springs.size() << endl;
+ double mean = accumulate( no_of_springs.begin(), no_of_springs.end(), 0.0)/no_of_springs.size();
+ double sq_sum = std::inner_product(no_of_springs.begin(), no_of_springs.end(), no_of_springs.begin(), 0.0);
+ double stdev = std::sqrt(sq_sum / no_of_springs.size() - mean * mean);
+ cout <<"The stdev of the springs is: "<< stdev << endl;
  cout << "The mean time taken is: " << ((accumulate( times.begin(), times.end(), 0.0)/times.size())/1000) << endl;
+
+
+
+
+
 
    return 0;
 }
