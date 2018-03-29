@@ -519,7 +519,8 @@ cout << "The number of springs is: " << s.size() << endl;
       VectorXd LearningWeightsVector = Cp *TargetSignal2;
       Output = LearningMatrix3*LearningWeightsVector;
 
-      cout << Output(0);
+      cout << "The size of the learning period is: " << LearningMatrix2.rows() << endl;
+      cout << "The size of the testing period is: " << LearningMatrix3.rows() << endl;
       cout << endl;
       //Populate_Learning_Weights(LearningWeightsVector);
 
@@ -629,8 +630,15 @@ void Simulation::output_LearningMatrix_and_MeanSquaredError()
 
   }
 
-  cout <<"The mean squared error of the output signal versus the target signal is: " << MSE(Output_Signal, Test_Data);
+  mean_squared_error = MSE(Output_Signal, Test_Data);
+  cout <<"The mean squared error of the output signal versus the target signal is: " << mean_squared_error;
   cout <<endl;
+
+}
+
+double Simulation::return_MSE()
+{
+  return mean_squared_error;
 }
 
 

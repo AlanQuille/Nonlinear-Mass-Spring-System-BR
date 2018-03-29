@@ -121,6 +121,9 @@ class Simulation
         string str ="chaoscheck.csv";
         string str2 = "LM.csv";
 
+        //Mean squared error of testing data
+        double mean_squared_error;
+
         //This is for the first phase of reservoir computing
         //bool is_learning_phase_over = false;
 
@@ -221,6 +224,9 @@ class Simulation
 
         //Return Output Signal after learning phase and the mean squared error.
         void output_LearningMatrix_and_MeanSquaredError();
+
+        //Return mean squared error
+        double return_MSE();
 
         //Return the weights after learning phase as a vector
         vector<double>& Return_Learning_Weights();

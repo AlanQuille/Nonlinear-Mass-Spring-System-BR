@@ -52,7 +52,7 @@ int main(int argc, char** argv)
  *
  * Copyright 1984-2007 The MathWorks, Inc.
  */
-
+/*
 #define BUFSIZE 256
 
   MATFile *pmat;
@@ -61,7 +61,7 @@ int main(int argc, char** argv)
   myInts.push_back(1);
   myInts.push_back(2);
   printf("Accessing a STL vector: %d\n", myInts[1]);
-/*
+
   double data[9] = { 1.0, 4.0, 7.0, 2.0, 5.0, 8.0, 3.0, 6.0, 9.0 };
   const char *file = "mattest.mat";
   char str[BUFSIZE];
@@ -115,12 +115,12 @@ int main(int argc, char** argv)
       return(EXIT_FAILURE);
   }
 
-  /*
-   * Ooops! we need to copy data before writing the array.  (Well,
-   * ok, this was really intentional.) This demonstrates that
-   * matPutVariable will overwrite an existing array in a MAT-file.
-   */
-   /*
+
+  // * Ooops! we need to copy data before writing the array.  (Well,
+  // * ok, this was really intentional.) This demonstrates that
+//   * matPutVariable will overwrite an existing array in a MAT-file.
+
+
   memcpy((void *)(mxGetPr(pa1)), (void *)data, sizeof(data));
   status = matPutVariable(pmat, "LocalDouble", pa1);
   if (status != 0) {
@@ -129,7 +129,7 @@ int main(int argc, char** argv)
   }
 
   /* clean up */
-  /*
+/*
   mxDestroyArray(pa1);
   mxDestroyArray(pa2);
   mxDestroyArray(pa3);
@@ -139,20 +139,20 @@ int main(int argc, char** argv)
     return(EXIT_FAILURE);
   }
 
-  /*
-   * Re-open file and verify its contents with matGetVariable
-   */
-   /*
+
+//   * Re-open file and verify its contents with matGetVariable
+
+
   pmat = matOpen(file, "r");
   if (pmat == NULL) {
     printf("Error reopening file %s\n", file);
     return(EXIT_FAILURE);
   }
 
-  /*
-   * Read in each array we just wrote
-   */
-   /*
+
+  // * Read in each array we just wrote
+
+
   pa1 = matGetVariable(pmat, "LocalDouble");
   if (pa1 == NULL) {
     printf("Error reading existing matrix LocalDouble\n");
@@ -190,7 +190,7 @@ int main(int argc, char** argv)
   }
 
   /* clean up before exit */
-  /*
+/*
   mxDestroyArray(pa1);
   mxDestroyArray(pa2);
   mxDestroyArray(pa3);
@@ -202,7 +202,7 @@ int main(int argc, char** argv)
   printf("Done\n");
 */
 
-   auto begin = std::chrono::high_resolution_clock::now();
+
 
 
     InitialDataValues input_data;
@@ -302,17 +302,35 @@ int main(int argc, char** argv)
 
     vector<double> Sine_Wave;
 
-    cout << "Initial Input is: "<< Input[0] << endl;
+    vector<int> no_of_springs;
+    vector<double> MSE_list;
+    vector<double> times;
+
+
 
   //  Simulation sim(data, Volterra, Input, wash_out_time, learning_time, learning_time_test);
+  for(int i=0; i<20; i++)
+  {
+    auto begin = std::chrono::high_resolution_clock::now();
    Simulation sim(input_data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
     cout <<"The number of nodes is: " << input_data.N << endl;
     cout <<"The number of springs is: " << sim.Spring_List() << endl;
+
+
 
    auto end = std::chrono::high_resolution_clock::now();
    cout << "The time it took for the programme to run in total in milliseconds: ";
    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << "ms";
 
+   //For the experiment matlab
+   no_of_springs.push_back(sim.Spring_List());
+   MSE_list.push_back(sim.return_MSE());
+   times.push_back(std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count());
+ }
+ cout << endl;
+ cout << "The mean of the MSE's is: " << accumulate( MSE_list.begin(), MSE_list.end(), 0.0)/MSE_list.size() << endl;
+ cout << "The mean no of springs is: " << accumulate( no_of_springs.begin(), no_of_springs.end(), 0.0)/no_of_springs.size() << endl;
+ cout << "The mean time taken is: " << ((accumulate( times.begin(), times.end(), 0.0)/times.size())/1000) << endl;
 
-    return 0;
+   return 0;
 }
