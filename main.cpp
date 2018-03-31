@@ -225,7 +225,7 @@ int main(int argc, char** argv)
   //  ifstream file_Input ( "/Users/hh14185/Leverhulme_Trust_Proposal_spider_web/Xcode/Nonlinear-Mass-Spring-System-BR/input.csv" );
     string final_path("Data/inputsignal.csv");
     final_path.insert(0, init_path);
-    ifstream file_Input (init_path); file_Input.precision(15);
+    ifstream file_Input (final_path); file_Input.precision(15);
     string tmp;
 
     while (getline(file_Input, tmp,'\n'))
@@ -308,21 +308,27 @@ int main(int argc, char** argv)
 
     vector<double> Sine_Wave;
 
+
+
+
     vector<int> no_of_springs;
     vector<double> MSE_list;
     vector<double> times;
 
-    ofstream MSE_list_out("MSE_list.txt", ofstream::out);
-    ofstream no_of_springs_out("no_of_springs.txt", ofstream::out);
-    ofstream times_out("time.txt", ofstream::out);
+    ofstream MSE_list_out("MSE_list.csv", ofstream::out);
+    ofstream no_of_springs_out("no_of_springs.csv", ofstream::out);
+    ofstream times_out("time.csv", ofstream::out);
+    
+
 
 
 
   //  Simulation sim(data, Volterra, Input, wash_out_time, learning_time, learning_time_test);
-  for(int i=0; i<20; i++)
+
+  for(int i=0; i<1; i++)
   {
     auto begin = std::chrono::high_resolution_clock::now();
-    Simulation sim(input_data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+   Simulation sim(input_data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
     cout <<"The number of nodes is: " << input_data.N << endl;
     cout <<"The number of springs is: " << sim.Spring_List() << endl;
 
@@ -337,9 +343,13 @@ int main(int argc, char** argv)
    MSE_list.push_back(sim.return_MSE());
    times.push_back(std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count());
 
-   MSE_list_out << MSE_list.at(i) << endl;
-   no_of_springs_out << no_of_springs.at(i) << endl;
-   times_out << times.at(i) << endl;
+   MSE_list_out << sim.return_MSE();
+   no_of_springs_out << sim.Spring_List();
+   times_out << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count();
+   if(i<20) MSE_list_out <<',';
+   if(i<20) no_of_springs_out <<',';
+   if(i<20) times_out <<',';
+
  }
  cout << endl;
  cout << "The mean of the MSE's is: " << accumulate( MSE_list.begin(), MSE_list.end(), 0.0)/MSE_list.size() << endl;
@@ -349,6 +359,7 @@ int main(int argc, char** argv)
  double stdev = std::sqrt(sq_sum / no_of_springs.size() - mean * mean);
  cout <<"The stdev of the springs is: "<< stdev << endl;
  cout << "The mean time taken is: " << ((accumulate( times.begin(), times.end(), 0.0)/times.size())/1000) << endl;
+
 
 
 
