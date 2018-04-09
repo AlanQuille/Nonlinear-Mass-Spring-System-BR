@@ -52,9 +52,9 @@ int main(int argc, char** argv)
  *
  * Copyright 1984-2007 The MathWorks, Inc.
  */
-/*
-#define BUFSIZE 256
 
+//#define BUFSIZE 256
+/*
   MATFile *pmat;
   mxArray *pa1, *pa2, *pa3;
   std::vector<int> myInts;
@@ -203,6 +203,53 @@ int main(int argc, char** argv)
 */
 
 
+MATFile * pmat; char ** you ; int ndir; int ndir2; mxArray * pa; mxArray * qa; const char * name; char ** dir;
+char ** dir2;
+pmat = matOpen ("init_net.mat", "r" ) ;
+//dir = matGetDir ( pmat, &ndir ) ;
+double * paData;
+/*
+for ( int i = 0 ; i <ndir; i ++ )
+{
+   cout <<"i is: " << i << endl;
+   name = dir[i];
+   printf("%s", name);
+   pa = matGetVariable(pmat, name);
+   cout << endl;
+  // pa = mxGetField ( pmat, name ) ;
+   paData = ( double * ) mxGetData ( pa ) ;
+   cout <<paData[1]<< endl;
+
+//   cout << paData[0] << endl;
+
+}
+*/
+pa = matGetVariable(pmat, "P");
+qa = mxGetField(pa, 0, "states");
+paData = ( double * ) mxGetData ( qa ) ;
+cout <<"The first element of P and states is: " << paData[29] << endl;
+
+return 0;
+
+//  const mxArray *mxTmp;
+  //double  *tmp;
+
+  //mxArray *pa;
+  //pa = mxGetField(init_net, 0, "P.states");
+
+//  mxTmp = mxGetField(init_net, 0,  "P.states");
+  //tmp   = mxGetPr(mxTmp);
+
+  //mxArray* net = matGetVariable(init_net, "P.states");
+  //cout << *mxGetPr(mxGetCell(net, 1));
+
+  //bool isNetStruct = mxIsStruct(net);
+
+  // //reading data
+//  MATFile* datafile =  matOpen("D:\\data.mat", "r");
+  //mxArray* data = matGetVariable(datafile, "minidata");
+
+
 
 
     InitialDataValues input_data;
@@ -318,7 +365,7 @@ int main(int argc, char** argv)
     ofstream MSE_list_out("MSE_list.csv", ofstream::out);
     ofstream no_of_springs_out("no_of_springs.csv", ofstream::out);
     ofstream times_out("time.csv", ofstream::out);
-    
+
 
 
 
