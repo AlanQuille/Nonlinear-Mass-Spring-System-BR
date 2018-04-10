@@ -72,7 +72,70 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
   output_LearningMatrix_and_MeanSquaredError();
   Output_For_Plot();
 }
+//Use same network, not new network.
+/*
+Simulation::Simulation(vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test, vector<double> &x_nodes, vector<double> &y_nodes)
+{
 
+
+
+  this->wash_out_time = wash_out_time;
+  this->learning_time = learning_time;
+  this->learning_time_test = learning_time_test;
+
+  //Total time
+  this->maxtimesteps = wash_out_time + learning_time + learning_time_test;
+
+  Target_Signal = TS;
+  Input_Signal = IS;
+
+  //for fixed nodes.
+  int j=0;
+  int k=0;
+
+  double x1 =1000;
+  double x0 =0;
+
+  double x;
+  double y;
+
+  for(int i=0; i<x_nodes.size(); i++)
+  {
+
+       x=x_nodes[i];
+       if(x1<x)
+       {
+        x1=x;
+        j=i;
+      }
+       y=y_nodes[i];
+       if(x0>x)
+       {
+         x0=x;
+         k=i;
+       }
+       Nodes p(x, y);
+       n.push_back(p);
+     }
+
+     fixed <<j << endl;
+     fixed <<k << endl;
+
+    //Test to see whether the reason why you're getting those 0 springs is because of fixed nodes.
+
+     n[j].set_Fixed_Node();
+     n[k].set_Fixed_Node();
+
+
+  Initialize_Nodes(smallest_x_position, largest_x_position, smallest_y_position, largest_y_position);
+  //Delaunay_Triangulation_and_Spring_Creation();
+
+  Initialize_Springs();
+  execute();
+  output_LearningMatrix_and_MeanSquaredError();
+  Output_For_Plot();
+}
+*/
 
 
 Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Lvx, vector<double> &Lvy)

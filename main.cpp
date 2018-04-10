@@ -203,11 +203,22 @@ int main(int argc, char** argv)
 */
 
 
-MATFile * pmat; char ** you ; int ndir; int ndir2; mxArray * pa; mxArray * qa; const char * name; char ** dir;
+MATFile * pmat; char ** you ; int ndir; int ndir2; mxArray * pa; mxArray * qa; mxArray *ra; mxArray *sa; mxArray *ta; mxArray *ua; mxArray *va; mxArray *xa;  mxArray *ya; mxArray *za; mxArray *zb; mxArray *in; const char * name; char ** dir;
 char ** dir2;
 pmat = matOpen ("init_net.mat", "r" ) ;
 //dir = matGetDir ( pmat, &ndir ) ;
-double * paData;
+//double * paData;
+double * qaData;
+double * raData;
+double * saData;
+double * taData;
+double * uaData;
+double * xaData;
+double * yaData;
+
+double * zaData;
+double * zbData;
+
 /*
 for ( int i = 0 ; i <ndir; i ++ )
 {
@@ -224,10 +235,86 @@ for ( int i = 0 ; i <ndir; i ++ )
 
 }
 */
+//Get positions of nodes
 pa = matGetVariable(pmat, "P");
 qa = mxGetField(pa, 0, "states");
-paData = ( double * ) mxGetData ( qa ) ;
-cout <<"The first element of P and states is: " << paData[29] << endl;
+in = mxGetField(pa, 0, "fixed");
+//Get spring variables.
+ra = matGetVariable(pmat, "W");
+sa = mxGetField(ra, 0, "k1");
+ta = mxGetField(ra, 0, "k3");
+ua = mxGetField(ra, 0, "d1");
+xa = mxGetField(ra, 0, "d3");
+ya = mxGetField(ra, 0, "l0");
+
+za = mxGetField(ra, 0, "from");
+zb = mxGetField(ra, 0, "to");
+
+in = mxGetField(ra, 0, )
+
+qaData = ( double * ) mxGetData ( qa ) ;
+
+raData = ( double * ) mxGetData ( ra ) ;
+saData = ( double * ) mxGetData ( sa ) ;
+taData = ( double * ) mxGetData ( ta ) ;
+uaData = ( double * ) mxGetData ( ua ) ;
+xaData = ( double * ) mxGetData ( xa ) ;
+yaData = ( double * ) mxGetData ( ya ) ;
+
+zaData = ( double * ) mxGetData ( za ) ;
+zbData = ( double * ) mxGetData ( zb ) ;
+//X positions of nodes
+vector<double> x_nodes;
+vector<double> y_nodes;
+//input nodes.
+vector<bool> input_nodes;
+
+//Get k1, k3, d1, d3, l0, from, to
+vector<double> k1;
+vector<double> k3;
+vector<double> d1;
+vector<double> d3;
+vector<double> l0;
+vector<double> node1;
+vector<double> node2;
+
+for(int i=0; i<78; i++)
+{
+  if(i<30)
+  {
+  x_nodes.push_back(qaData[i]);
+  cout << x_nodes[i] << endl;
+  }
+  if(i>=30 && i<60)
+  {
+  y_nodes.push_back(qaData[i]);
+  cout << y_nodes[i] << endl;
+  }
+
+  k1.push_back(saData[i]);
+  cout << k1[i] << endl;
+  k3.push_back(taData[i]);
+  cout << k3[i] << endl;
+  d1.push_back(uaData[i]);
+  cout << d1[i] << endl;
+  d3.push_back(xaData[i]);
+  cout << d3[i] << endl;
+  l0.push_back(yaData[i]);
+  cout << l0[i] << endl;;
+
+  node1.push_back(zaData[i]);
+  cout << node1[i] << endl;
+  node2.push_back(zbData[i]);
+  cout << node2[i] << endl;
+}
+//cout <<"The first element of P and states is: " << paData[29] << endl;
+
+
+double wash_out_time = 20000;
+double learning_time = 200000;
+double learning_time_test = 15000;
+
+//
 
 return 0;
 
@@ -317,9 +404,9 @@ return 0;
     cout <<"Size of input signal is: "<< Input.size() << endl;
     cout <<"Size of target signal is: "<< Volterra.size() << endl;
 
-    double wash_out_time = 20000;
-    double learning_time = 200000;
-    double learning_time_test = 15000;
+  //  double wash_out_time = 20000;
+    //double learning_time = 200000;
+    //double learning_time_test = 15000;
 
 
     // setting parameters for simulation
