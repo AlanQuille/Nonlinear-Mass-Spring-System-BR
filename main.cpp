@@ -208,6 +208,7 @@ char ** dir2;
 pmat = matOpen ("init_net.mat", "r" ) ;
 //dir = matGetDir ( pmat, &ndir ) ;
 //double * paData;
+//Double and bool vectors for .mat input.
 double * qaData;
 double * raData;
 double * saData;
@@ -218,6 +219,8 @@ double * yaData;
 
 double * zaData;
 double * zbData;
+
+double * inData;
 
 /*
 for ( int i = 0 ; i <ndir; i ++ )
@@ -250,7 +253,7 @@ ya = mxGetField(ra, 0, "l0");
 za = mxGetField(ra, 0, "from");
 zb = mxGetField(ra, 0, "to");
 
-in = mxGetField(ra, 0, )
+in = mxGetField(ra, 0, "fixed");
 
 qaData = ( double * ) mxGetData ( qa ) ;
 
@@ -263,11 +266,13 @@ yaData = ( double * ) mxGetData ( ya ) ;
 
 zaData = ( double * ) mxGetData ( za ) ;
 zbData = ( double * ) mxGetData ( zb ) ;
+
+inData = ( double * ) mxGetData ( in ) ;
 //X positions of nodes
 vector<double> x_nodes;
 vector<double> y_nodes;
 //input nodes.
-vector<bool> input_nodes;
+//vector<bool> input_nodes;
 
 //Get k1, k3, d1, d3, l0, from, to
 vector<double> k1;
@@ -275,8 +280,10 @@ vector<double> k3;
 vector<double> d1;
 vector<double> d3;
 vector<double> l0;
-vector<double> node1;
-vector<double> node2;
+vector<int> node1;
+vector<int> node2;
+
+vector<bool> input_nodes;
 
 for(int i=0; i<78; i++)
 {
@@ -302,10 +309,17 @@ for(int i=0; i<78; i++)
   l0.push_back(yaData[i]);
   cout << l0[i] << endl;;
 
-  node1.push_back(zaData[i]);
+  node1.push_back((int)zaData[i]);
   cout << node1[i] << endl;
-  node2.push_back(zbData[i]);
+  node2.push_back((int)zbData[i]);
   cout << node2[i] << endl;
+
+//  if(i<30)
+//  {
+  //input_nodes.push_back((bool)inData[i]);
+  //cout <<input_nodes[i] << endl;
+  //cout << inData[i] << endl;
+//  }
 }
 //cout <<"The first element of P and states is: " << paData[29] << endl;
 
