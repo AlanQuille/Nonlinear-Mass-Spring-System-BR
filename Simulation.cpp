@@ -73,11 +73,9 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
   Output_For_Plot();
 }
 //Use same network, not new network.
-/*
-Simulation::Simulation(vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test, vector<double> &x_nodes, vector<double> &y_nodes)
+
+Simulation::Simulation(vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test, double min_input_weight, double max_input_weight, vector<double> &x_nodes, vector<double> &y_nodes, vector<bool> &input_nodes, vector<double> &k1, vector<double> &k3, vector<double> &d1, vector<double> &d3, vector<double> &l0, vector<int> &node1, vector<int> &node2)
 {
-
-
 
   this->wash_out_time = wash_out_time;
   this->learning_time = learning_time;
@@ -99,43 +97,51 @@ Simulation::Simulation(vector<double> &IS, vector<double> &TS, int wash_out_time
   double x;
   double y;
 
-  for(int i=0; i<x_nodes.size(); i++)
+  for(int i=0; i<k1.size(); i++)
   {
+       if(i<x_nodes.size())
+       {
 
        x=x_nodes[i];
+
        if(x1<x)
        {
         x1=x;
         j=i;
-      }
+       }
+
        y=y_nodes[i];
+
        if(x0>x)
        {
          x0=x;
          k=i;
        }
+
        Nodes p(x, y);
        n.push_back(p);
-     }
 
-     fixed <<j << endl;
-     fixed <<k << endl;
+       if(input_nodes[i]==true) n[i].init_Input_Node(0, 0, Uniform(min_input_weight, max_input_weight));
 
+       n[j].set_Fixed_Node();
+       n[k].set_Fixed_Node();
+
+      }
+
+      s.push_back(Springs(k1[i], d1[i], k3[i], d3[i], l0[i], node1[i], node2[i], 0));
+
+
+  }
     //Test to see whether the reason why you're getting those 0 springs is because of fixed nodes.
 
-     n[j].set_Fixed_Node();
-     n[k].set_Fixed_Node();
+    execute();
+    output_LearningMatrix_and_MeanSquaredError();
+    Output_For_Plot();
 
 
-  Initialize_Nodes(smallest_x_position, largest_x_position, smallest_y_position, largest_y_position);
-  //Delaunay_Triangulation_and_Spring_Creation();
-
-  Initialize_Springs();
-  execute();
-  output_LearningMatrix_and_MeanSquaredError();
-  Output_For_Plot();
 }
-*/
+
+
 
 
 Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Lvx, vector<double> &Lvy)
@@ -527,7 +533,6 @@ cout << "The number of springs is: " << s.size() << endl;
 
             Fsum =-k3*x1new*x1new*x1new - k1*x1new - d3*x2spring*x2spring*x2spring - d1*x2spring;
 
-
             Fx_nodeb = Fsum*alpha;
             Fx_nodea = -Fx_nodeb;
 
@@ -536,9 +541,6 @@ cout << "The number of springs is: " << s.size() << endl;
 
             n[nodea].Input_Force(Fx_nodea, Fy_nodea);
             n[nodeb].Input_Force(Fx_nodeb, Fy_nodeb);
-
-
-
 
             Fsum = 0;
             Fx_nodea =0;

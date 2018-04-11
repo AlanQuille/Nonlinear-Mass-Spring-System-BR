@@ -253,7 +253,7 @@ ya = mxGetField(ra, 0, "l0");
 za = mxGetField(ra, 0, "from");
 zb = mxGetField(ra, 0, "to");
 
-in = mxGetField(ra, 0, "fixed");
+//in = mxGetField(ra, 0, "fixed");
 
 qaData = ( double * ) mxGetData ( qa ) ;
 
@@ -290,47 +290,47 @@ for(int i=0; i<78; i++)
   if(i<30)
   {
   x_nodes.push_back(qaData[i]);
-  cout << x_nodes[i] << endl;
+//  cout << x_nodes[i] << endl;
   }
   if(i>=30 && i<60)
   {
   y_nodes.push_back(qaData[i]);
-  cout << y_nodes[i] << endl;
+//  cout << y_nodes[i] << endl;
   }
 
   k1.push_back(saData[i]);
-  cout << k1[i] << endl;
+//  cout << k1[i] << endl;
   k3.push_back(taData[i]);
-  cout << k3[i] << endl;
+//  cout << k3[i] << endl;
   d1.push_back(uaData[i]);
-  cout << d1[i] << endl;
+//  cout << d1[i] << endl;
   d3.push_back(xaData[i]);
-  cout << d3[i] << endl;
+//  cout << d3[i] << endl;
   l0.push_back(yaData[i]);
-  cout << l0[i] << endl;;
+//  cout << l0[i] << endl;;
 
   node1.push_back((int)zaData[i]);
-  cout << node1[i] << endl;
+  //cout << node1[i] << endl;
   node2.push_back((int)zbData[i]);
-  cout << node2[i] << endl;
+//  cout << node2[i] << endl;
 
-//  if(i<30)
-//  {
-  //input_nodes.push_back((bool)inData[i]);
-  //cout <<input_nodes[i] << endl;
+  if(i<30)
+   {
+  input_nodes.push_back((bool)inData[i]);
+  cout <<input_nodes[i] << endl;
   //cout << inData[i] << endl;
-//  }
+   }
 }
 //cout <<"The first element of P and states is: " << paData[29] << endl;
 
 
-double wash_out_time = 20000;
-double learning_time = 200000;
-double learning_time_test = 15000;
+//double wash_out_time = 20000;
+//double learning_time = 200000;
+//double learning_time_test = 15000;
+
 
 //
 
-return 0;
 
 //  const mxArray *mxTmp;
   //double  *tmp;
@@ -418,9 +418,26 @@ return 0;
     cout <<"Size of input signal is: "<< Input.size() << endl;
     cout <<"Size of target signal is: "<< Volterra.size() << endl;
 
-  //  double wash_out_time = 20000;
-    //double learning_time = 200000;
-    //double learning_time_test = 15000;
+
+    double wash_out_time = 20000;
+    double learning_time = 200000;
+    double learning_time_test = 15000;
+    double min_input_weight = -1;
+    double max_input_weight = 1;
+
+    auto begin = std::chrono::high_resolution_clock::now();
+
+    //cout <<"The number of nodes is: " << input_data.N << endl;
+    //cout <<"The number of springs is: " << sim.Spring_List() << endl;
+
+
+    Simulation(Input, Volterra, wash_out_time, learning_time, learning_time_test, min_input_weight, max_input_weight, x_nodes, y_nodes, input_nodes, k1, k3, d1, d3, l0, node1, node2);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    cout << "The time it took for the programme to run in total in milliseconds: ";
+    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << "ms";
+
+    return 0;
 
 
     // setting parameters for simulation
