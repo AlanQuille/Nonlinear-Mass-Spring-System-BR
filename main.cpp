@@ -457,10 +457,10 @@ for(int i=0; i<78; i++)
     input_data.ux=0;
     input_data.uy= 0;
 
-    input_data.input_connectivity_percentage = 1;
+    input_data.input_connectivity_percentage = 0.2;
     //data.w_in_initial = -1;
-    input_data.min_input_weight = -1;
-    input_data.max_input_weight = 1;
+    input_data.min_input_weight = -10;
+    input_data.max_input_weight = 10;
 
   //  input_data.min_input_weight = -0.1;
   //  input_data.max_input_weight = 0.1;
@@ -505,9 +505,10 @@ for(int i=0; i<78; i++)
   //  Simulation sim(data, Volterra, Input, wash_out_time, learning_time, learning_time_test);
 
 
-  double radius = 5.0;
-  int rounds = 3;
-  int no_of_points_per_round = 32;
+
+  double radius = 1.0;
+  int rounds = 4;
+  int no_of_points_per_round = 15;
 
 
   Simulation sim(radius, rounds, no_of_points_per_round, input_data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
