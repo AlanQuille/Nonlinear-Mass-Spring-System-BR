@@ -26,7 +26,6 @@ y = test2;
 %x=[x_pos(nodea), x_pos(nodeb), x_pos(nodea), x_pos(nodeb)]
 %y=[y_pos(nodea), y_pos(nodeb), y_pos(nodea)]
     
-s
 
 s = csvread("s.csv")
 t = csvread("t.csv")
@@ -45,4 +44,4 @@ xlim([-0.215 -0.19])
 ylim([0.4 0.45])
 pause(0.001);
 drawnow;x
-axis([0 10 0 10]);
+axis([-10 10 -10 10]);

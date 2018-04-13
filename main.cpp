@@ -203,6 +203,9 @@ int main(int argc, char** argv)
 */
 
 
+//Experiment 2 for matlab and c++ comparison.
+/*
+
 MATFile * pmat; char ** you ; int ndir; int ndir2; mxArray * pa; mxArray * qa; mxArray *ra; mxArray *sa; mxArray *ta; mxArray *ua; mxArray *va; mxArray *xa;  mxArray *ya; mxArray *za; mxArray *zb; mxArray *in; const char * name; char ** dir;
 char ** dir2;
 pmat = matOpen ("init_net.mat", "r" ) ;
@@ -238,6 +241,7 @@ for ( int i = 0 ; i <ndir; i ++ )
 
 }
 */
+/*
 //Get positions of nodes
 pa = matGetVariable(pmat, "P");
 qa = mxGetField(pa, 0, "states");
@@ -313,7 +317,8 @@ for(int i=0; i<78; i++)
   //cout << node1[i] << endl;
   node2.push_back((int)zbData[i]);
 //  cout << node2[i] << endl;
-
+*/
+/*
   if(i<30)
    {
   input_nodes.push_back((bool)inData[i]);
@@ -321,6 +326,10 @@ for(int i=0; i<78; i++)
   //cout << inData[i] << endl;
    }
 }
+*/
+
+
+
 //cout <<"The first element of P and states is: " << paData[29] << endl;
 
 
@@ -422,9 +431,10 @@ for(int i=0; i<78; i++)
     double wash_out_time = 20000;
     double learning_time = 200000;
     double learning_time_test = 15000;
-    double min_input_weight = -1;
-    double max_input_weight = 1;
 
+//    double min_input_weight = -1;
+  //  double max_input_weight = 1;
+/*
     auto begin = std::chrono::high_resolution_clock::now();
 
     //cout <<"The number of nodes is: " << input_data.N << endl;
@@ -438,7 +448,7 @@ for(int i=0; i<78; i++)
     std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << "ms";
 
     return 0;
-
+*/
 
     // setting parameters for simulation
     // This should be possible to read in from a text file
@@ -447,10 +457,14 @@ for(int i=0; i<78; i++)
     input_data.ux=0;
     input_data.uy= 0;
 
-    input_data.input_connectivity_percentage = 20;
+    input_data.input_connectivity_percentage = 1;
     //data.w_in_initial = -1;
     input_data.min_input_weight = -1;
     input_data.max_input_weight = 1;
+
+  //  input_data.min_input_weight = -0.1;
+  //  input_data.max_input_weight = 0.1;
+
     input_data.min_x_position = 0;
     input_data.max_x_position = 10;
     input_data.min_y_position  = 0;
@@ -471,18 +485,18 @@ for(int i=0; i<78; i++)
     input_data.t0 = wash_out_time*input_data.dt;
     input_data.tmax = (wash_out_time+learning_time+learning_time_test)*input_data.dt;
 
-    vector<double> Sine_Wave;
+    //vector<double> Sine_Wave;
 
 
 
 
-    vector<int> no_of_springs;
-    vector<double> MSE_list;
-    vector<double> times;
+    //vector<int> no_of_springs;
+    //vector<double> MSE_list;
+    //vector<double> times;
 
-    ofstream MSE_list_out("MSE_list.csv", ofstream::out);
-    ofstream no_of_springs_out("no_of_springs.csv", ofstream::out);
-    ofstream times_out("time.csv", ofstream::out);
+    //ofstream MSE_list_out("MSE_list.csv", ofstream::out);
+    //ofstream no_of_springs_out("no_of_springs.csv", ofstream::out);
+    //ofstream times_out("time.csv", ofstream::out);
 
 
 
@@ -490,10 +504,19 @@ for(int i=0; i<78; i++)
 
   //  Simulation sim(data, Volterra, Input, wash_out_time, learning_time, learning_time_test);
 
+
+  double radius = 5.0;
+  int rounds = 3;
+  int no_of_points_per_round = 32;
+
+
+  Simulation sim(radius, rounds, no_of_points_per_round, input_data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+//   Simulation sim(input_data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+/*
   for(int i=0; i<1; i++)
   {
     auto begin = std::chrono::high_resolution_clock::now();
-   Simulation sim(input_data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+
     cout <<"The number of nodes is: " << input_data.N << endl;
     cout <<"The number of springs is: " << sim.Spring_List() << endl;
 
@@ -516,7 +539,11 @@ for(int i=0; i<78; i++)
    if(i<20) times_out <<',';
 
  }
- cout << endl;
+
+
+
+ //cout << endl;
+ /*
  cout << "The mean of the MSE's is: " << accumulate( MSE_list.begin(), MSE_list.end(), 0.0)/MSE_list.size() << endl;
  cout << "The mean no of springs is: " << accumulate( no_of_springs.begin(), no_of_springs.end(), 0.0)/no_of_springs.size() << endl;
  double mean = accumulate( no_of_springs.begin(), no_of_springs.end(), 0.0)/no_of_springs.size();
@@ -524,6 +551,7 @@ for(int i=0; i<78; i++)
  double stdev = std::sqrt(sq_sum / no_of_springs.size() - mean * mean);
  cout <<"The stdev of the springs is: "<< stdev << endl;
  cout << "The mean time taken is: " << ((accumulate( times.begin(), times.end(), 0.0)/times.size())/1000) << endl;
+ */
 
 
 

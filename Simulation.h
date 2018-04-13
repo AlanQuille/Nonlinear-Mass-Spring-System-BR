@@ -163,7 +163,7 @@ class Simulation
 
         //This is an overloaded default constructor. This is not randomly initialized mass spring system, this is a determined one.
         // Todo: Maybe derive a class for spiderweb simulation
-        Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Input_Signal, vector<double> &Target_Signal);
+        Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Input_Signal, vector<double> &Target_Signal, int wash_out_time, int learning_time, int learning_time_test);
 
         //This creates the nodes for the reservoir computer implementation
         // Todo: Maybe derive a class for spiderweb simulation
