@@ -432,6 +432,9 @@ for(int i=0; i<78; i++)
     double learning_time = 200000;
     double learning_time_test = 15000;
 
+    double a =0;
+    double b =0;
+
 //    double min_input_weight = -1;
   //  double max_input_weight = 1;
 /*
@@ -457,28 +460,47 @@ for(int i=0; i<78; i++)
     input_data.ux=0;
     input_data.uy= 0;
 
-    input_data.input_connectivity_percentage = 0.2;
+    input_data.input_connectivity_percentage = 20;
     //data.w_in_initial = -1;
-    input_data.min_input_weight = -10;
-    input_data.max_input_weight = 10;
+    input_data.min_input_weight = -1;
+    input_data.max_input_weight = 1;
 
-  //  input_data.min_input_weight = -0.1;
-  //  input_data.max_input_weight = 0.1;
+  //  input_data.min_input_weight = -0.000;
+  //  input_data.max_input_weight = 0.000;
 
     input_data.min_x_position = 0;
-    input_data.max_x_position = 10;
+    input_data.max_x_position = 1;
     input_data.min_y_position  = 0;
-    input_data.max_y_position = 10;
-
+    input_data.max_y_position = 1;
+/*
     input_data.min_k3 = 1;
     input_data.max_k3  = 100;
     input_data.min_d3 = 1;
     input_data.max_d3  = 100;
+    */
+
+    /*
+        input_data.min_k3 = 1;
+        input_data.max_k3  = 100;
+        input_data.min_d3 = 1;
+        input_data.max_d3  = 100;
+        */
+
+    /*
+
 
     input_data.min_k1 = 1;
     input_data.max_k1  = 200;
     input_data.min_d1 = 1;
     input_data.max_d1  = 200;
+
+    */
+
+    input_data.min_k1 = a;
+    input_data.max_k1  = 0;
+    input_data.min_d1 = b;
+    input_data.max_d1  = 0;
+
 
 
     input_data.dt = 0.001;
@@ -507,11 +529,33 @@ for(int i=0; i<78; i++)
 
 
   double radius = 1.0;
-  int rounds = 4;
-  int no_of_points_per_round = 15;
+  int rounds = 3;
+  int no_of_points_per_round = 8;
+
+  for(int i=0; i<30; i++)
+  {
+    a = i+0.001;
+    for(int j=1; j<30; j++)
+    {
+      b=j+0.001;
+
+      input_data.min_k1 = a;
+      input_data.max_k1  = 0;
+      input_data.min_d1 = b;
+      input_data.max_d1 = 0;
+
+      cout << endl << endl;
+
+      Simulation sim(radius, rounds, no_of_points_per_round, input_data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+      cout << "a is: " <<" " << a <<"b is: " <<" " <<b <<" " <<"MSE: " << sim.return_MSE() << endl;
+
+      cout << endl << endl;
+
+    }
+  }
 
 
-  Simulation sim(radius, rounds, no_of_points_per_round, input_data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+
 //   Simulation sim(input_data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
 /*
   for(int i=0; i<1; i++)

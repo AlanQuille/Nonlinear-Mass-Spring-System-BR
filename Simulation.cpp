@@ -267,6 +267,9 @@ void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_pe
   double l0;
   double wout;
 
+  double random_factor_x = 0;
+  double random_factor_y = 0;
+
 
   int k =0;
 
@@ -282,6 +285,7 @@ void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_pe
       y_position = (j+1)*radius*sin((i*angle));
 
 
+
       Nodes node(x_position, y_position);
 
       //THIS IS NOT GOOD CODING PRACTICE. FIX IT.
@@ -293,10 +297,21 @@ void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_pe
       if(i>0)
       {
         //This has to be done from main, this is not good here.
+
+      //For purposes of test
+      /*
       k1 = Rand_In_Range_Exp_k1();
       d1 = Rand_In_Range_Exp_d1();
       k3 = Rand_In_Range_Exp_k3();
       d3 = Rand_In_Range_Exp_d3();
+      */
+
+      k1 = data.min_k1;
+      d1 = data.min_d1;
+      k3 = 0;
+      d3 = 0;
+    //  k3 = Rand_In_Range_Exp_k3();
+    //  d3 = Rand_In_Range_Exp_d3();
 
       l0 = Eucl_Dist(x0, y0, x_position, y_position);
     //  wout = Uniform(data.w_out_initial, data.w_out_final);
@@ -308,6 +323,7 @@ void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_pe
       //For radial pattern.
       if(j>0)
       {
+      /*
       k1 = Rand_In_Range_Exp_k1();
       cout <<"k1 is: " << endl;
       d1 = Rand_In_Range_Exp_d1();
@@ -316,8 +332,19 @@ void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_pe
       cout << "k3 is: " << endl;
       d3 = Rand_In_Range_Exp_d3();
       cout << "d3 is: " << endl;
+      */
 
-      l0 = Eucl_Dist(x0, y0, x_position, y_position);
+      k1 = data.min_k1;
+      d1 = data.min_d1;
+      
+      cout << "k1 is " << k1;
+      cout << "d1 is " << k1;
+
+      k3 = 0;
+      d3 = 0;
+
+      //l0 = Eucl_Dist(x0, y0, x_position, y_position);
+      l0 = radius;
     //  wout = Uniform(data.w_out_initial, data.w_out_final);
        wout = 0;
 
@@ -575,6 +602,11 @@ cout << "The number of springs is: " << s.size() << endl;
             d3 = s[j].get_d3();
 
             x1new = l - s[j].return_Initial_Length();
+
+          //  cout <<"l is: " << l << endl;
+          //  cout << "original lenght is: " << s[j].return_Initial_Length() << endl;
+          //  cout <<"x1new is : " << x1new << endl;
+
             x1spring = s[j].return_x1();
             //cout << "For spring" <<" " <<j <<"x1new is : "<< x1new<< endl;
             x2spring = ((x1new - x1spring)/dt);
@@ -584,6 +616,8 @@ cout << "The number of springs is: " << s.size() << endl;
             s[j].set_x1(x1new);
 
             Fsum =-k3*x1new*x1new*x1new - k1*x1new - d3*x2spring*x2spring*x2spring - d1*x2spring;
+
+          //  cout << Fsum << endl;
 
             Fx_nodeb = Fsum*alpha;
             Fx_nodea = -Fx_nodeb;
@@ -630,15 +664,17 @@ cout << "The number of springs is: " << s.size() << endl;
 
 
       JacobiSVD<MatrixXd> svd(LearningMatrix2, ComputeThinU | ComputeThinV);
-      MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
+      MatrixXd Pseudo_Inverted_Matrix = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
   //    MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
       //Moore_Penrose_Pseudoinverse(LearningMatrix2);
-      VectorXd LearningWeightsVector = Cp *TargetSignal2;
+      VectorXd LearningWeightsVector =  Pseudo_Inverted_Matrix *TargetSignal2;
       Output = LearningMatrix3*LearningWeightsVector;
 
       cout << "The size of the learning period is: " << LearningMatrix2.rows() << endl;
       cout << "The size of the testing period is: " << LearningMatrix3.rows() << endl;
       cout << endl;
+
+    //  cout << Output << endl;
       //Populate_Learning_Weights(LearningWeightsVector);
 
     //  LM = LearningMatrix3;
