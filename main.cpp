@@ -526,6 +526,10 @@ for(int i=0; i<78; i++)
 
   //  Simulation sim(data, Volterra, Input, wash_out_time, learning_time, learning_time_test);
 
+  ofstream linear_web_and_MSE("k_and_d_and_MSE.csv", ofstream::out);
+
+
+
 
 
   double radius = 1.0;
@@ -547,9 +551,7 @@ for(int i=0; i<78; i++)
       cout << endl << endl;
 
       Simulation sim(radius, rounds, no_of_points_per_round, input_data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
-      cout << "a is: " <<" " << a <<"b is: " <<" " <<b <<" " <<"MSE: " << sim.return_MSE() << endl;
-
-      cout << endl << endl;
+      linear_web_and_MSE << a << "," <<b <<"," <<"," << sim.return_MSE() << endl;
 
     }
   }
