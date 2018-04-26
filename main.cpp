@@ -203,7 +203,7 @@ int main(int argc, char** argv)
 */
 
 
-MATFile * pmat; char ** you ; int ndir; int ndir2; mxArray * pa; mxArray * qa; mxArray *ra; mxArray *sa; mxArray *ta; mxArray *ua; mxArray *va; mxArray *xa;  mxArray *ya; mxArray *za; mxArray *zb; mxArray *in; const char * name; char ** dir;
+MATFile * pmat; char ** you ; int ndir; int ndir2; mxArray * pa; mxArray * qa; mxArray *ra; mxArray *sa; mxArray *ta; mxArray *ua; mxArray *va; mxArray *xa;  mxArray *ya; mxArray *za; mxArray *zb; mxArray *in; mxArray *in2; const char * name; char ** dir;
 char ** dir2;
 pmat = matOpen ("init_net.mat", "r" ) ;
 //dir = matGetDir ( pmat, &ndir ) ;
@@ -221,6 +221,8 @@ double * zaData;
 double * zbData;
 
 double * inData;
+
+double * inData2;
 
 /*
 for ( int i = 0 ; i <ndir; i ++ )
@@ -242,6 +244,10 @@ for ( int i = 0 ; i <ndir; i ++ )
 pa = matGetVariable(pmat, "P");
 qa = mxGetField(pa, 0, "states");
 in = mxGetField(pa, 0, "fixed");
+
+//For input nodes
+in2 = matGetVariable(pmat, "W_in");
+
 //Get spring variables.
 ra = matGetVariable(pmat, "W");
 sa = mxGetField(ra, 0, "k1");
@@ -268,6 +274,7 @@ zaData = ( double * ) mxGetData ( za ) ;
 zbData = ( double * ) mxGetData ( zb ) ;
 
 inData = ( double * ) mxGetData ( in ) ;
+inData2 = ( double * ) mxGetData ( in2 ) ;
 //X positions of nodes
 vector<double> x_nodes;
 vector<double> y_nodes;
@@ -283,7 +290,8 @@ vector<double> l0;
 vector<int> node1;
 vector<int> node2;
 
-vector<bool> input_nodes;
+vector<bool> fixed_nodes;
+vector<double> W_in;
 
 for(int i=0; i<78; i++)
 {
@@ -316,10 +324,18 @@ for(int i=0; i<78; i++)
 
   if(i<30)
    {
-  input_nodes.push_back((bool)inData[i]);
-  cout <<input_nodes[i] << endl;
+  fixed_nodes.push_back((bool)inData[i]);
+  cout <<fixed_nodes[i] << endl;
   //cout << inData[i] << endl;
    }
+
+   //Number of fixed nodes, manual load in not present yet.
+   if(i<30)
+   {
+   W_in.push_back(inData2[i]);
+   cout <<"W_in is" << W_in[i] << endl;
+   }
+
 }
 //cout <<"The first element of P and states is: " << paData[29] << endl;
 
@@ -431,7 +447,7 @@ for(int i=0; i<78; i++)
     //cout <<"The number of springs is: " << sim.Spring_List() << endl;
 
 
-    Simulation(Input, Volterra, wash_out_time, learning_time, learning_time_test, min_input_weight, max_input_weight, x_nodes, y_nodes, input_nodes, k1, k3, d1, d3, l0, node1, node2);
+    Simulation(Input, Volterra, wash_out_time, learning_time, learning_time_test, min_input_weight, max_input_weight, x_nodes, y_nodes, fixed_nodes, W_in, k1, k3, d1, d3, l0, node1, node2);
 
     auto end = std::chrono::high_resolution_clock::now();
     cout << "The time it took for the programme to run in total in milliseconds: ";

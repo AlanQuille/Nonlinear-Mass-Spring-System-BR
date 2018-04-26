@@ -74,7 +74,7 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
 }
 //Use same network, not new network.
 
-Simulation::Simulation(vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test, double min_input_weight, double max_input_weight, vector<double> &x_nodes, vector<double> &y_nodes, vector<bool> &input_nodes, vector<double> &k1, vector<double> &k3, vector<double> &d1, vector<double> &d3, vector<double> &l0, vector<int> &node1, vector<int> &node2)
+Simulation::Simulation(vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test, double min_input_weight, double max_input_weight, vector<double> &x_nodes, vector<double> &y_nodes, vector<bool> &fixed_nodes, vector<double> &W_in, vector<double> &k1, vector<double> &k3, vector<double> &d1, vector<double> &d3, vector<double> &l0, vector<int> &node1, vector<int> &node2)
 {
 
   this->wash_out_time = wash_out_time;
@@ -97,46 +97,40 @@ Simulation::Simulation(vector<double> &IS, vector<double> &TS, int wash_out_time
   double x;
   double y;
 
-  for(int i=0; i<k1.size(); i++)
+  for(j=0; j<x_nodes.size(); j++)
   {
-       if(i<x_nodes.size())
-       {
 
-       x=x_nodes[i];
+    x=x_nodes[j];
+    y=y_nodes[j];
 
-       if(x1<x)
-       {
-        x1=x;
-        j=i;
-       }
+    Nodes p(x, y);
+    n.push_back(p);
 
-       y=y_nodes[i];
+    if(fixed_nodes[j]==true)
+    {
+    n[j].set_Fixed_Node();
+    cout << "Fixed node: "<< j << endl;
+    }
 
-       if(x0>x)
-       {
-         x0=x;
-         k=i;
-       }
-
-       Nodes p(x, y);
-       n.push_back(p);
-
-       if(input_nodes[i]==true) n[i].init_Input_Node(0, 0, Uniform(min_input_weight, max_input_weight));
-
-       n[j].set_Fixed_Node();
-       n[k].set_Fixed_Node();
-
-      }
-
-      s.push_back(Springs(k1[i], d1[i], k3[i], d3[i], l0[i], node1[i], node2[i], 0));
-
+    //As a shortcut, all the nodes are input nodes but win = 0
+    if(W_in[j]!=0)
+    {
+      n[j].init_Input_Node(0, 0, W_in[j]);
+      cout << "Input node: " << j << endl;
+    }
 
   }
+
+  for(int i=0; i<k1.size(); i++)
+  {
+    s.push_back(Springs(k1[i], d1[i], k3[i], d3[i], l0[i], node1[i]-1, node2[i]-1, 0));
+  }
+
     //Test to see whether the reason why you're getting those 0 springs is because of fixed nodes.
 
-    execute();
-    output_LearningMatrix_and_MeanSquaredError();
-    Output_For_Plot();
+     execute();
+     output_LearningMatrix_and_MeanSquaredError();
+  //  Output_For_Plot();
 
 
 }
@@ -517,6 +511,7 @@ cout << "The number of springs is: " << s.size() << endl;
             if(i>=wash_out_time && i<(wash_out_time+learning_time)) LearningMatrix2(i-wash_out_time, j) = l;
             if(i>=(wash_out_time+learning_time)) LearningMatrix3(i-wash_out_time-learning_time, j) = l;
 
+
             k1 = s[j].get_k1();
             d1 = s[j].get_d1();
             k3 = s[j].get_k3();
@@ -587,6 +582,7 @@ cout << "The number of springs is: " << s.size() << endl;
       cout << "The size of the learning period is: " << LearningMatrix2.rows() << endl;
       cout << "The size of the testing period is: " << LearningMatrix3.rows() << endl;
       cout << endl;
+
       //Populate_Learning_Weights(LearningWeightsVector);
 
     //  LM = LearningMatrix3;
