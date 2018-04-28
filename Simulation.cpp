@@ -104,33 +104,56 @@ Simulation::Simulation(vector<double> &IS, vector<double> &TS, int wash_out_time
     y=y_nodes[j];
 
     Nodes p(x, y);
-    n.push_back(p);
 
     if(fixed_nodes[j]==true)
     {
-    n[j].set_Fixed_Node();
+    p.set_Fixed_Node();
     cout << "Fixed node: "<< j << endl;
     }
+
+    if(p.is_Fixed_Node()) cout <<"Is fixed node" << endl;
 
     //As a shortcut, all the nodes are input nodes but win = 0
     if(W_in[j]!=0)
     {
-      n[j].init_Input_Node(0, 0, W_in[j]);
+      p.init_Input_Node(0, 0, W_in[j]);
       cout << "Input node: " << j << endl;
     }
 
+    if(p.is_Input_Node()) cout <<"Is input node" << endl;
+
+    n.push_back(p);
+
   }
+
+  x0 = 0;
+  double y0 = 0;
+
+  x1 = 0;
+  double y1 = 0;
+
+  double l = 0;
 
   for(int i=0; i<k1.size(); i++)
   {
+    x0 = n[node1[i]-1].get_x_position();
+    y0 = n[node1[i]-1].get_y_position();
+
+    x1 = n[node2[i]-1].get_x_position();
+    y1 = n[node2[i]-1].get_y_position();
+
+    l = Eucl_Dist(x0, y0, x1, y1);
+
+    cout <<"l - l0[i] " << l - l0[i] << endl;
+
     s.push_back(Springs(k1[i], d1[i], k3[i], d3[i], l0[i], node1[i]-1, node2[i]-1, 0));
   }
 
     //Test to see whether the reason why you're getting those 0 springs is because of fixed nodes.
 
-     execute();
-     output_LearningMatrix_and_MeanSquaredError();
-  //  Output_For_Plot();
+//     execute();
+//     output_LearningMatrix_and_MeanSquaredError();
+//    Output_For_Plot();
 
 
 }
@@ -167,7 +190,7 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
 //  Output_For_Plot();
 }
 
-//Need this function to change input_connectivity input input_connectivity
+//Need this function t  o change input_connectivity input input_connectivity
 
 
 void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_position, double smallest_y_position, double largest_y_position)
@@ -503,6 +526,7 @@ cout << "The number of springs is: " << s.size() << endl;
 
             l = sqrt(vector_x*vector_x + vector_y*vector_y);
 
+
             alpha = vector_x/l;
             beta = vector_y/l;
 
@@ -518,6 +542,7 @@ cout << "The number of springs is: " << s.size() << endl;
             d3 = s[j].get_d3();
 
             x1new = l - s[j].return_Initial_Length();
+
             x1spring = s[j].return_x1();
             //cout << "For spring" <<" " <<j <<"x1new is : "<< x1new<< endl;
             x2spring = ((x1new - x1spring)/dt);
@@ -527,6 +552,8 @@ cout << "The number of springs is: " << s.size() << endl;
             s[j].set_x1(x1new);
 
             Fsum =-k3*x1new*x1new*x1new - k1*x1new - d3*x2spring*x2spring*x2spring - d1*x2spring;
+
+            cout << Fsum << endl;
 
             Fx_nodeb = Fsum*alpha;
             Fx_nodea = -Fx_nodeb;
@@ -552,6 +579,7 @@ cout << "The number of springs is: " << s.size() << endl;
 
               //Input force to input nodes
               if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
+            //  if(n[l].is_Input_Node()==true) n[l].Input_Force(100,0);
             //  n[l].Input_Force(1,0);
               //Change the node position, velocity and acceleration in response.
               n[l].Update(dt);
