@@ -98,6 +98,8 @@ private:
 
 	void Update(double dt);
 
+	void zero_Accel_and_Vel();
+
   //At every timestep, a node should be changed only once. A node should not be changed at every tiem
 	void change_updatecheck();
 

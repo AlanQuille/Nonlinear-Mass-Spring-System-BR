@@ -149,6 +149,15 @@ void Nodes::Update(double dt)
 
 }
 
+void Nodes::zero_Accel_and_Vel()
+{
+  pxdot =0;
+  pydot =0;
+
+  pxdotdot = 0;
+  pydotdot = 0;
+}
+
 void Nodes::change_updatecheck()
 {
     updatecheck = 1;

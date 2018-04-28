@@ -129,8 +129,24 @@ int main(int argc, char** argv)
 
   //  Simulation sim(data, Volterra, Input, wash_out_time, learning_time, learning_time_test);
    Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
-    cout <<"The number of nodes is: " << data.N << endl;
-    cout <<"The number of springs is: " << sim.Spring_List() << endl;
+   sim.Reset_Simulation();
+   sim.execute();
+   sim.output_LearningMatrix_and_MeanSquaredError();
+
+   sim.Reset_Simulation();
+   sim.execute();
+   sim.output_LearningMatrix_and_MeanSquaredError();
+
+   sim.Reset_Simulation();
+   sim.execute();
+   sim.output_LearningMatrix_and_MeanSquaredError();
+
+   sim.Reset_Simulation();
+   sim.execute();
+   sim.output_LearningMatrix_and_MeanSquaredError();
+
+  cout <<"The number of nodes is: " << data.N << endl;
+  cout <<"The number of springs is: " << sim.Spring_List() << endl;
 
    auto end = std::chrono::high_resolution_clock::now();
    cout << "The time it took for the programme to run in total in milliseconds: ";

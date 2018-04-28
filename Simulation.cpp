@@ -331,12 +331,22 @@ void Simulation::Reset_Simulation()
     s[i].set_x1(0);
     s[i].set_x2(0);
 
+    s[i].set_Force_0();
+
     n[s[i].Nodea()].original_positions();
     n[s[i].Nodeb()].original_positions();
 
-    n[s[i].Nodea()].print_position();
+  //  n[s[i].Nodea()].print_position();
 
   }
+
+  for(int j=0; j<n.size(); j++)
+  {
+    n[j].original_positions();
+    n[j].zero_Accel_and_Vel();
+  }
+
+
 }
 
 

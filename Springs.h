@@ -65,6 +65,9 @@ class Springs
 
         void set_original_length();
 
+        //Make total force 0 for reset.
+        void set_Force_0();
+
         // Output current length of spring
         void print_output();
 

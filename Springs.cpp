@@ -38,6 +38,11 @@ void Springs::set_original_length()
   l = l0;
 }
 
+void Springs::set_Force_0()
+{
+  F_total = 0;
+}
+
 double Springs::return_Initial_Length()
 {
     return l0;
