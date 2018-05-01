@@ -110,3 +110,23 @@ double Springs::get_d3()
 {
 return d3;
 }
+
+void Springs::set_k1(double k1)
+{
+this->k1 = k1;
+}
+
+void Springs::set_k3(double k3)
+{
+this->k3 = k3;
+}
+
+void Springs::set_d1(double d1)
+{
+this->d1 = d1;
+}
+
+void Springs::set_d3(double d3)
+{
+this->d3 = d3;
+}

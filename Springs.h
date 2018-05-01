@@ -89,6 +89,12 @@ class Springs
         double get_d1();
         double get_d3();
 
+        //These are for changing the k1, k3, d1 and d3.
+        void set_k1(double k1);
+        void set_k3(double k3);
+        void set_d1(double d1);
+        void set_d3(double d3);
+
         //Return x1 and x2
         double return_x1();
         double return_x2();

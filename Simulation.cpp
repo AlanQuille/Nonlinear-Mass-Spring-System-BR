@@ -324,6 +324,12 @@ void Simulation::input_Magnitude_of_Chaos_Force(double k, const std::string& inp
 
 void Simulation::Reset_Simulation()
 {
+
+  double k1_new;
+  double d1_new;
+  double k3_new;
+  double d3_new;
+
   for(int i=0; i<s.size(); i++)
   {
     s[i].set_original_length();
@@ -333,8 +339,32 @@ void Simulation::Reset_Simulation()
 
     s[i].set_Force_0();
 
+    k1_new = Rand_In_Range_Exp_k1();
+    d1_new = Rand_In_Range_Exp_d1();
+    k3_new = 0;
+    d3_new = 0;
+
+    s[i].set_k1(k1_new);
+    s[i].set_d1(d1_new);
+    s[i].set_k3(0);
+    s[i].set_d3(0);
+
+
     n[s[i].Nodea()].original_positions();
     n[s[i].Nodeb()].original_positions();
+
+    cout <<"k1 is: " << s[i].get_k1();
+    cout << endl;
+
+    cout <<"k3 is: " << s[i].get_k3();
+    cout << endl;
+
+    cout <<"d1 is: " << s[i].get_d1();
+    cout << endl;
+
+    cout <<"d3 is: " << s[i].get_d3();
+    cout << endl;
+
 
   //  n[s[i].Nodea()].print_position();
 
@@ -590,7 +620,7 @@ void Simulation::Populate_Learning_Weights(VectorXd& L)
 // Btw. any graphical output (even to the terminal) slows the process down a lot
 // However, you could have every 1000 points and update message to show the use the simualtion is still going
 // Btw. it is good to have a functionality to switch off any of these things by the user
-void Simulation::output_LearningMatrix_and_MeanSquaredError()
+double Simulation::output_LearningMatrix_and_MeanSquaredError()
 {
   ofstream output("outputsignal.csv"); output.precision(15);
   ofstream learningweights("learningweights.csv"); learningweights.precision(15);
@@ -613,6 +643,7 @@ void Simulation::output_LearningMatrix_and_MeanSquaredError()
   double currentvalue = 0;
   double average = 0;
   double std = 0;
+  double MSE = 0;
 
   vector<double> Output_Signal;
   vector<double> Test_Data;
@@ -638,9 +669,11 @@ void Simulation::output_LearningMatrix_and_MeanSquaredError()
       }
 
   }
+  MSE = MSE(Output_Signal, Test_Data);
 
   cout <<"The mean squared error of the output signal versus the target signal is: " << MSE(Output_Signal, Test_Data);
   cout <<endl;
+  return MSE;
 }
 
 
