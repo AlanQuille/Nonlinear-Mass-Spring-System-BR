@@ -95,7 +95,7 @@ int main(int argc, char** argv)
 
     // setting parameters for simulation
     // This should be possible to read in from a text file
-    data.N = 30;
+    data.N = 50;
     data.ux=0;
     data.uy= 0;
 
@@ -127,9 +127,22 @@ int main(int argc, char** argv)
 
     cout << "Initial Input is: "<< Input[0] << endl;
 
+    double new_MSE = 0;
+    double old_MSE = 0;
 
+  for(int i=0; i<10; i++)
+  {
+  Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+  new_MSE = sim.return_MSE();
+  if(old_MSE>new_MSE)
+    {
+  sim.Output_For_Plot();
+  sim.output_Output_Signal();
+  old_MSE = new_MSE;
+    }
+  }
 
-   Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+  cout <<"The best MSE is: " << old_MSE << endl;
   // sim.Reset_Simulation();
 //   sim.execute();
 //   sim.output_LearningMatrix_and_MeanSquaredError();
@@ -146,8 +159,8 @@ int main(int argc, char** argv)
 
 //  Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
 
-  cout <<"The number of nodes is: " << data.N << endl;
-  cout <<"The number of springs is: " << sim.Spring_List() << endl;
+//  cout <<"The number of nodes is: " << data.N << endl;
+//  cout <<"The number of springs is: " << sim.Spring_List() << endl;
 
    auto end = std::chrono::high_resolution_clock::now();
    cout << "The time it took for the programme to run in total in milliseconds: ";

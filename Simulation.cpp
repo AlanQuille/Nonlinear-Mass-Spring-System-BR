@@ -69,8 +69,8 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
 
   Initialize_Springs();
   execute();
-  output_LearningMatrix_and_MeanSquaredError();
-  Output_For_Plot();
+  Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
+  //Output_For_Plot();
 }
 
 
@@ -112,7 +112,7 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
   Input_Signal = IS;
 
 //  execute();
-//  output_LearningMatrix_and_MeanSquaredError();
+//  Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
   Output_For_Plot();
 }
 
@@ -666,6 +666,11 @@ void Simulation::Moore_Penrose_Pseudoinverse(MatrixXd& L)
   L = L.completeOrthogonalDecomposition().pseudoInverse();
 }
 
+double Simulation::return_MSE()
+{
+  return Mean_Squared_Error;
+}
+
 vector<double>& Simulation::Return_Learning_Weights()
 {
   return Learning_Weights;
@@ -728,11 +733,11 @@ double Simulation::output_LearningMatrix_and_MeanSquaredError()
 
       if(i>=(wash_out_time+learning_time))
       {
-        outputsignal << Output(i-wash_out_time-learning_time);
-        outputsignal << endl;
+    //    outputsignal << Output(i-wash_out_time-learning_time);
+    //    outputsignal << endl;
 
-        targetsignal << Target_Signal.at(i);
-        targetsignal << endl;
+    //    targetsignal << Target_Signal.at(i);
+    //    targetsignal << endl;
         //(i-wash_out_time-learning_time) = Target_Signal.at(i);
         Test_Data.push_back(Target_Signal.at(i));
         Output_Signal.push_back(Output(i-wash_out_time-learning_time));
@@ -744,6 +749,41 @@ double Simulation::output_LearningMatrix_and_MeanSquaredError()
   cout <<"The mean squared error of the output signal versus the target signal is: " << Mean_squared_error;
   cout <<endl;
   return Mean_squared_error;
+}
+
+void Simulation::output_Output_Signal()
+{
+  ofstream output("outputsignal.csv"); output.precision(15);
+  ofstream learningweights("learningweights.csv"); learningweights.precision(15);
+  ofstream targetsignal("targetsignal.csv");  targetsignal.precision(15);
+  ofstream targetsignal2("targetsignal2.csv");  targetsignal.precision(15);
+  ofstream targetsignal3("targetsignal3.csv");  targetsignal.precision(15);
+
+  ofstream learningmatrix("learningmatrix.csv");  learningmatrix.precision(15);
+  ofstream learningmatrix2("learningmatrix2.csv");  learningmatrix.precision(15);
+  ofstream learningmatrix3("learningmatrix3.csv");  learningmatrix.precision(15);
+  ofstream outputsignal("outputsignal.csv");  learningmatrix.precision(15);
+
+  ofstream inputsignalcheck("inputsignalcheck.csv");  inputsignalcheck.precision(15);
+
+  ofstream chaoscheck(str);
+
+  for(int i=0; i<maxtimesteps; i++)
+ // for(int i=0; i<learning_time_test; i++)
+ {
+
+     if(i>=(wash_out_time+learning_time))
+     {
+       outputsignal << Output(i-wash_out_time-learning_time);
+       outputsignal << endl;
+
+       targetsignal << Target_Signal.at(i);
+       targetsignal << endl;
+       //(i-wash_out_time-learning_time) = Target_Signal.at(i);
+     }
+
+ }
+
 }
 
 
