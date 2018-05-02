@@ -95,7 +95,7 @@ int main(int argc, char** argv)
 
     // setting parameters for simulation
     // This should be possible to read in from a text file
-    data.N = 17;
+    data.N = 27;
     data.ux=0;
     data.uy= 0;
 
@@ -132,7 +132,7 @@ int main(int argc, char** argv)
    sim.Reset_Simulation();
    sim.execute();
    sim.output_LearningMatrix_and_MeanSquaredError();
-
+/*
    sim.Reset_Simulation();
    sim.execute();
    sim.output_LearningMatrix_and_MeanSquaredError();
@@ -144,6 +144,7 @@ int main(int argc, char** argv)
    sim.Reset_Simulation();
    sim.execute();
    sim.output_LearningMatrix_and_MeanSquaredError();
+   */
 
   cout <<"The number of nodes is: " << data.N << endl;
   cout <<"The number of springs is: " << sim.Spring_List() << endl;

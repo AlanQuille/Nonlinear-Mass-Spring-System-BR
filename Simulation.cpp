@@ -643,7 +643,7 @@ double Simulation::output_LearningMatrix_and_MeanSquaredError()
   double currentvalue = 0;
   double average = 0;
   double std = 0;
-  double MSE = 0;
+  double Mean_squared_error = 0;
 
   vector<double> Output_Signal;
   vector<double> Test_Data;
@@ -669,11 +669,11 @@ double Simulation::output_LearningMatrix_and_MeanSquaredError()
       }
 
   }
-  MSE = MSE(Output_Signal, Test_Data);
+  Mean_squared_error = MSE(Output_Signal, Test_Data);
 
-  cout <<"The mean squared error of the output signal versus the target signal is: " << MSE(Output_Signal, Test_Data);
+  cout <<"The mean squared error of the output signal versus the target signal is: " << Mean_squared_error;
   cout <<endl;
-  return MSE;
+  return Mean_squared_error;
 }
 
 
