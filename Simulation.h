@@ -159,13 +159,16 @@ class Simulation
         // Todo: Maybe derive a class for spiderweb simulation
         Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Input_Signal, vector<double> &Target_Signal);
 
+        //radius rounds etc.
+        Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test);
+
         //This creates the nodes for the reservoir computer implementation
         // Todo: Maybe derive a class for spiderweb simulation
         void Initialize_Nodes(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data);
 
         //This initializes the nodes and puts in appropriate values for the ranges and the weights
         // Todo: change variable names here
-        void Initialize_Nodes(double range0x, double range1x, double range0y, double range1y);
+        void Initialize_Nodes(double smallest_x_position, double largest_x_position, double smallest_y_position, double largest_y_position);
 
         //This is for the csv files to test if there is chaos.
         void input_Magnitude_of_Chaos_Force(double k, const std::string& input, const std::string& input2);

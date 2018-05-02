@@ -95,7 +95,7 @@ int main(int argc, char** argv)
 
     // setting parameters for simulation
     // This should be possible to read in from a text file
-    data.N = 27;
+    data.N = 30;
     data.ux=0;
     data.uy= 0;
 
@@ -127,24 +127,24 @@ int main(int argc, char** argv)
 
     cout << "Initial Input is: "<< Input[0] << endl;
 
-  //  Simulation sim(data, Volterra, Input, wash_out_time, learning_time, learning_time_test);
+
+
    Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
-   sim.Reset_Simulation();
-   sim.execute();
-   sim.output_LearningMatrix_and_MeanSquaredError();
+  // sim.Reset_Simulation();
+//   sim.execute();
+//   sim.output_LearningMatrix_and_MeanSquaredError();
+
+
 /*
-   sim.Reset_Simulation();
-   sim.execute();
-   sim.output_LearningMatrix_and_MeanSquaredError();
+  cout <<"The number of nodes is: " << data.N << endl;
+  cout <<"The number of springs is: " << sim.Spring_List() << endl;
+*/
+  double radius = 1.0;
+  int rounds = 4;
+  int no_of_points_per_round= 50;
 
-   sim.Reset_Simulation();
-   sim.execute();
-   sim.output_LearningMatrix_and_MeanSquaredError();
 
-   sim.Reset_Simulation();
-   sim.execute();
-   sim.output_LearningMatrix_and_MeanSquaredError();
-   */
+//  Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
 
   cout <<"The number of nodes is: " << data.N << endl;
   cout <<"The number of springs is: " << sim.Spring_List() << endl;

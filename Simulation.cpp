@@ -75,7 +75,7 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
 
 
 
-Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Lvx, vector<double> &Lvy)
+Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test)
 {
   //this->input_connectivity_percentage = data.input_connectivity_percentage;
   this->num_input_nodes = (data.input_connectivity_percentage)*rounds*no_of_points_per_round;
@@ -85,10 +85,15 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
   this->input_weight_smallest_value = data.min_input_weight;
   this->input_weight_largest_value = data.max_input_weight;
 
-  this->smallest_x_position = data.min_x_position;     // smallest_x_position ?? name is not very descriptive (same for the others below)
-  this->largest_x_position = data.max_x_position;
-  this->smallest_y_position=data.min_y_position;
-  this->largest_y_position = data.max_y_position;
+  this-> min_k1 = data.min_k1;
+  this-> min_k3 = data.min_k3;
+  this-> min_d1 = data.min_d1;
+  this-> min_d3 = data.min_d3;
+
+  this-> max_k1 = data.max_k1;
+  this-> max_k3 = data.max_k3;
+  this-> max_d1 = data.max_d1;
+  this-> max_d3 = data.max_d3;
 
   //Learning phase
   Initialize_Nodes(radius, rounds, no_of_points_per_round, data);
@@ -96,12 +101,19 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
   this->t0 = data.t0;
   this->tmax = data.tmax;
   this->dt = data.dt;
-  this->maxtimesteps = ((data.tmax - data.t0)/data.dt);
 
-  Target_Signal = Lvx;
+  this->wash_out_time = wash_out_time;
+  this->learning_time = learning_time;
+  this->learning_time_test = learning_time_test;
 
-  execute();
-//  Output_For_Plot();
+  this->maxtimesteps = wash_out_time + learning_time + learning_time_test;
+
+  Target_Signal = TS;
+  Input_Signal = IS;
+
+//  execute();
+//  output_LearningMatrix_and_MeanSquaredError();
+  Output_For_Plot();
 }
 
 //Need this function to change input_connectivity input input_connectivity
@@ -157,116 +169,174 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
  		 //Fixed the leftmost and rightmost nodes.
    }
 
-void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data)
-{
-  double angle = ((2*M_PI)/no_of_points_per_round);
-  double x_position;
-  double y_position;
-
-  double k1;
-  double d1;
-  double k3;
-  double d3;
-
-  double x0;
-//  double x1;
-
-  double y0;
-//  double y1;
-
-  double l0;
-  double wout;
-  double win;
-  double BeforeRand = 0;
-
-
-  int k =0;
-
- for(int j=0; j<rounds; j++)
- {
-   x0 = (j+1)*radius*cos((0));
-   y0 = (j+1)*radius*sin((0));
-
-   for(int i=0; i<no_of_points_per_round; i++)
+   void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data)
    {
-      //So this
-      x_position = (j+1)*radius*cos((i*angle));
-      y_position = (j+1)*radius*sin((i*angle));
+     double angle = ((2*M_PI)/no_of_points_per_round);
+     double x_position;
+     double y_position;
+
+     double k1;
+     double d1;
+     double k3;
+     double d3;
+
+     double x0;
+   //  double x1;
+
+     double y0;
+   //  double y1;
+
+     double l0;
+     double wout;
+
+     double random_factor_x = 0;
+     double random_factor_y = 0;
 
 
-      Nodes node(x_position, y_position);
+     int k =0;
 
-      //THIS IS NOT GOOD CODING PRACTICE. FIX IT.
-      //FIX IT
-      //FIX IT
+    for(int j=0; j<rounds; j++)
+    {
+      x0 = (j+1)*radius*cos((0));
+      y0 = (j+1)*radius*sin((0));
+
+      for(int i=0; i<no_of_points_per_round; i++)
+      {
+         //So this
+         x_position = (j+1)*radius*cos((i*angle));
+         y_position = (j+1)*radius*sin((i*angle));
+
+
+
+         Nodes node(x_position, y_position);
+
+         //THIS IS NOT GOOD CODING PRACTICE. FIX IT.
+         //FIX IT
+         //FIX IT
+
+         n.push_back(node);
+
+         if(i>0)
+         {
+           //This has to be done from main, this is not good here.
+
+         //For purposes of test
+         /*
+         k1 = Rand_In_Range_Exp_k1();
+         d1 = Rand_In_Range_Exp_d1();
+         k3 = Rand_In_Range_Exp_k3();
+         d3 = Rand_In_Range_Exp_d3();
+         */
+
+         k1 = data.min_k1;
+         d1 = data.min_d1;
+         k3 = 0;
+         d3 = 0;
+       //  k3 = Rand_In_Range_Exp_k3();
+       //  d3 = Rand_In_Range_Exp_d3();
+
+         l0 = Eucl_Dist(x0, y0, x_position, y_position);
+       //  wout = Uniform(data.w_out_initial, data.w_out_final);
+         wout = 0;
+
+         s.push_back(Springs(k1, d1, k3, d3, l0, k, k-1, wout));
+         }
+
+         //For radial pattern.
+         if(j>0)
+         {
+         /*
+         k1 = Rand_In_Range_Exp_k1();
+         cout <<"k1 is: " << endl;
+         d1 = Rand_In_Range_Exp_d1();
+         cout <<"d1 is: " << endl;
+         k3 = Rand_In_Range_Exp_k3();
+         cout << "k3 is: " << endl;
+         d3 = Rand_In_Range_Exp_d3();
+         cout << "d3 is: " << endl;
+         */
+
+         k1 = data.min_k1;
+         d1 = data.min_d1;
+
+         cout << "k1 is " << k1;
+         cout << "d1 is " << k1;
+
+         k3 = 0;
+         d3 = 0;
+
+         //l0 = Eucl_Dist(x0, y0, x_position, y_position);
+         l0 = radius;
+       //  wout = Uniform(data.w_out_initial, data.w_out_final);
+          wout = 0;
+
+         s.push_back(Springs(k1, d1, k3, d3, l0, k, k-no_of_points_per_round, wout));
+         }
+
+         x0 = x_position;
+         y0 = y_position;
+         k++;
+
+      }
+      x_position = (j+1)*radius*cos((0));
+      y_position = (j+1)*radius*sin((0));
+
+      k1 = Rand_In_Range_Exp_k1();
+      cout <<"k1 is: " <<k1 << endl;
+      d1 = Rand_In_Range_Exp_d1();
+      cout <<"d1 is: " <<d1 << endl;
+      k3 = Rand_In_Range_Exp_k3();
+      cout <<"k3 is: " <<k3 << endl;
+      d3 = Rand_In_Range_Exp_d3();
+      cout <<"d3 is: " <<d3 << endl;
+
+      l0 = Eucl_Dist(x0, y0, x_position, y_position);
+      cout <<"l0 is: " <<l0 << endl;
+     // wout = Uniform(data.w_out_initial, data.w_out_final);
+     //Temporarily remove
+     wout = 0;
+
+      if(no_of_points_per_round>2)
+      {
+      s.push_back(Springs(k1, d1, k3, d3, l0, (k-no_of_points_per_round), k-1, wout));
+      }
+    }
+
+    int input_node_nums = 0.01*(data.input_connectivity_percentage)*rounds*no_of_points_per_round;
+    int N = rounds * no_of_points_per_round;
+    int randomnum;
+    double win;
+
+
+    n[no_of_points_per_round*(rounds-1)].set_Fixed_Node();
+    n[(no_of_points_per_round/2)+no_of_points_per_round*(rounds-1)].set_Fixed_Node();
+
+    cout << "Outer fixed node 1 " << no_of_points_per_round*(rounds-1) << endl;
+    cout << "Outer fixed node 2 " <<(no_of_points_per_round/2) + no_of_points_per_round*(rounds-1) << endl;
+
+    for(int i=0; i<N; i++)
+     {
+      //Input weights for the number of input_connectivitiy nodes.
       win = Uniform(data.min_input_weight, data.max_input_weight);
-      cout << win << endl;
+      randomnum = (int)Uniform(0, N);
 
-      n.push_back(node);
-
-      if(BeforeRand<=input_connectivity_percentage)
+      //Make sure fixed nodes are not input nodes
+      if(i<input_node_nums)
       {
-      n[k].init_Input_Node(data.ux, data.uy, win);
-      cout << endl;
+      //If it is not a fixed node.
+      while(n[randomnum].is_Fixed_Node())
+        {
+        //C++ typecasting rounds down (truncates) but this is fine going from 0 to N-1.
+        randomnum = (int)Uniform(0, N);
+        }
+
+      n[randomnum].init_Input_Node(data.ux, data.uy, win);
+
       }
 
-      if(i>0)
-      {
-        //This has to be done from main, this is not good here.
-      k1 = log10(Uniform(data.min_k1, data.max_k1));
-      d1 = log10(Uniform(data.min_d1, data.max_d1));
-      k3 = log10(Uniform(data.min_k3, data.max_k3));
-      d3 = log10(Uniform(data.min_d1, data.max_d1));
-
-      l0 = Eucl_Dist(x0, y0, x_position, y_position);
-    //  wout = Uniform(data.w_out_initial, data.w_out_final);
-      wout = 0;
-
-      s.push_back(Springs(k1, d1, k3, d3, l0, k, k-1, wout));
-      }
-
-      //For radial pattern.
-      if(j>0)
-      {
-        k1 = log10(Uniform(data.min_k1, data.max_k1));
-        d1 = log10(Uniform(data.min_d1, data.max_d1));
-        k3 = log10(Uniform(data.min_k3, data.max_k3));
-        d3 = log10(Uniform(data.min_d3, data.max_d3));
-
-      l0 = Eucl_Dist(x0, y0, x_position, y_position);
-    //  wout = Uniform(data.w_out_initial, data.w_out_final);
-       wout = 0;
-
-      s.push_back(Springs(k1, d1, k3, d3, l0, k, k-no_of_points_per_round, wout));
-      }
-
-      x0 = x_position;
-      y0 = y_position;
-      k++;
+     }
 
    }
-   x_position = (j+1)*radius*cos((0));
-   y_position = (j+1)*radius*sin((0));
-
-   k1 = log10(Uniform(data.min_k1, data.max_k1));
-   d1 = log10(Uniform(data.min_d1, data.max_d1));
-   k3 = log10(Uniform(data.min_k3, data.max_k3));
-   d3 = log10(Uniform(data.min_d3, data.max_d3));
-   l0 = Eucl_Dist(x0, y0, x_position, y_position);
-  // wout = Uniform(data.w_out_initial, data.w_out_final);
-  //Temporarily remove
-  wout = 0;
-
-   if(no_of_points_per_round>2)
-   {
-   s.push_back(Springs(k1, d1, k3, d3, l0, (k-no_of_points_per_round), k-1, wout));
-   }
- }
-
-
- n[no_of_points_per_round*(rounds-1)].set_Fixed_Node();
- n[2+no_of_points_per_round*(rounds-1)].set_Fixed_Node();
-}
 
 void Simulation::Delaunay_Triangulation_and_Spring_Creation()
 {
