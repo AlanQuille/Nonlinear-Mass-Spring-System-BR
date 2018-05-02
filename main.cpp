@@ -129,11 +129,13 @@ int main(int argc, char** argv)
 
     double new_MSE = 0;
     double old_MSE = 0;
+    vector<double> MSE_list;
 
   for(int i=0; i<10; i++)
   {
   Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
   new_MSE = sim.return_MSE();
+  MSE_list.push_back(new_MSE);
   if(old_MSE>new_MSE)
     {
   sim.Output_For_Plot();
@@ -143,6 +145,7 @@ int main(int argc, char** argv)
   }
 
   cout <<"The best MSE is: " << old_MSE << endl;
+  cout <<"The average MSE is: " << accumulate( MSE_list.begin(), MSE_list.end(), 0.0/ MSE_list.size()) << endl;
   // sim.Reset_Simulation();
 //   sim.execute();
 //   sim.output_LearningMatrix_and_MeanSquaredError();
