@@ -111,7 +111,7 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
   Target_Signal = TS;
   Input_Signal = IS;
 
-//  execute();
+  execute();
 //  Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
   Output_For_Plot();
 }
@@ -307,6 +307,14 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
     int randomnum;
     double win;
 
+    cout << "No of input nodes is: " << input_node_nums << endl;
+    cout << "No of input nodes is: " << input_node_nums << endl;
+    cout << "No of input nodes is: " << input_node_nums << endl;
+    cout << "No of input nodes is: " << input_node_nums << endl;
+    cout << "No of input nodes is: " << input_node_nums << endl;
+    cout << "No of input nodes is: " << input_node_nums << endl;
+    
+
 
     n[no_of_points_per_round*(rounds-1)].set_Fixed_Node();
     n[(no_of_points_per_round/2)+no_of_points_per_round*(rounds-1)].set_Fixed_Node();
@@ -372,6 +380,8 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
       num_of_input_nodes++;
 
       }
+
+
 
 
       DT.AddPoint(Point(n[i].get_x_position(),n[i].get_y_position(),0));
@@ -536,6 +546,7 @@ cout << "The number of springs is: " << s.size() << endl;
 
         for(int j=0;  j<s.size(); j++)
         {
+
             nodea = s[j].Nodea();
             nodeb = s[j].Nodeb();
 
@@ -549,6 +560,7 @@ cout << "The number of springs is: " << s.size() << endl;
             vector_y = y1 - y0;
 
             l = sqrt(vector_x*vector_x + vector_y*vector_y);
+            cout <<j <<" " << l << endl;
 
             alpha = vector_x/l;
             beta = vector_y/l;
@@ -751,9 +763,9 @@ double Simulation::output_LearningMatrix_and_MeanSquaredError()
   return Mean_squared_error;
 }
 
-void Simulation::output_Output_Signal()
+void Simulation::output_Output_Signal(string& s)
 {
-  ofstream output("outputsignal.csv"); output.precision(15);
+  string str = s + "_" + "outputsignal.csv";
   ofstream learningweights("learningweights.csv"); learningweights.precision(15);
   ofstream targetsignal("targetsignal.csv");  targetsignal.precision(15);
   ofstream targetsignal2("targetsignal2.csv");  targetsignal.precision(15);
@@ -762,7 +774,7 @@ void Simulation::output_Output_Signal()
   ofstream learningmatrix("learningmatrix.csv");  learningmatrix.precision(15);
   ofstream learningmatrix2("learningmatrix2.csv");  learningmatrix.precision(15);
   ofstream learningmatrix3("learningmatrix3.csv");  learningmatrix.precision(15);
-  ofstream outputsignal("outputsignal.csv");  learningmatrix.precision(15);
+  ofstream outputsignal(str);  learningmatrix.precision(15);
 
   ofstream inputsignalcheck("inputsignalcheck.csv");  inputsignalcheck.precision(15);
 

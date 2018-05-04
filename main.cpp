@@ -128,24 +128,36 @@ int main(int argc, char** argv)
     cout << "Initial Input is: "<< Input[0] << endl;
 
     double new_MSE = 0;
-    double old_MSE = 0;
+    double old_MSE = 100;
     vector<double> MSE_list;
+    string st;
 
+//    Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+/*
   for(int i=0; i<10; i++)
   {
+
   Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
   new_MSE = sim.return_MSE();
   MSE_list.push_back(new_MSE);
+  st = to_string(new_MSE);
+
   if(old_MSE>new_MSE)
     {
   sim.Output_For_Plot();
-  sim.output_Output_Signal();
+  sim.output_Output_Signal(st);
   old_MSE = new_MSE;
+  cout << "New one" << endl;
+  cout << "New one" << endl;
+  cout << "New one" << endl;
+  cout << "New one" << endl;
     }
+
   }
 
   cout <<"The best MSE is: " << old_MSE << endl;
-  cout <<"The average MSE is: " << accumulate( MSE_list.begin(), MSE_list.end(), 0.0/ MSE_list.size()) << endl;
+  cout <<"The average MSE is: " << accumulate( MSE_list.begin(), MSE_list.end(), 0.0)/ MSE_list.size() << endl;
+  */
   // sim.Reset_Simulation();
 //   sim.execute();
 //   sim.output_LearningMatrix_and_MeanSquaredError();
@@ -156,11 +168,11 @@ int main(int argc, char** argv)
   cout <<"The number of springs is: " << sim.Spring_List() << endl;
 */
   double radius = 1.0;
-  int rounds = 4;
-  int no_of_points_per_round= 50;
+  int rounds = 2;
+  int no_of_points_per_round= 30;
 
 
-//  Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+  Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
 
 //  cout <<"The number of nodes is: " << data.N << endl;
 //  cout <<"The number of springs is: " << sim.Spring_List() << endl;

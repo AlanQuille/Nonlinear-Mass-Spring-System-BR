@@ -231,7 +231,7 @@ class Simulation
         double output_LearningMatrix_and_MeanSquaredError();
 
         //Return output signal on its own, for MSE test.
-        void output_Output_Signal();
+        void output_Output_Signal(string& s);
 
         //Return the weights after learning phase as a vector
         vector<double>& Return_Learning_Weights();
