@@ -52,6 +52,106 @@ int main(int argc, char** argv)
 
   double * inData2;
 
+  //Get positions of nodes
+pa = matGetVariable(pmat, "P");
+qa = mxGetField(pa, 0, "states");
+in = mxGetField(pa, 0, "fixed");
+
+//For input nodes
+in2 = matGetVariable(pmat, "W_in");
+
+//Get spring variables.
+ra = matGetVariable(pmat, "W");
+sa = mxGetField(ra, 0, "k1");
+ta = mxGetField(ra, 0, "k3");
+ua = mxGetField(ra, 0, "d1");
+xa = mxGetField(ra, 0, "d3");
+ya = mxGetField(ra, 0, "l0");
+
+za = mxGetField(ra, 0, "from");
+zb = mxGetField(ra, 0, "to");
+
+//in = mxGetField(ra, 0, "fixed");
+
+qaData = ( double * ) mxGetData ( qa ) ;
+
+raData = ( double * ) mxGetData ( ra ) ;
+saData = ( double * ) mxGetData ( sa ) ;
+taData = ( double * ) mxGetData ( ta ) ;
+uaData = ( double * ) mxGetData ( ua ) ;
+xaData = ( double * ) mxGetData ( xa ) ;
+yaData = ( double * ) mxGetData ( ya ) ;
+
+zaData = ( double * ) mxGetData ( za ) ;
+zbData = ( double * ) mxGetData ( zb ) ;
+
+inData = ( double * ) mxGetData ( in ) ;
+inData2 = ( double * ) mxGetData ( in2 ) ;
+//X positions of nodes
+vector<double> x_nodes;
+vector<double> y_nodes;
+//input nodes.
+//vector<bool> input_nodes;
+
+//Get k1, k3, d1, d3, l0, from, to
+vector<double> k1;
+vector<double> k3;
+vector<double> d1;
+vector<double> d3;
+vector<double> l0;
+vector<int> node1;
+vector<int> node2;
+
+vector<bool> fixed_nodes;
+vector<double> W_in;
+
+for(int i=0; i<78; i++)
+{
+  if(i<30)
+  {
+  x_nodes.push_back(qaData[i]);
+//  cout << x_nodes[i] << endl;
+  }
+  if(i>=30 && i<60)
+  {
+  y_nodes.push_back(qaData[i]);
+//  cout << y_nodes[i] << endl;
+  }
+
+  k1.push_back(saData[i]);
+//  cout << k1[i] << endl;
+  k3.push_back(taData[i]);
+//  cout << k3[i] << endl;
+  d1.push_back(uaData[i]);
+//  cout << d1[i] << endl;
+  d3.push_back(xaData[i]);
+//  cout << d3[i] << endl;
+  l0.push_back(yaData[i]);
+//  cout << l0[i] << endl;;
+
+  node1.push_back((int)zaData[i]);
+  //cout << node1[i] << endl;
+  node2.push_back((int)zbData[i]);
+//  cout << node2[i] << endl;
+
+  if(i<30)
+   {
+  fixed_nodes.push_back((bool)inData[i]);
+  cout <<fixed_nodes[i] << endl;
+  //cout << inData[i] << endl;
+   }
+
+   //Number of fixed nodes, manual load in not present yet.
+   if(i<30)
+   {
+   W_in.push_back(inData2[i]);
+   cout <<"W_in is" << W_in[i] << endl;
+   }
+
+}
+
+
+
 
    auto begin = std::chrono::high_resolution_clock::now();
 
@@ -113,6 +213,8 @@ int main(int argc, char** argv)
     }
 
 
+
+
     cout <<"Size of input signal is: "<< Input.size() << endl;
     cout <<"Size of target signal is: "<< Volterra.size() << endl;
 
@@ -155,11 +257,12 @@ int main(int argc, char** argv)
 
     cout << "Initial Input is: "<< Input[0] << endl;
 
-  //  Simulation sim(data, Volterra, Input, wash_out_time, learning_time, learning_time_test);
+  //  Simulation(Input, Volterra, wash_out_time, learning_time, learning_time_test, data.min_input_weight, data.max_input_weight, x_nodes, y_nodes, fixed_nodes, W_in, k1, k3, d1, d3, l0, node1, node2);
+
    Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
-   sim.Reset_Simulation();
-   sim.execute();
-   sim.output_LearningMatrix_and_MeanSquaredError();
+   //sim.Reset_Simulation();
+   //sim.execute();
+   //sim.output_LearningMatrix_and_MeanSquaredError();
 /*
    sim.Reset_Simulation();
    sim.execute();
@@ -174,8 +277,8 @@ int main(int argc, char** argv)
    sim.output_LearningMatrix_and_MeanSquaredError();
    */
 
-  cout <<"The number of nodes is: " << data.N << endl;
-  cout <<"The number of springs is: " << sim.Spring_List() << endl;
+  //cout <<"The number of nodes is: " << data.N << endl;
+  //cout <<"The number of springs is: " << sim.Spring_List() << endl;
 
    auto end = std::chrono::high_resolution_clock::now();
    cout << "The time it took for the programme to run in total in milliseconds: ";

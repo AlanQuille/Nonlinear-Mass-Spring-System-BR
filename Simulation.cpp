@@ -104,6 +104,90 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
 //  Output_For_Plot();
 }
 
+Simulation::Simulation(vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test, double min_input_weight, double max_input_weight, vector<double> &x_nodes, vector<double> &y_nodes, vector<bool> &fixed_nodes, vector<double> &W_in, vector<double> &k1, vector<double> &k3, vector<double> &d1, vector<double> &d3, vector<double> &l0, vector<int> &node1, vector<int> &node2)
+{
+
+  this->wash_out_time = wash_out_time;
+  this->learning_time = learning_time;
+  this->learning_time_test = learning_time_test;
+
+  //Total time
+  this->maxtimesteps = wash_out_time + learning_time + learning_time_test;
+
+  Target_Signal = TS;
+  Input_Signal = IS;
+
+  //for fixed nodes.
+  int j=0;
+  int k=0;
+
+  double x1 =1000;
+  double x0 =0;
+
+  double x;
+  double y;
+
+  for(j=0; j<x_nodes.size(); j++)
+  {
+
+    x=x_nodes[j];
+    y=y_nodes[j];
+
+    Nodes p(x, y);
+
+    if(fixed_nodes[j]==true)
+    {
+    p.set_Fixed_Node();
+    cout << "Fixed node: "<< j << endl;
+    }
+
+    if(p.is_Fixed_Node()) cout <<"Is fixed node" << endl;
+
+    //As a shortcut, all the nodes are input nodes but win = 0
+    if(W_in[j]!=0)
+    {
+      p.init_Input_Node(0, 0, W_in[j]);
+      cout << "Input node: " << j << endl;
+    }
+
+    if(p.is_Input_Node()) cout <<"Is input node" << endl;
+
+    n.push_back(p);
+
+  }
+
+  x0 = 0;
+  double y0 = 0;
+
+  x1 = 0;
+  double y1 = 0;
+
+  double l = 0;
+
+  for(int i=0; i<k1.size(); i++)
+  {
+    x0 = n[node1[i]-1].get_x_position();
+    y0 = n[node1[i]-1].get_y_position();
+
+    x1 = n[node2[i]-1].get_x_position();
+    y1 = n[node2[i]-1].get_y_position();
+
+    l = Eucl_Dist(x0, y0, x1, y1);
+
+    cout <<"l - l0[i] " << l - l0[i] << endl;
+
+    s.push_back(Springs(k1[i], d1[i], k3[i], d3[i], l0[i], node1[i]-1, node2[i]-1, 0));
+  }
+
+    //Test to see whether the reason why you're getting those 0 springs is because of fixed nodes.
+
+     execute();
+     output_LearningMatrix_and_MeanSquaredError();
+ //    Output_For_Plot();
+
+
+}
+
 //Need this function to change input_connectivity input input_connectivity
 
 
@@ -504,7 +588,6 @@ cout << "The number of springs is: " << s.size() << endl;
 
             Fsum =-k3*x1new*x1new*x1new - k1*x1new - d3*x2spring*x2spring*x2spring - d1*x2spring;
 
-
             Fx_nodeb = Fsum*alpha;
             Fx_nodea = -Fx_nodeb;
 
@@ -531,7 +614,11 @@ cout << "The number of springs is: " << s.size() << endl;
           {
 
               //Input force to input nodes
-              if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
+              if(n[l].is_Input_Node()==true)
+              {
+              n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
+              //n[l].Input_Force(10000000000,0);
+              }
             //  n[l].Input_Force(1,0);
               //Change the node position, velocity and acceleration in response.
               n[l].Update(dt);
@@ -551,7 +638,6 @@ cout << "The number of springs is: " << s.size() << endl;
       LM3 = LearningMatrix3;
     //  Test_Target = TargetSignal3;
 
-
       JacobiSVD<MatrixXd> svd(LearningMatrix2, ComputeThinU | ComputeThinV);
       MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
   //    MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
@@ -561,6 +647,7 @@ cout << "The number of springs is: " << s.size() << endl;
 
       cout << Output(0);
       cout << endl;
+
       //Populate_Learning_Weights(LearningWeightsVector);
 
     //  LM = LearningMatrix3;
