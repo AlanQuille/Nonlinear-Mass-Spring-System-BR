@@ -133,7 +133,7 @@ int main(int argc, char** argv)
     string st;
 
 //    Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
-/*
+
   for(int i=0; i<10; i++)
   {
 
@@ -157,7 +157,7 @@ int main(int argc, char** argv)
 
   cout <<"The best MSE is: " << old_MSE << endl;
   cout <<"The average MSE is: " << accumulate( MSE_list.begin(), MSE_list.end(), 0.0)/ MSE_list.size() << endl;
-  */
+
   // sim.Reset_Simulation();
 //   sim.execute();
 //   sim.output_LearningMatrix_and_MeanSquaredError();
@@ -172,7 +172,7 @@ int main(int argc, char** argv)
   int no_of_points_per_round= 30;
 
 
-  Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+//  Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
 
 //  cout <<"The number of nodes is: " << data.N << endl;
 //  cout <<"The number of springs is: " << sim.Spring_List() << endl;

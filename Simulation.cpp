@@ -313,7 +313,7 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
     cout << "No of input nodes is: " << input_node_nums << endl;
     cout << "No of input nodes is: " << input_node_nums << endl;
     cout << "No of input nodes is: " << input_node_nums << endl;
-    
+
 
 
     n[no_of_points_per_round*(rounds-1)].set_Fixed_Node();
@@ -560,7 +560,6 @@ cout << "The number of springs is: " << s.size() << endl;
             vector_y = y1 - y0;
 
             l = sqrt(vector_x*vector_x + vector_y*vector_y);
-            cout <<j <<" " << l << endl;
 
             alpha = vector_x/l;
             beta = vector_y/l;
