@@ -8,6 +8,11 @@
 #include "Simulation.cpp"
 #include "Eigen/Dense"
 #include "Eigen/QR"
+//Matlab
+#include "mat.h"
+#include "matrix.h"
+#include "tmwtypes.h"
+
 
 
 using namespace std;
@@ -24,6 +29,29 @@ unsigned long long rdtsc()
 
 int main(int argc, char** argv)
 {
+
+  //Matlab inputs
+  MATFile * pmat; char ** you ; int ndir; int ndir2; mxArray * pa; mxArray * qa; mxArray *ra; mxArray *sa; mxArray *ta; mxArray *ua; mxArray *va; mxArray *xa;  mxArray *ya; mxArray *za; mxArray *zb; mxArray *in; mxArray *in2; const char * name; char ** dir;
+  char ** dir2;
+  pmat = matOpen ("init_net.mat", "r" ) ;
+  //dir = matGetDir ( pmat, &ndir ) ;
+  //double * paData;
+  //Double and bool vectors for .mat input.
+  double * qaData;
+  double * raData;
+  double * saData;
+  double * taData;
+  double * uaData;
+  double * xaData;
+  double * yaData;
+
+  double * zaData;
+  double * zbData;
+
+  double * inData;
+
+  double * inData2;
+
 
    auto begin = std::chrono::high_resolution_clock::now();
 
