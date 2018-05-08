@@ -8,7 +8,7 @@ addpath('');
 %L = L(:, 1:end-1);
 %L = csvread('learningmatrix3.csv');
 %L = L(:, 1:end-1);
-inputsig = csvread('Data/inputsignal.csv');
+%inputsig = csvread('Data/inputsignal.csv');
 targetsig = csvread('Data/volterra.csv');
 outputsignal = csvread('outputsignal.csv');
 o = csvread('targetsignal.csv');

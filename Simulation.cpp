@@ -661,10 +661,12 @@ double Simulation::output_LearningMatrix_and_MeanSquaredError()
         outputsignal << Output(i-wash_out_time-learning_time);
         outputsignal << endl;
 
-        targetsignal << Target_Signal.at(i);
-        targetsignal << endl;
         //(i-wash_out_time-learning_time) = Target_Signal.at(i);
         Test_Data.push_back(Target_Signal.at(i));
+
+        targetsignal << Test_Data.at(i-wash_out_time-learning_time);
+        targetsignal << endl;
+        
         Output_Signal.push_back(Output(i-wash_out_time-learning_time));
       }
 

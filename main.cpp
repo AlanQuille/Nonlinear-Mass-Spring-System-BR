@@ -129,9 +129,9 @@ int main(int argc, char** argv)
 
   //  Simulation sim(data, Volterra, Input, wash_out_time, learning_time, learning_time_test);
    Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
-   sim.Reset_Simulation();
-   sim.execute();
-   sim.output_LearningMatrix_and_MeanSquaredError();
+   //sim.Reset_Simulation();
+  // sim.execute();
+  // sim.output_LearningMatrix_and_MeanSquaredError();
 /*
    sim.Reset_Simulation();
    sim.execute();
