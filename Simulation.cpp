@@ -68,9 +68,9 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
   Delaunay_Triangulation_and_Spring_Creation();
 
   Initialize_Springs();
-  execute();
-  output_LearningMatrix_and_MeanSquaredError();
   Output_For_Plot();
+  execute();
+//  output_LearningMatrix_and_MeanSquaredError();
 }
 
 
@@ -622,6 +622,66 @@ void Simulation::Populate_Learning_Weights(VectorXd& L)
 // Btw. it is good to have a functionality to switch off any of these things by the user
 double Simulation::output_LearningMatrix_and_MeanSquaredError()
 {
+  /*
+  ofstream output("outputsignal.csv"); output.precision(15);
+  ofstream learningweights("learningweights.csv"); learningweights.precision(15);
+  ofstream targetsignal("targetsignal.csv");  targetsignal.precision(15);
+  ofstream targetsignal2("targetsignal2.csv");  targetsignal.precision(15);
+  ofstream targetsignal3("targetsignal3.csv");  targetsignal.precision(15);
+
+  ofstream learningmatrix("learningmatrix.csv");  learningmatrix.precision(15);
+  ofstream learningmatrix2("learningmatrix2.csv");  learningmatrix.precision(15);
+  ofstream learningmatrix3("learningmatrix3.csv");  learningmatrix.precision(15);
+  ofstream outputsignal("outputsignal.csv");  learningmatrix.precision(15);
+
+  ofstream inputsignalcheck("inputsignalcheck.csv");  inputsignalcheck.precision(15);
+
+  ofstream chaoscheck(str);
+  */
+
+  //double outputsignal = 0;
+  double wjej = 0;
+  double currenttime = 0;
+  double currentvalue = 0;
+  double average = 0;
+  double std = 0;
+  double Mean_squared_error = 0;
+
+  vector<double> Output_Signal;
+  vector<double> Test_Data;
+
+  VectorXd Target_Here(learning_time_test);
+
+//  for(int i=0; i<learning_time_test; i++)
+  cout << "Is this working " << endl;
+   for(int i=0; i<maxtimesteps; i++)
+  // for(int i=0; i<learning_time_test; i++)
+  {
+
+      if(i>=(wash_out_time+learning_time))
+      {
+    //    outputsignal << Output(i-wash_out_time-learning_time);
+    //    outputsignal << endl;
+
+        //(i-wash_out_time-learning_time) = Target_Signal.at(i);
+        Test_Data.push_back(Target_Signal.at(i));
+
+      //  targetsignal << Test_Data.at(i-wash_out_time-learning_time);
+      //  targetsignal << endl;
+
+        Output_Signal.push_back(Output(i-wash_out_time-learning_time));
+      }
+
+  }
+  Mean_squared_error = MSE(Output_Signal, Test_Data);
+
+  cout <<"The mean squared error of the output signal versus the target signal is: " << Mean_squared_error;
+  cout <<endl;
+  return Mean_squared_error;
+}
+
+void Simulation::output_Output_Signal()
+{
   ofstream output("outputsignal.csv"); output.precision(15);
   ofstream learningweights("learningweights.csv"); learningweights.precision(15);
   ofstream targetsignal("targetsignal.csv");  targetsignal.precision(15);
@@ -666,16 +726,12 @@ double Simulation::output_LearningMatrix_and_MeanSquaredError()
 
         targetsignal << Test_Data.at(i-wash_out_time-learning_time);
         targetsignal << endl;
-        
+
         Output_Signal.push_back(Output(i-wash_out_time-learning_time));
       }
 
   }
-  Mean_squared_error = MSE(Output_Signal, Test_Data);
-
-  cout <<"The mean squared error of the output signal versus the target signal is: " << Mean_squared_error;
-  cout <<endl;
-  return Mean_squared_error;
+//  Mean_squared_error = MSE(Output_Signal, Test_Data);
 }
 
 

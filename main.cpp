@@ -128,7 +128,6 @@ int main(int argc, char** argv)
     cout << "Initial Input is: "<< Input[0] << endl;
 
   //  Simulation sim(data, Volterra, Input, wash_out_time, learning_time, learning_time_test);
-   Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
    //sim.Reset_Simulation();
   // sim.execute();
   // sim.output_LearningMatrix_and_MeanSquaredError();
@@ -146,8 +145,33 @@ int main(int argc, char** argv)
    sim.output_LearningMatrix_and_MeanSquaredError();
    */
 
-  cout <<"The number of nodes is: " << data.N << endl;
-  cout <<"The number of springs is: " << sim.Spring_List() << endl;
+   double Mean_Sq = 1000;
+   double MSE = 0;
+
+   double total_MSE = 0;
+
+   for(int i=0; i<10; i++)
+   {
+        Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+        MSE = sim.output_LearningMatrix_and_MeanSquaredError();
+        total_MSE += MSE;
+
+
+        if(Mean_Sq>MSE)
+        {
+        Mean_Sq = MSE;
+        cout <<"The best MSE at the moment is: " << Mean_Sq << endl;
+        sim.output_Output_Signal();
+        }
+
+   }
+
+   total_MSE = total_MSE/10;
+   cout << "The average MSE: " << total_MSE << endl;
+   cout << "The best MSE: " << Mean_Sq << endl;
+
+//  cout <<"The number of nodes is: " << data.N << endl;
+//  cout <<"The number of springs is: " << sim.Spring_List() << endl;
 
    auto end = std::chrono::high_resolution_clock::now();
    cout << "The time it took for the programme to run in total in milliseconds: ";

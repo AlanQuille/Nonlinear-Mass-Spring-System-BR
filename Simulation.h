@@ -222,6 +222,9 @@ class Simulation
         //Return Output Signal after learning phase and the mean squared error.
         double output_LearningMatrix_and_MeanSquaredError();
 
+        //Outputsignal
+        void output_Output_Signal();
+
         //Return the weights after learning phase as a vector
         vector<double>& Return_Learning_Weights();
 
