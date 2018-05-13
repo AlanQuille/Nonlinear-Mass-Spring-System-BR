@@ -257,9 +257,9 @@ for(int i=0; i<78; i++)
 
     cout << "Initial Input is: "<< Input[0] << endl;
 
-  //  Simulation(Input, Volterra, wash_out_time, learning_time, learning_time_test, data.min_input_weight, data.max_input_weight, x_nodes, y_nodes, fixed_nodes, W_in, k1, k3, d1, d3, l0, node1, node2);
+    Simulation(Input, Volterra, wash_out_time, learning_time, learning_time_test, data.min_input_weight, data.max_input_weight, x_nodes, y_nodes, fixed_nodes, W_in, k1, k3, d1, d3, l0, node1, node2, data.dt);
 
-   Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+   //Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
    //sim.Reset_Simulation();
    //sim.execute();
    //sim.output_LearningMatrix_and_MeanSquaredError();

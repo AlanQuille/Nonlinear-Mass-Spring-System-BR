@@ -160,7 +160,7 @@ class Simulation
         Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Input_Signal, vector<double> &Target_Signal);
 
         //next simulation function
-        Simulation(vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test, double min_input_weight, double max_input_weight, vector<double> &x_nodes, vector<double> &y_nodes, vector<bool> &fixed_nodes, vector<double> &W_in, vector<double> &k1, vector<double> &k3, vector<double> &d1, vector<double> &d3, vector<double> &l0, vector<int> &node1, vector<int> &node2);
+        Simulation(vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test, double min_input_weight, double max_input_weight, vector<double> &x_nodes, vector<double> &y_nodes, vector<bool> &fixed_nodes, vector<double> &W_in, vector<double> &k1, vector<double> &k3, vector<double> &d1, vector<double> &d3, vector<double> &l0, vector<int> &node1, vector<int> &node2, double dt);
 
         //This creates the nodes for the reservoir computer implementation
         // Todo: Maybe derive a class for spiderweb simulation

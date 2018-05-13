@@ -104,12 +104,14 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
 //  Output_For_Plot();
 }
 
-Simulation::Simulation(vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test, double min_input_weight, double max_input_weight, vector<double> &x_nodes, vector<double> &y_nodes, vector<bool> &fixed_nodes, vector<double> &W_in, vector<double> &k1, vector<double> &k3, vector<double> &d1, vector<double> &d3, vector<double> &l0, vector<int> &node1, vector<int> &node2)
+Simulation::Simulation(vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test, double min_input_weight, double max_input_weight, vector<double> &x_nodes, vector<double> &y_nodes, vector<bool> &fixed_nodes, vector<double> &W_in, vector<double> &k1, vector<double> &k3, vector<double> &d1, vector<double> &d3, vector<double> &l0, vector<int> &node1, vector<int> &node2, double dt)
 {
 
   this->wash_out_time = wash_out_time;
   this->learning_time = learning_time;
   this->learning_time_test = learning_time_test;
+
+  this->dt = dt;
 
   //Total time
   this->maxtimesteps = wash_out_time + learning_time + learning_time_test;
@@ -135,25 +137,13 @@ Simulation::Simulation(vector<double> &IS, vector<double> &TS, int wash_out_time
 
     Nodes p(x, y);
 
-    if(fixed_nodes[j]==true)
-    {
-    p.set_Fixed_Node();
-    cout << "Fixed node: "<< j << endl;
-    }
-
-    if(p.is_Fixed_Node()) cout <<"Is fixed node" << endl;
-
-    //As a shortcut, all the nodes are input nodes but win = 0
-    if(W_in[j]!=0)
-    {
-      p.init_Input_Node(0, 0, W_in[j]);
-      cout << "Input node: " << j << endl;
-    }
-
-    if(p.is_Input_Node()) cout <<"Is input node" << endl;
-
+//    if(p.is_Input_Node()) cout <<"Is input node" << endl;
     n.push_back(p);
 
+    if(fixed_nodes[j]==true) n[j].set_Fixed_Node();
+    //As a shortcut, all the nodes are input nodes but win = 0
+    n[j].init_Input_Node(0, 0, W_in[j]);
+    cout << "Input node: " << j << endl;
   }
 
   x0 = 0;
@@ -177,6 +167,8 @@ Simulation::Simulation(vector<double> &IS, vector<double> &TS, int wash_out_time
     cout <<"l - l0[i] " << l - l0[i] << endl;
 
     s.push_back(Springs(k1[i], d1[i], k3[i], d3[i], l0[i], node1[i]-1, node2[i]-1, 0));
+    cout << node1[i] << endl;
+    cout << endl;
   }
 
     //Test to see whether the reason why you're getting those 0 springs is because of fixed nodes.

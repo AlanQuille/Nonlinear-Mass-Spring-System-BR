@@ -108,17 +108,17 @@ void Nodes::Update(double dt)
 
   //Standard Euler's
     pxdotdot = (F_in_x)/m;
-  //  cout <<"acceleration x is: " << pxdotdot << endl;
+//    cout <<"acceleration x is: " << pxdotdot << endl;
     pydotdot = (F_in_y)/m;
-  //  cout <<"acceleration y is: " << pydotdot << endl;
+//    cout <<"acceleration y is: " << pydotdot << endl;
       //You want to calculate the velocity so that initial velocity is 0 and than calculate the corresponding change in position
     pydot += dt*pydotdot;
-  //  cout <<"velocity y is: " << pydot << endl;
+//    cout <<"velocity y is: " << pydot << endl;
     py += dt*pydot;
-  //  cout <<"position y is: " << py << endl;
+//    cout <<"position y is: " << py << endl;
 
     pxdot += dt*pxdotdot;
-  //  cout <<"velocity y is: " << pydot << endl;
+//    cout <<"velocity x is: " << pxdot << endl;
     px += dt*pxdot;
 //    cout <<"position x is: " <<px << endl;
 
