@@ -10,12 +10,24 @@ addpath('');
 %L = L(:, 1:end-1);
 %inputsig = csvread('Data/inputsignal.csv');
 targetsig = csvread('Data/volterra.csv');
-outputsignal = csvread('outputsignal.csv');
+outputsignal = csvread('0output_signal_with_bias.csv'); 
 o = csvread('targetsignal.csv');
 
+figure(1)
 plot(o);
 hold on
 plot(outputsignal);
+
+outputsignal = csvread('0output_signal_without_bias.csv');
+
+figure(2)
+plot(o);
+hold on
+plot(outputsignal);
+
+%bias = csvread("MSE_bias.csv");
+%unbias = csvread("MSE_without_bias.csv");
+
 
 %i = csvread('input.csv');
 % o = i.*2;

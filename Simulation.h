@@ -173,7 +173,7 @@ class Simulation
         //This changes position of springs and nodes dynamically in time.
         void Reset_Simulation();
         // Todo: Name is not ideal. Better would be to call it update() or similar
-        void execute();
+        void execute(bool bias_learning);
 
         //Range in Range, required.
         double Rand_In_Range_Exp_k1();
@@ -223,7 +223,7 @@ class Simulation
         double output_LearningMatrix_and_MeanSquaredError();
 
         //Outputsignal
-        void output_Output_Signal();
+        void output_Output_Signal(string str);
 
         //Return the weights after learning phase as a vector
         vector<double>& Return_Learning_Weights();

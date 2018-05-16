@@ -69,7 +69,7 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
 
   Initialize_Springs();
   Output_For_Plot();
-  execute();
+  execute(false);
 //  output_LearningMatrix_and_MeanSquaredError();
 }
 
@@ -100,7 +100,7 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
 
   Target_Signal = Lvx;
 
-  execute();
+  execute(false);
 //  Output_For_Plot();
 }
 
@@ -339,32 +339,8 @@ void Simulation::Reset_Simulation()
 
     s[i].set_Force_0();
 
-    k1_new = Rand_In_Range_Exp_k1();
-    d1_new = Rand_In_Range_Exp_d1();
-    k3_new = 0;
-    d3_new = 0;
-
-    s[i].set_k1(k1_new);
-    s[i].set_d1(d1_new);
-    s[i].set_k3(0);
-    s[i].set_d3(0);
-
-
     n[s[i].Nodea()].original_positions();
     n[s[i].Nodeb()].original_positions();
-
-    cout <<"k1 is: " << s[i].get_k1();
-    cout << endl;
-
-    cout <<"k3 is: " << s[i].get_k3();
-    cout << endl;
-
-    cout <<"d1 is: " << s[i].get_d1();
-    cout << endl;
-
-    cout <<"d3 is: " << s[i].get_d3();
-    cout << endl;
-
 
   //  n[s[i].Nodea()].print_position();
 
@@ -380,7 +356,7 @@ void Simulation::Reset_Simulation()
 }
 
 
-void Simulation::execute()
+void Simulation::execute(bool bias_learning)
 {
   double Fsum =0;
   double Fx_nodea =0;
@@ -554,8 +530,11 @@ cout << "The number of springs is: " << s.size() << endl;
 
 // For bias learning.
 
+      if(bias_learning)
+      {
       LearningMatrix2.conservativeResize(LearningMatrix2.rows(), LearningMatrix2.cols()+1);
       LearningMatrix2.col(LearningMatrix2.cols() - 1) = VectorXd::Ones(learning_time);
+      }
 
 
       JacobiSVD<MatrixXd> svd(LearningMatrix2, ComputeThinU | ComputeThinV);
@@ -567,10 +546,11 @@ cout << "The number of springs is: " << s.size() << endl;
 
       VectorXd LearningWeightsVector = Cp *TargetSignal2;
 
-      cout << LearningWeightsVector << endl;
-
+      if(bias_learning)
+      {
       LearningMatrix3.conservativeResize(LearningMatrix3.rows(), LearningMatrix3.cols()+1);
       LearningMatrix3.col(LearningMatrix2.cols()-1) = VectorXd::Ones(learning_time_test);
+      }
 
     //  cout << LearningMatrix3.col(LearningMatrix3.cols()-2) << endl;
     //  cout << LearningMatrix3.col(LearningMatrix3.cols()-1) << endl;
@@ -698,9 +678,10 @@ double Simulation::output_LearningMatrix_and_MeanSquaredError()
   return Mean_squared_error;
 }
 
-void Simulation::output_Output_Signal()
+void Simulation::output_Output_Signal(string str)
 {
-  ofstream output("outputsignal.csv"); output.precision(15);
+//  ofstream output("outputsignal.csv"); output.precision(15);
+  //ofstream output(str); output.precision(15);
   ofstream learningweights("learningweights.csv"); learningweights.precision(15);
   ofstream targetsignal("targetsignal.csv");  targetsignal.precision(15);
   ofstream targetsignal2("targetsignal2.csv");  targetsignal.precision(15);
@@ -709,7 +690,7 @@ void Simulation::output_Output_Signal()
   ofstream learningmatrix("learningmatrix.csv");  learningmatrix.precision(15);
   ofstream learningmatrix2("learningmatrix2.csv");  learningmatrix.precision(15);
   ofstream learningmatrix3("learningmatrix3.csv");  learningmatrix.precision(15);
-  ofstream outputsignal("outputsignal.csv");  learningmatrix.precision(15);
+  ofstream outputsignal(str);  learningmatrix.precision(15);
 
   ofstream inputsignalcheck("inputsignalcheck.csv");  inputsignalcheck.precision(15);
 

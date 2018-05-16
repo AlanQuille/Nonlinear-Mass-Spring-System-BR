@@ -95,7 +95,7 @@ int main(int argc, char** argv)
 
     // setting parameters for simulation
     // This should be possible to read in from a text file
-    data.N = 10;
+    data.N = 30;
     data.ux=0;
     data.uy= 0;
 
@@ -148,27 +148,78 @@ int main(int argc, char** argv)
    double Mean_Sq = 1000;
    double MSE = 0;
 
+   bool best_MSE_check = false;
+
+   double best_offset_MSE = 0;
+
    double total_MSE = 0;
+   double total_MSE2 = 0;
 
-   for(int i=0; i<10; i++)
+   string str;
+   string str2;
+   str = "output_signal_without_bias.csv";
+   str2 = "output_signal_with_bias.csv";
+
+   ofstream ofs("MSE_bias.csv");
+   ofstream ofs2("MSE_without_bias.csv");
+
+  for(int i=0; i<10; i++)
+  {
+
+   cout <<"number of nodes: " << data.N << endl;
+   str = to_string(i) + str;
+   str2 = to_string(i) + str2;
+   Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+//   sim.output_Output_Signal(str);
+
+   MSE = sim.output_LearningMatrix_and_MeanSquaredError();
+   total_MSE += MSE;
+
+   if(MSE<Mean_Sq)
    {
-        Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
-        MSE = sim.output_LearningMatrix_and_MeanSquaredError();
-        total_MSE += MSE;
+     Mean_Sq = MSE;
+     sim.output_Output_Signal(str);
+     ofs << MSE << endl;
 
-
-        if(Mean_Sq>MSE)
-        {
-        Mean_Sq = MSE;
-        cout <<"The best MSE at the moment is: " << Mean_Sq << endl;
-        sim.output_Output_Signal();
-        }
+     best_MSE_check = true;
 
    }
+   cout <<"MSE without offset is: " << MSE << endl;
 
-   total_MSE = total_MSE/10;
-   cout << "The average MSE: " << total_MSE << endl;
-   cout << "The best MSE: " << Mean_Sq << endl;
+
+   sim.Reset_Simulation();
+
+//   sim.execute(false);
+//   MSE = sim.output_LearningMatrix_and_MeanSquaredError();
+//   cout <<"MSE without offset again is: " << MSE << endl;
+
+   sim.execute(true);
+   MSE = sim.output_LearningMatrix_and_MeanSquaredError();
+   cout <<"MSE with offset again is: " << MSE << endl;
+  // sim.output_Output_Signal(str2);
+   total_MSE2 += MSE;
+
+   if(best_MSE_check)
+   {
+     sim.output_Output_Signal(str2);
+     best_offset_MSE = MSE;
+     ofs2 << MSE << endl;
+     best_MSE_check = false;
+   }
+
+
+
+   //data.N += 2;
+
+ }
+
+ cout << endl;
+ cout <<"The best MSE is: " << Mean_Sq << endl;
+ cout <<"The offset MSE for this is: " << best_offset_MSE << endl;
+ cout <<"The average MSE without offset is: " << total_MSE/10 << endl;
+ cout <<"The average MSE with offset is: " << total_MSE2/10 << endl;
+
+
 
 //  cout <<"The number of nodes is: " << data.N << endl;
 //  cout <<"The number of springs is: " << sim.Spring_List() << endl;
