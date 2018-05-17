@@ -68,7 +68,7 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
   Delaunay_Triangulation_and_Spring_Creation();
 
   Initialize_Springs();
-  execute();
+  execute(true);
   Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
   //Output_For_Plot();
 }
@@ -111,7 +111,7 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
   Target_Signal = TS;
   Input_Signal = IS;
 
-  execute();
+  execute(true);
 //  Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
   Output_For_Plot();
 }
