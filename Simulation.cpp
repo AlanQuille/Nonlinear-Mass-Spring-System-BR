@@ -69,7 +69,7 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
 
   Initialize_Springs();
   Output_For_Plot();
-  execute();
+  execute(true);
 //  output_LearningMatrix_and_MeanSquaredError();
 }
 
@@ -100,7 +100,7 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
 
   Target_Signal = Lvx;
 
-  execute();
+  execute(true);
 //  Output_For_Plot();
 }
 
@@ -380,7 +380,7 @@ void Simulation::Reset_Simulation()
 }
 
 
-void Simulation::execute()
+void Simulation::execute(bool bias_learning)
 {
   double Fsum =0;
   double Fx_nodea =0;
@@ -552,15 +552,37 @@ cout << "The number of springs is: " << s.size() << endl;
     //  Test_Target = TargetSignal3;
 
 
+// For bias learning.
+
+      if(bias_learning)
+      {
+      LearningMatrix2.conservativeResize(LearningMatrix2.rows(), LearningMatrix2.cols()+1);
+      LearningMatrix2.col(LearningMatrix2.cols() - 1) = VectorXd::Ones(learning_time);
+      }
+
+
       JacobiSVD<MatrixXd> svd(LearningMatrix2, ComputeThinU | ComputeThinV);
       MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
   //    MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
       //Moore_Penrose_Pseudoinverse(LearningMatrix2);
+
+    //  cout << TargetSignal2.rows() << endl;
+
       VectorXd LearningWeightsVector = Cp *TargetSignal2;
+
+      if(bias_learning)
+      {
+      LearningMatrix3.conservativeResize(LearningMatrix3.rows(), LearningMatrix3.cols()+1);
+      LearningMatrix3.col(LearningMatrix2.cols()-1) = VectorXd::Ones(learning_time_test);
+      }
+
+    //  cout << LearningMatrix3.col(LearningMatrix3.cols()-2) << endl;
+    //  cout << LearningMatrix3.col(LearningMatrix3.cols()-1) << endl;
+
+
       Output = LearningMatrix3*LearningWeightsVector;
 
-      cout << Output(0);
-      cout << endl;
+
       //Populate_Learning_Weights(LearningWeightsVector);
 
     //  LM = LearningMatrix3;
