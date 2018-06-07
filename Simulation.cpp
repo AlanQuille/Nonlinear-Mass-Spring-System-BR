@@ -534,6 +534,9 @@ void Simulation::execute(bool bias_learning)
 //Inputs: Input SignalTarget Signal, nodes n, springs s
 //Outputs: LearningMatrix
 
+//For some reason the number of threads/webs is gone in simulation. I will save them again.
+
+number_of_threads_or_webs = s.size();
 cout << "The number of springs is: " << s.size() << endl;
 
    for(int i=0; i<maxtimesteps; i++)
@@ -611,8 +614,9 @@ cout << "The number of springs is: " << s.size() << endl;
           {
 
               //Input force to input nodes
-              if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
-            //  n[l].Input_Force(1,0);
+             if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
+            //  if(i>=1 && n[l].is_Input_Node()==true) n[l].Input_Force(1,0);
+          //    if(i==1 && n[l].is_Input_Node()==true) n[l].Input_Force(1,0);
               //Change the node position, velocity and acceleration in response.
               n[l].Update(dt);
               //At the end of the loop, each node has no force acting on it.
@@ -640,15 +644,24 @@ cout << "The number of springs is: " << s.size() << endl;
       LearningMatrix2.col(LearningMatrix2.cols() - 1) = VectorXd::Ones(learning_time);
       }
 
+      //This is to see if the multiplication is working correctly.
+  //    LearningMatrix2.conservativeResize(LearningMatrix2.rows(), LearningMatrix2.cols()+1);
+  //    LearningMatrix2.col(LearningMatrix2.cols() - 1) = TargetSignal2;
+
+
 
       JacobiSVD<MatrixXd> svd(LearningMatrix2, ComputeThinU | ComputeThinV);
       MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
   //    MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
       //Moore_Penrose_Pseudoinverse(LearningMatrix2);
 
+
     //  cout << TargetSignal2.rows() << endl;
 
       VectorXd LearningWeightsVector = Cp *TargetSignal2;
+
+      cout << LearningWeightsVector << endl;
+
 
       if(bias_learning)
       {
@@ -803,6 +816,21 @@ void Simulation::output_Output_Signal(string& s)
   for(int i=0; i<maxtimesteps; i++)
  // for(int i=0; i<learning_time_test; i++)
  {
+
+     //Use number_of_threads_or_webs isntead of s.size()
+     //for(int j = 0; j<s.size(); j++)
+     for(int j = 0; j<number_of_threads_or_webs; j++)
+     {
+       learningmatrix << LM(i, j) <<",";
+       if(i>=wash_out_time && i<(wash_out_time+learning_time)) learningmatrix2 << LM2(i-wash_out_time, j) <<",";
+       if(i>=(wash_out_time+learning_time)) learningmatrix3 << LM3(i-wash_out_time-learning_time, j) << ",";
+     }
+
+     learningmatrix << endl;
+     if(i>=wash_out_time && i<(wash_out_time+learning_time)) learningmatrix2 << endl;
+     if(i>=wash_out_time && i<(wash_out_time+learning_time)) targetsignal2 << Target_Signal.at(i) <<",";
+     if(i>=(wash_out_time+learning_time)) learningmatrix3 << endl;
+
 
      if(i>=(wash_out_time+learning_time))
      {

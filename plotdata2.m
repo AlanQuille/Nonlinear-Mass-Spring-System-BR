@@ -1,14 +1,14 @@
 %figure(2)
 tic
 
-targetsignal = csvread("targetsignal.csv");
-targetsignal2 = csvread("targetsignal2.csv");
-targetsignal3 = csvread("targetsignal3.csv");
+targetsignal = csvread("volterra.csv");
+%targetsignal2 = csvread("targetsignal2.csv");
+%targetsignal3 = csvread("targetsignal3.csv");
 
-inputsignal =csvread("inputsignalcheck.csv");
+%inputsignal =csvread("inputsignalcheck.csv");
 %inputsignal2 =csvread("Data/inputsignal.csv");
 %test2 = test1(:,2);
-learningweights = csvread("learningweights.csv");
+%learningweights = csvread("learningweights.csv");
 %test4 = csvread("outputsignal.csv");
 %test5 = csvread("inputsignal.csv");
 learningmatrix = csvread("learningmatrix.csv");
@@ -16,21 +16,31 @@ learningmatrix2 = csvread("learningmatrix2.csv");
 learningmatrix3 = csvread("learningmatrix3.csv");
 
 learningmatrix = learningmatrix(:, 1:end-1);
-learningmatrix2 = learningmatrix2(:, 1:end);
-learningmatrix3 = learningmatrix3(:, 1:end);
+learningmatrix2 = learningmatrix(20000:220000, 1:end-1);
+learningmatrix3 = learningmatrix(220000:235000, 1:end-1);
 
+%learningmatrix2(:, end+1) = ones(1, 200000);
+%learningmatrix3(:, end+1) = ones(1,15000);
+
+targetsignal2 = targetsignal(20000:220000);
+targetsignal3 = targetsignal(220000:235000);
 learningweights2 = learningmatrix2\targetsignal2;
-OutputVector = learningmatrix3*learningweights;
-OutputVector2 = learningmatrix3*learningweights2;
 
-plot(OutputVector)
-hold on
+%OutputVector = learningmatrix3*learningweights;
+OutputVector2 = learningmatrix3*learningweights2;
 plot(OutputVector2)
+hold on
+plot(targetsignal3)
+
+%plot(OutputVector)
+%hold on
+%plot(OutputVector2)
 
 %[m,n] = size(learningmatrix);
 % = 1 + ((learningmatrix(:,1)-mean(learningmatrix(:,1))*(std(learningmatrix(:,1)/1))))x;
 
-newmatrix = (learningmatrix - repmat(mean(learningmatrix), size(learningmatrix,1), 1)) ./ repmat(std(learningmatrix), size(learningmatrix,1), 1);
+%newmatrix = (learningmatrix3 - repmat(mean(learningmatrix3), size(learningmatrix3,1), 1)) ./ repmat(std(learningmatrix3), size(learningmatrix3,1), 1);
+newmatrix2 = (learningmatrix - repmat(mean(learningmatrix), size(learningmatrix,1), 1)) ./ repmat(std(learningmatrix), size(learningmatrix,1), 1);
 %plot(OutputMatrix, "Color", "Blue")
 %hold on
 %plot(targetsignal)
@@ -46,7 +56,7 @@ newmatrix = (learningmatrix - repmat(mean(learningmatrix), size(learningmatrix,1
 %chaoscheck10 = csvread("chaoscheck10.csv");
 
 
-newmatrix = (learningmatrix - repmat(mean(learningmatrix), size(learningmatrix,1), 1)) ./ repmat(std(learningmatrix), size(learningmatrix,1), 1);
+%newmatrix = (learningmatrix - repmat(mean(learningmatrix), size(learningmatrix,1), 1)) ./ repmat(std(learningmatrix), size(learningmatrix,1), 1);
 %plot(OutputMatrix, "Color", "Blue")
 %hold on
 %plot(targetsignal)

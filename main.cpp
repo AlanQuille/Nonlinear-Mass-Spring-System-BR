@@ -95,7 +95,7 @@ int main(int argc, char** argv)
 
     // setting parameters for simulation
     // This should be possible to read in from a text file
-    data.N = 50;
+    data.N = 40;
     data.ux=0;
     data.uy= 0;
 
@@ -133,11 +133,11 @@ int main(int argc, char** argv)
     string st;
 
 //    Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
-
+/*
   for(int i=0; i<10; i++)
   {
 
-  Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+  //Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
   new_MSE = sim.return_MSE();
   MSE_list.push_back(new_MSE);
   st = to_string(new_MSE);
@@ -157,7 +157,7 @@ int main(int argc, char** argv)
 
   cout <<"The best MSE is: " << old_MSE << endl;
   cout <<"The average MSE is: " << accumulate( MSE_list.begin(), MSE_list.end(), 0.0)/ MSE_list.size() << endl;
-
+*/
   // sim.Reset_Simulation();
 //   sim.execute();
 //   sim.output_LearningMatrix_and_MeanSquaredError();
@@ -168,11 +168,15 @@ int main(int argc, char** argv)
   cout <<"The number of springs is: " << sim.Spring_List() << endl;
 */
   double radius = 1.0;
-  int rounds = 2;
+  int rounds = 4;
   int no_of_points_per_round= 30;
 
+  string str = "1";
 
-//  Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+
+  Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+  sim.output_LearningMatrix_and_MeanSquaredError();
+  sim.output_Output_Signal(str);
 
 //  cout <<"The number of nodes is: " << data.N << endl;
 //  cout <<"The number of springs is: " << sim.Spring_List() << endl;

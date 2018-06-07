@@ -152,6 +152,9 @@ class Simulation
         //Mean squared Error
         double Mean_Squared_Error;
 
+        //Record of number of threads/webs independant of s for bug fixing.
+        int number_of_threads_or_webs = 0;
+
 
     public:
 

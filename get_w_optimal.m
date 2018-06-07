@@ -10,10 +10,11 @@ addpath('');
 %L = L(:, 1:end-1);
 inputsig = csvread('Data/inputsignal.csv');
 targetsig = csvread('Data/volterra.csv');
-outputsignal = csvread('0.000048_outputsignal.csv');
+outputsignal = csvread('1_outputsignal.csv');
 %o = csvread('targetsignal.csv');
 
-plot(targetsig(end-length(outputsignal):end));
+figure(2)
+plot(targetsig(220000:235000));
 hold on
 plot(outputsignal);
 
