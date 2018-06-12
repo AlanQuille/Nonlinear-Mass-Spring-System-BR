@@ -110,13 +110,18 @@ int main(int argc, char** argv)
 
     data.min_k3 = 1;
     data.max_k3  = 100;
-    data.min_d3 = 1;
-    data.max_d3  = 100;
+
+    //Increase d3 and d1.
+    double range_d1_d3 = 1000;
+    data.min_d3 = 1+range_d1_d3;
+    data.max_d3  = 100+range_d1_d3;
 
     data.min_k1 = 1;
     data.max_k1  = 200;
-    data.min_d1 = 1;
-    data.max_d1  = 200;
+
+    //Increase d3 and d1.
+    data.min_d1 = 1+range_d1_d3;
+    data.max_d1  = 200+range_d1_d3;
 
 
     data.dt = 0.001;
@@ -166,17 +171,65 @@ int main(int argc, char** argv)
 /*
   cout <<"The number of nodes is: " << data.N << endl;
   cout <<"The number of springs is: " << sim.Spring_List() << endl;
+
+  data.min_d3 = 1+range_d1_d3;
+  data.max_d3  = 100+range_d1_d3;
 */
+
+
+
+
   double radius = 1.0;
-  int rounds = 4;
-  int no_of_points_per_round= 30;
+  int rounds = 2;
+  int no_of_points_per_round= 55;
 
   string str = "1";
+  new_MSE = 0;
+  old_MSE = 0;
 
+  vector<double> range_d1_d3_list;
+  double best_range_d1_d3;
+
+  range_d1_d3 = 5000;
+  best_range_d1_d3 = 5000;
+  double a = 100;
+
+  for(int i=0; i<20; i++)
+  {
+
+  range_d1_d3 += a;
+
+  data.min_d3 = 1+range_d1_d3;
+  data.max_d3  = 100+range_d1_d3;
+
+  data.min_d1 = 1+range_d1_d3;
+  data.max_d1  = 100+range_d1_d3;
 
   Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
-  sim.output_LearningMatrix_and_MeanSquaredError();
-  sim.output_Output_Signal(str);
+  new_MSE = sim.return_MSE();
+
+  if(new_MSE>old_MSE)
+  {
+    a = -a;
+  }
+
+  MSE_list.push_back(new_MSE);
+  range_d1_d3_list.push_back(new_MSE);
+
+  if(new_MSE < old_MSE)
+  {
+    old_MSE = new_MSE;
+    best_range_d1_d3 = range_d1_d3;
+  }
+
+  }
+
+  cout << endl << endl;
+  cout <<"The best MSE and range is: " << best_range_d1_d3 << " " << old_MSE << endl;
+  cout << endl << endl;
+
+//  sim.output_LearningMatrix_and_MeanSquaredError();
+//  sim.output_Output_Signal(str);
 
 //  cout <<"The number of nodes is: " << data.N << endl;
 //  cout <<"The number of springs is: " << sim.Spring_List() << endl;
