@@ -89,6 +89,7 @@ int main(int argc, char** argv)
     cout <<"Size of target signal is: "<< Volterra.size() << endl;
 
     double wash_out_time = 20000;
+    wash_out_time = 20000;
     double learning_time = 200000;
     double learning_time_test = 15000;
 
@@ -180,8 +181,9 @@ int main(int argc, char** argv)
 
 
   double radius = 1.0;
-  int rounds = 2;
-  int no_of_points_per_round= 55;
+  int rounds = 50;
+//  int rounds = 24;
+  int no_of_points_per_round= 5;
 
   string str = "1";
   new_MSE = 0;
@@ -190,43 +192,23 @@ int main(int argc, char** argv)
   vector<double> range_d1_d3_list;
   double best_range_d1_d3;
 
-  range_d1_d3 = 5000;
-  best_range_d1_d3 = 5000;
+//  range_d1_d3 = 5000000;
+  //best_range_d1_d3 = 5000;
+  range_d1_d3 = 200;
   double a = 100;
 
-  for(int i=0; i<20; i++)
-  {
-
-  range_d1_d3 += a;
+//  range_d1_d3 += a;
 
   data.min_d3 = 1+range_d1_d3;
   data.max_d3  = 100+range_d1_d3;
 
   data.min_d1 = 1+range_d1_d3;
-  data.max_d1  = 100+range_d1_d3;
+  data.max_d1  = 200+range_d1_d3;
 
   Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
-  new_MSE = sim.return_MSE();
+  //sim.output_LearningMatrix_and_MeanSquaredError();
+  sim.output_Output_Signal(str);
 
-  if(new_MSE>old_MSE)
-  {
-    a = -a;
-  }
-
-  MSE_list.push_back(new_MSE);
-  range_d1_d3_list.push_back(new_MSE);
-
-  if(new_MSE < old_MSE)
-  {
-    old_MSE = new_MSE;
-    best_range_d1_d3 = range_d1_d3;
-  }
-
-  }
-
-  cout << endl << endl;
-  cout <<"The best MSE and range is: " << best_range_d1_d3 << " " << old_MSE << endl;
-  cout << endl << endl;
 
 //  sim.output_LearningMatrix_and_MeanSquaredError();
 //  sim.output_Output_Signal(str);

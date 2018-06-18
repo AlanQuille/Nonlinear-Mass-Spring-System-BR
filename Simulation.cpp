@@ -112,7 +112,7 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
   Input_Signal = IS;
 
   execute(true);
-//  Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
+  Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
   Output_For_Plot();
 }
 
@@ -192,6 +192,8 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
      double random_factor_x = 0;
      double random_factor_y = 0;
 
+     bool odd_even_check = 1;
+
 
      int k =0;
 
@@ -207,7 +209,6 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
          y_position = (j+1)*radius*sin((i*angle));
 
 
-
          Nodes node(x_position, y_position);
 
          //THIS IS NOT GOOD CODING PRACTICE. FIX IT.
@@ -221,18 +222,25 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
            //This has to be done from main, this is not good here.
 
          //For purposes of test
-         /*
+
          k1 = Rand_In_Range_Exp_k1();
          d1 = Rand_In_Range_Exp_d1();
+
+         cout << k1 << endl;
+         cout << d1 << endl;
+
          k3 = Rand_In_Range_Exp_k3();
          d3 = Rand_In_Range_Exp_d3();
-         */
 
-         k1 = data.min_k1;
-         d1 = data.min_d1;
-         k3 = 0;
-         d3 = 0;
-       //  k3 = Rand_In_Range_Exp_k3();
+         cout << k3 << endl;
+         cout << d3 << endl;
+
+
+    //     k1 = data.min_k1;
+    //     d1 = data.max_d1;
+    //     k3 = data.min_k3;
+    //     d3 = data.max_d3;
+      //  k3 = Rand_In_Range_Exp_k3();
        //  d3 = Rand_In_Range_Exp_d3();
 
          l0 = Eucl_Dist(x0, y0, x_position, y_position);
@@ -245,7 +253,7 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
          //For radial pattern.
          if(j>0)
          {
-         /*
+
          k1 = Rand_In_Range_Exp_k1();
          cout <<"k1 is: " << endl;
          d1 = Rand_In_Range_Exp_d1();
@@ -254,23 +262,44 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
          cout << "k3 is: " << endl;
          d3 = Rand_In_Range_Exp_d3();
          cout << "d3 is: " << endl;
-         */
 
-         k1 = data.min_k1;
-         d1 = data.min_d1;
 
-         cout << "k1 is " << k1;
-         cout << "d1 is " << k1;
+      //   k1 = data.min_k1;
+      //   d1 = data.min_d1;
 
-         k3 = 0;
-         d3 = 0;
+
+         //k3 = 0;
+         //d3 = 0;
+        // k3 = data.max_k3;
+    //     d3 = data.max_d3;
 
          //l0 = Eucl_Dist(x0, y0, x_position, y_position);
          l0 = radius;
        //  wout = Uniform(data.w_out_initial, data.w_out_final);
           wout = 0;
 
-         s.push_back(Springs(k1, d1, k3, d3, l0, k, k-no_of_points_per_round, wout));
+
+         if(odd_even_check)
+         {
+         if(j%2==0 && i%2==0) s.push_back(Springs(k1, d1, k3, d3, l0, k, k-no_of_points_per_round, wout));
+         if(j%2==1 && i%2==1) s.push_back(Springs(k1, d1, k3, d3, l0, k, k-no_of_points_per_round, wout));
+         odd_even_check = false;
+         }
+
+         else
+         {
+         if(j%2==0 && i%2==1) s.push_back(Springs(k1, d1, k3, d3, l0, k, k-no_of_points_per_round, wout));
+         if(j%2==1 && i%2==0) s.push_back(Springs(k1, d1, k3, d3, l0, k, k-no_of_points_per_round, wout));
+      //   odd_even_check = true;
+         }
+
+
+
+
+//         s.push_back(Springs(k1, d1, k3, d3, l0, k, k-no_of_points_per_round, wout));
+
+
+
          }
 
          x0 = x_position;
@@ -614,8 +643,8 @@ cout << "The number of springs is: " << s.size() << endl;
           {
 
               //Input force to input nodes
-             if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
-            //  if(i>=1 && n[l].is_Input_Node()==true) n[l].Input_Force(1,0);
+          //    if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
+             if(i>=1 && n[l].is_Input_Node()==true) n[l].Input_Force(1,0);
           //    if(i==1 && n[l].is_Input_Node()==true) n[l].Input_Force(1,0);
               //Change the node position, velocity and acceleration in response.
               n[l].Update(dt);
