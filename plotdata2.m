@@ -6,7 +6,7 @@ targetsignal = csvread("volterra.csv");
 %targetsignal3 = csvread("targetsignal3.csv");
 
 %inputsignal =csvread("inputsignalcheck.csv");
-%inputsignal2 =csvread("Data/inputsignal.csv");
+%inputsignal2 =csvread("Data/inputsignal.csv");plot
 %test2 = test1(:,2);
 %learningweights = csvread("learningweights.csv");
 %test4 = csvread("outputsignal.csv");

@@ -232,8 +232,8 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
          k3 = Rand_In_Range_Exp_k3();
          d3 = Rand_In_Range_Exp_d3();
 
-         cout << k3 << endl;
-         cout << d3 << endl;
+         k3 = 0;
+         d3 = 0;
 
 
     //     k1 = data.min_k1;
@@ -263,6 +263,8 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
          d3 = Rand_In_Range_Exp_d3();
          cout << "d3 is: " << endl;
 
+         k3 = 0;
+         d3 = 0;
 
       //   k1 = data.min_k1;
       //   d1 = data.min_d1;
@@ -278,7 +280,7 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
        //  wout = Uniform(data.w_out_initial, data.w_out_final);
           wout = 0;
 
-
+/*
          if(odd_even_check)
          {
          if(j%2==0 && i%2==0) s.push_back(Springs(k1, d1, k3, d3, l0, k, k-no_of_points_per_round, wout));
@@ -294,9 +296,9 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
          }
 
 
+*/
 
-
-//         s.push_back(Springs(k1, d1, k3, d3, l0, k, k-no_of_points_per_round, wout));
+         s.push_back(Springs(k1, d1, k3, d3, l0, k, k-no_of_points_per_round, wout));
 
 
 
@@ -318,6 +320,10 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
       cout <<"k3 is: " <<k3 << endl;
       d3 = Rand_In_Range_Exp_d3();
       cout <<"d3 is: " <<d3 << endl;
+
+      k3 = 0;
+      d3 = 0;
+
 
       l0 = Eucl_Dist(x0, y0, x_position, y_position);
       cout <<"l0 is: " <<l0 << endl;
@@ -368,6 +374,7 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
         }
 
       n[randomnum].init_Input_Node(data.ux, data.uy, win);
+
 
       }
 
@@ -644,7 +651,7 @@ cout << "The number of springs is: " << s.size() << endl;
 
               //Input force to input nodes
           //    if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
-             if(i>=1 && n[l].is_Input_Node()==true) n[l].Input_Force(1,0);
+              if(i>=1 && n[l].is_Input_Node()==true) n[l].Input_Force(1,0);
           //    if(i==1 && n[l].is_Input_Node()==true) n[l].Input_Force(1,0);
               //Change the node position, velocity and acceleration in response.
               n[l].Update(dt);
@@ -1134,6 +1141,12 @@ void Simulation::Initialize_Springs()
       d1 = Rand_In_Range_Exp_d1();
       k3 = Rand_In_Range_Exp_k3();
       d3 = Rand_In_Range_Exp_d3();
+
+      //Just for Test
+    //  d3 = 0;
+  //    k3 = 0;
+
+
 
       k1output << k1 <<endl;
       k3output << d1 <<endl;

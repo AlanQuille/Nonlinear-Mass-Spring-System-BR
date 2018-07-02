@@ -100,7 +100,7 @@ int main(int argc, char** argv)
     data.ux=0;
     data.uy= 0;
 
-    data.input_connectivity_percentage = 20;
+    data.input_connectivity_percentage = 5;
     //data.w_in_initial = -1;
     data.min_input_weight = -1;
     data.max_input_weight = 1;
@@ -113,7 +113,7 @@ int main(int argc, char** argv)
     data.max_k3  = 100;
 
     //Increase d3 and d1.
-    double range_d1_d3 = 1000;
+    double range_d1_d3 = 0;
     data.min_d3 = 1+range_d1_d3;
     data.max_d3  = 100+range_d1_d3;
 
@@ -181,7 +181,7 @@ int main(int argc, char** argv)
 
 
   double radius = 1.0;
-  int rounds = 50;
+  int rounds = 5;
 //  int rounds = 24;
   int no_of_points_per_round= 5;
 
@@ -194,16 +194,31 @@ int main(int argc, char** argv)
 
 //  range_d1_d3 = 5000000;
   //best_range_d1_d3 = 5000;
-  range_d1_d3 = 200;
+  range_d1_d3 = 0;
   double a = 100;
 
 //  range_d1_d3 += a;
 
-  data.min_d3 = 1+range_d1_d3;
-  data.max_d3  = 100+range_d1_d3;
+  data.min_d3 = 1;
+  data.max_d3  = 100;
 
-  data.min_d1 = 1+range_d1_d3;
-  data.max_d1  = 200+range_d1_d3;
+  data.min_d1 = 1;
+  data.max_d1  = 200;
+
+
+    data.min_d3 = 1;
+    data.max_d3  = 100;
+
+    data.min_d1 = 1;
+    data.max_d1  = 200;
+
+/*
+  data.min_d3 = 100000;
+  data.max_d3  =1000000;
+
+  data.min_d1 = 100000;
+  data.max_d1  = 1000000;
+  */
 
   Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
   //sim.output_LearningMatrix_and_MeanSquaredError();
