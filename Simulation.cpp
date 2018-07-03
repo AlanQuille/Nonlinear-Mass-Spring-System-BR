@@ -232,8 +232,8 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
          k3 = Rand_In_Range_Exp_k3();
          d3 = Rand_In_Range_Exp_d3();
 
-         k3 = 0;
-         d3 = 0;
+      //   k3 = 0;
+      //   d3 = 0;
 
 
     //     k1 = data.min_k1;
@@ -263,8 +263,8 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
          d3 = Rand_In_Range_Exp_d3();
          cout << "d3 is: " << endl;
 
-         k3 = 0;
-         d3 = 0;
+      //   k3 = 0;
+      //   d3 = 0;
 
       //   k1 = data.min_k1;
       //   d1 = data.min_d1;
@@ -321,8 +321,8 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
       d3 = Rand_In_Range_Exp_d3();
       cout <<"d3 is: " <<d3 << endl;
 
-      k3 = 0;
-      d3 = 0;
+    //  k3 = 0;
+    //  d3 = 0;
 
 
       l0 = Eucl_Dist(x0, y0, x_position, y_position);
@@ -336,6 +336,8 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
       s.push_back(Springs(k1, d1, k3, d3, l0, (k-no_of_points_per_round), k-1, wout));
       }
     }
+
+
 
     int input_node_nums = 0.01*(data.input_connectivity_percentage)*rounds*no_of_points_per_round;
     int N = rounds * no_of_points_per_round;
@@ -379,6 +381,36 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
       }
 
      }
+
+     // add in central node here.
+
+
+     Nodes central_node(0, 0);
+     n.push_back(central_node);
+
+
+
+
+     for(int i=0; i<no_of_points_per_round; i++)
+     {
+       k1 = Rand_In_Range_Exp_k1();
+       cout <<"k1 is: " << endl;
+       d1 = Rand_In_Range_Exp_d1();
+       cout <<"d1 is: " << endl;
+       k3 = Rand_In_Range_Exp_k3();
+       cout << "k3 is: " << endl;
+       d3 = Rand_In_Range_Exp_d3();
+       cout << "d3 is: " << endl;
+
+       l0 = Eucl_Dist(0, 0, n[i].get_x_position(), n[i].get_y_position());
+
+       wout = 0;
+
+       s.push_back(Springs(k1, d1, k3, d3, l0, i, n.size()-1, wout));
+
+     }
+
+
 
    }
 
@@ -650,8 +682,8 @@ cout << "The number of springs is: " << s.size() << endl;
           {
 
               //Input force to input nodes
-          //    if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
-              if(i>=1 && n[l].is_Input_Node()==true) n[l].Input_Force(1,0);
+              if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
+            //  if(i>=1 && n[l].is_Input_Node()==true) n[l].Input_Force(1,0);
           //    if(i==1 && n[l].is_Input_Node()==true) n[l].Input_Force(1,0);
               //Change the node position, velocity and acceleration in response.
               n[l].Update(dt);
