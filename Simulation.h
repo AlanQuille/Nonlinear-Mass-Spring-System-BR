@@ -12,7 +12,7 @@ struct InitialDataValues
     double ux;   // First input values in x direction  TODO: Really needed?
     double uy;   // First input values in y direction
 
-    double input_connectivity_percentage;  // [0,1] percentage of nodes that receive input
+    double input_connectivity;  // [0,1] percentage of nodes that receive input
     // lower and upper range for input weights
     double min_input_weight;
     double max_input_weight;
@@ -70,7 +70,7 @@ class Simulation
 
     private:
         int N;                                  // Number of mass points
-        double input_connectivity_percentage;
+        double input_connectivity;
         int num_input_nodes;    // Number of input nodes
         vector<Nodes> n;        // List of all nodes
         vector<Springs> s;      // List of all springs

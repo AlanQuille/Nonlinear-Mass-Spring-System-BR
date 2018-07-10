@@ -24,8 +24,8 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
   // read out all the data from the data structure
   this->N = data.N;
 
-  this->input_connectivity_percentage = data.input_connectivity_percentage;
-  this->num_input_nodes = 0.01*(data.input_connectivity_percentage)*N;
+  this->input_connectivity = data.input_connectivity;
+  this->num_input_nodes = (data.input_connectivity)*N;
 
   this->input_weight_smallest_value = data.min_input_weight;
   this->input_weight_largest_value = data.max_input_weight;
@@ -78,7 +78,7 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
 Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test)
 {
   //this->input_connectivity_percentage = data.input_connectivity_percentage;
-  this->num_input_nodes = (data.input_connectivity_percentage)*rounds*no_of_points_per_round;
+  this->num_input_nodes = (data.input_connectivity)*rounds*no_of_points_per_round;
 
   this->N = data.N;
   //Step 2: The positions of the nodes were initialized and 20% of the nodes are connected to the input.
@@ -235,6 +235,9 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
       //   k3 = 0;
       //   d3 = 0;
 
+      cout << k3 << endl;
+      cout << d3 << endl;
+
 
     //     k1 = data.min_k1;
     //     d1 = data.max_d1;
@@ -255,13 +258,13 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
          {
 
          k1 = Rand_In_Range_Exp_k1();
-         cout <<"k1 is: " << endl;
+         cout <<"k1 is: " << k1 << endl;
          d1 = Rand_In_Range_Exp_d1();
-         cout <<"d1 is: " << endl;
+         cout <<"d1 is: " << d1 << endl;
          k3 = Rand_In_Range_Exp_k3();
-         cout << "k3 is: " << endl;
+         cout << "k3 is: " << k3 << endl;
          d3 = Rand_In_Range_Exp_d3();
-         cout << "d3 is: " << endl;
+         cout << "d3 is: " << d3 << endl;
 
       //   k3 = 0;
       //   d3 = 0;
@@ -337,24 +340,61 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
       }
     }
 
+    vector<int> nos;
+
+    for(int i=0; i<n.size()-1; i++)
+    {
+    nos.push_back(i);
+    random_shuffle(nos.begin(), nos.end());
+
+    }
 
 
-    int input_node_nums = 0.01*(data.input_connectivity_percentage)*rounds*no_of_points_per_round;
-    int N = rounds * no_of_points_per_round;
-    int randomnum;
+
+
+    //Add in central node = 1
+    int N = rounds * no_of_points_per_round + 1;
+
+    int input_node_nums = 0;
+
+    input_node_nums = data.input_connectivity*(N);
+
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+
+    int randomnum = 0;
     double win;
 
     cout << "No of input nodes is: " << input_node_nums << endl;
     cout << "No of input nodes is: " << input_node_nums << endl;
-    cout << "No of input nodes is: " << input_node_nums << endl;
-    cout << "No of input nodes is: " << input_node_nums << endl;
-    cout << "No of input nodes is: " << input_node_nums << endl;
-    cout << "No of input nodes is: " << input_node_nums << endl;
+
+
+    //Fix out ringer of nodesY
 
 
 
+
+/*
     n[no_of_points_per_round*(rounds-1)].set_Fixed_Node();
     n[(no_of_points_per_round/2)+no_of_points_per_round*(rounds-1)].set_Fixed_Node();
+    */
+
+    //Also set the very outer ring for the spider web to be fixed.
+
+    //n[8].set_Fixed_Node();
+
+    //ONLY FOR SPECIAL SPIDER WEB
+
 
     cout << "Outer fixed node 1 " << no_of_points_per_round*(rounds-1) << endl;
     cout << "Outer fixed node 2 " <<(no_of_points_per_round/2) + no_of_points_per_round*(rounds-1) << endl;
@@ -363,12 +403,24 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
      {
       //Input weights for the number of input_connectivitiy nodes.
       win = Uniform(data.min_input_weight, data.max_input_weight);
-      randomnum = (int)Uniform(0, N);
+    //  randomnum = (int)Uniform(0, N);
 
-      //Make sure fixed nodes are not input nodes
+      randomnum = (int)Uniform(0, no_of_points_per_round*(rounds-1));
+
       if(i<input_node_nums)
       {
+      n[randomnum].init_Input_Node(data.ux, data.uy, win);
+      cout <<"The input node is:" << randomnum << endl;
+      }
+
+
+
+      //Make sure fixed nodes are not input nodes
+
+//      if(i<input_node_nums)
+//      {
       //If it is not a fixed node.
+      /*
       while(n[randomnum].is_Fixed_Node())
         {
         //C++ typecasting rounds down (truncates) but this is fine going from 0 to N-1.
@@ -376,13 +428,42 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
         }
 
       n[randomnum].init_Input_Node(data.ux, data.uy, win);
+      */
 
+    //  }
 
+      if(i>=no_of_points_per_round*(rounds-1) && i<((no_of_points_per_round)+no_of_points_per_round*(rounds-1)))
+      {
+        n[i].set_Fixed_Node();
+        cout <<"The: " <<i <<"th" << " fixed node is fixed." << endl;
       }
+
+    //        if(i<no_of_points_per_round*(rounds-1) )
+      //      {
+
+    //        randomnum = (int)Uniform(0, no_of_points_per_round*(rounds-1));
+    //        n[randomnum].init_Input_Node(data.ux, data.uy, win);
+         //If it is not a fixed node.
+            /*
+            while(n[randomnum].is_Fixed_Node())
+              {
+              //C++ typecasting rounds down (truncates) but this is fine going from 0 to N-1.
+              randomnum = (int)Uniform(0, N);
+              }
+
+            n[randomnum].init_Input_Node(data.ux, data.uy, win);
+            */
+
+      //       }
+
 
      }
 
      // add in central node here.
+
+     cout << randomnum << endl;
+
+
 
 
      Nodes central_node(0, 0);
@@ -394,19 +475,19 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
      for(int i=0; i<no_of_points_per_round; i++)
      {
        k1 = Rand_In_Range_Exp_k1();
-       cout <<"k1 is: " << endl;
+       cout <<"k1 is: " <<k1 << endl;
        d1 = Rand_In_Range_Exp_d1();
-       cout <<"d1 is: " << endl;
+       cout <<"d1 is: " <<d1 << endl;
        k3 = Rand_In_Range_Exp_k3();
-       cout << "k3 is: " << endl;
+       cout << "k3 is: " <<k3 << endl;
        d3 = Rand_In_Range_Exp_d3();
-       cout << "d3 is: " << endl;
+       cout << "d3 is: " <<d3 << endl;
 
        l0 = Eucl_Dist(0, 0, n[i].get_x_position(), n[i].get_y_position());
 
        wout = 0;
 
-       s.push_back(Springs(k1, d1, k3, d3, l0, i, n.size()-1, wout));
+       s.push_back(Springs(k1, d1, k3, d3, l0, n.size()-1, i, wout));
 
      }
 
@@ -420,7 +501,23 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
     DelaunayTriangulation DT(abs(largest_x_position-smallest_x_position), abs(largest_y_position-smallest_y_position));
 
     double win = 0;
-    int input_node_nums = 0.01*(int)input_connectivity_percentage*N;
+    int input_node_nums = (int)(input_connectivity*((int)N));
+
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+    cout << input_node_nums << endl;
+
     int randomnum;
 
     int num_of_input_nodes = 0;
@@ -448,6 +545,7 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
       num_of_input_nodes++;
 
       }
+
 
 
 
@@ -607,6 +705,8 @@ void Simulation::execute(bool bias_learning)
 number_of_threads_or_webs = s.size();
 cout << "The number of springs is: " << s.size() << endl;
 
+bool wcheck = 0;
+
    for(int i=0; i<maxtimesteps; i++)
     {
   //      cout << "Time step " << i << endl;
@@ -636,6 +736,8 @@ cout << "The number of springs is: " << s.size() << endl;
 
 
             LearningMatrix(i,j) = l;  // Todo: update is not needed for target signal
+
+          //  cout << l << endl;
             if(i>=wash_out_time && i<(wash_out_time+learning_time)) LearningMatrix2(i-wash_out_time, j) = l;
             if(i>=(wash_out_time+learning_time)) LearningMatrix3(i-wash_out_time-learning_time, j) = l;
 
@@ -643,9 +745,28 @@ cout << "The number of springs is: " << s.size() << endl;
             d1 = s[j].get_d1();
             k3 = s[j].get_k3();
             d3 = s[j].get_d3();
+/*
+
+            cout << "k1 is: " <<k1 << endl;
+            cout << "d1 is: " <<d1 << endl;
+
+            cout << "k3 is: " <<k3 << endl;
+            cout << "d3 is: " <<d3 << endl;
+
+*/
+
 
             x1new = l - s[j].return_Initial_Length();
+
+
+
+
             x1spring = s[j].return_x1();
+
+
+        //    cout <<"x1spring is: " << x1spring << endl;
+      //      cout <<"x1new is: " << x1new << endl;
+
             //cout << "For spring" <<" " <<j <<"x1new is : "<< x1new<< endl;
             x2spring = ((x1new - x1spring)/dt);
             //cout << "For spring" <<" " <<j <<"x2spring is : "<< x2spring<< endl;
@@ -678,11 +799,18 @@ cout << "The number of springs is: " << s.size() << endl;
         }
 
 
+
+
           for(int l=0; l<n.size(); l++)
           {
 
               //Input force to input nodes
-              if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
+              //Decrease magnitude by 10^-3
+            if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
+              //if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
+          //    if(n[l].is_Input_Node()==true && i==0) n[l].Input_Force(0.0001,0);
+
+              //if(n[l].return_Win()!=0) wcheck = true;
             //  if(i>=1 && n[l].is_Input_Node()==true) n[l].Input_Force(1,0);
           //    if(i==1 && n[l].is_Input_Node()==true) n[l].Input_Force(1,0);
               //Change the node position, velocity and acceleration in response.
@@ -702,6 +830,8 @@ cout << "The number of springs is: " << s.size() << endl;
       LM2 = LearningMatrix2;
       LM3 = LearningMatrix3;
     //  Test_Target = TargetSignal3;
+
+    if(wcheck == true) cout <<"weheck is: " << wcheck << endl << endl << endl<< endl << endl << endl << endl << endl << endl << endl;
 
 
 // For bias learning.

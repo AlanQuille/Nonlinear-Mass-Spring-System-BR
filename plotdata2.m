@@ -37,10 +37,11 @@ plot(targetsignal3)
 %plot(OutputVector2)
 
 %[m,n] = size(learningmatrix);
-% = 1 + ((learningmatrix(:,1)-mean(learningmatrix(:,1))*(std(learningmatrix(:,1)/1))))x;
+% = 1 + ((learninpgmatrix(:,1)-mean(learningmatrix(:,1))*(std(learningmatrix(:,1)/1))))x;
 
 %newmatrix = (learningmatrix3 - repmat(mean(learningmatrix3), size(learningmatrix3,1), 1)) ./ repmat(std(learningmatrix3), size(learningmatrix3,1), 1);
 newmatrix2 = (learningmatrix - repmat(mean(learningmatrix), size(learningmatrix,1), 1)) ./ repmat(std(learningmatrix), size(learningmatrix,1), 1);
+newmatrix3 = (learningmatrix - repmat(mean(learningmatrix), size(learningmatrix,1), 1));
 %plot(OutputMatrix, "Color", "Blue")
 %hold on
 %plot(targetsignal)

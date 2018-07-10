@@ -89,21 +89,29 @@ int main(int argc, char** argv)
     cout <<"Size of target signal is: "<< Volterra.size() << endl;
 
     double wash_out_time = 20000;
-    wash_out_time = 20000;
+  //  wash_out_time = 20000;
     double learning_time = 200000;
     double learning_time_test = 15000;
 
 
+    wash_out_time = 10000;
+    learning_time = 400000;
+    learning_time_test = 15000;
     // setting parameters for simulation
     // This should be possible to read in from a text file
-    data.N = 40;
+    data.N = 15;
     data.ux=0;
     data.uy= 0;
 
-    data.input_connectivity_percentage = 20;
+    data.input_connectivity = 0.08;
     //data.w_in_initial = -1;
+    /*
     data.min_input_weight = -1;
     data.max_input_weight = 1;
+    */
+    data.min_input_weight = -0.0001 * 1;
+    data.max_input_weight = 0.0001 * 1;
+
     data.min_x_position = 0;
     data.max_x_position = 10;
     data.min_y_position  = 0;
@@ -138,7 +146,7 @@ int main(int argc, char** argv)
     vector<double> MSE_list;
     string st;
 
-//    Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+  //  Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
 /*
   for(int i=0; i<10; i++)
   {
@@ -180,7 +188,7 @@ int main(int argc, char** argv)
 
 
 
-  double radius = 1.0;
+  double radius = 2.0;
   int rounds = 5;
 //  int rounds = 24;
   int no_of_points_per_round= 5;
@@ -199,24 +207,35 @@ int main(int argc, char** argv)
 
 //  range_d1_d3 += a;
 
-data.min_k1 = 1;
-data.max_k1  = 200;
+//data.k_lim = [10 50;0.1 1];
 
-data.min_k3 = 1;
-data.max_k3  = 100;
+/*
+data.k_lim = [10 50;0.1 1];
+data.d_lim = [10 500;100 500];
+*/
+/*
+data.min_k1 = 10;
+data.max_k1  = 50;
 
-  data.min_d3 = 1;
-  data.max_d3  = 100;
+data.min_k3 = 0.1;
+data.max_k3  = 1;
+*/
+/*
+data.min_k3 = 10;
+data.max_k3  = 50;
 
-  data.min_d1 = 1;
-  data.max_d1  = 200;
+data.min_k1 = 0.1;
+data.max_k1  = 1;
+
+  data.min_d1 = 100;
+  data.max_d1  = 500;
+
+  data.min_d3 = 10;
+  data.max_d3  = 500;
+  */
 
   //data.min_d1 = 100;
 //  data.max_d1  = 20000;
-
-
-    data.min_d3 = 1;
-    data.max_d3  = 100;
 
 /*
   data.min_d3 = 100000;
@@ -228,7 +247,7 @@ data.max_k3  = 100;
 
 //Input, Volterra.
 //Volterra, Input
-  Simulation sim(radius, rounds, no_of_points_per_round, data, Volterra, Input, wash_out_time, learning_time, learning_time_test);
+ Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
   //sim.output_LearningMatrix_and_MeanSquaredError();
   sim.output_Output_Signal(str);
 
