@@ -14,7 +14,7 @@ outputsignal = csvread('1_outputsignal.csv');
 %o = csvread('targetsignal.csv');
 
 figure(2)
-plot(targetsig(220000:235000));
+plot(targetsig(410000:425000));
 hold on
 plot(outputsignal);
 

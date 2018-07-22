@@ -67,7 +67,7 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
   Initialize_Nodes(smallest_x_position, largest_x_position, smallest_y_position, largest_y_position);
   Delaunay_Triangulation_and_Spring_Creation();
 
-  Initialize_Springs();
+  Initialize_Springs(data);
   execute(true);
   Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
   //Output_For_Plot();
@@ -223,14 +223,14 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
 
          //For purposes of test
 
-         k1 = Rand_In_Range_Exp_k1();
-         d1 = Rand_In_Range_Exp_d1();
+         k1 = Rand_In_Range_Exp(data.min_k1, data.max_k1);
+         d1 = Rand_In_Range_Exp(data.min_d1, data.max_d1);
 
          cout << k1 << endl;
          cout << d1 << endl;
 
-         k3 = Rand_In_Range_Exp_k3();
-         d3 = Rand_In_Range_Exp_d3();
+         k3 = Rand_In_Range_Exp(data.min_k3, data.max_k3);
+         d3 = Rand_In_Range_Exp(data.min_d3, data.max_d3);
 
       //   k3 = 0;
       //   d3 = 0;
@@ -257,13 +257,10 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
          if(j>0)
          {
 
-         k1 = Rand_In_Range_Exp_k1();
-         cout <<"k1 is: " << k1 << endl;
-         d1 = Rand_In_Range_Exp_d1();
-         cout <<"d1 is: " << d1 << endl;
-         k3 = Rand_In_Range_Exp_k3();
-         cout << "k3 is: " << k3 << endl;
-         d3 = Rand_In_Range_Exp_d3();
+         k1 = Rand_In_Range_Exp(data.min_k1, data.max_k1);
+         d1 = Rand_In_Range_Exp(data.min_d1, data.max_d1);
+         k3 = Rand_In_Range_Exp(data.min_k3, data.max_d3);
+         d3 = Rand_In_Range_Exp(data.min_d3, data.max_d3);
          cout << "d3 is: " << d3 << endl;
 
       //   k3 = 0;
@@ -315,13 +312,13 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
       x_position = (j+1)*radius*cos((0));
       y_position = (j+1)*radius*sin((0));
 
-      k1 = Rand_In_Range_Exp_k1();
+      k1 = Rand_In_Range_Exp(data.min_k1, data.max_k1);
       cout <<"k1 is: " <<k1 << endl;
-      d1 = Rand_In_Range_Exp_d1();
+      d1 = Rand_In_Range_Exp(data.min_d1, data.max_d1);
       cout <<"d1 is: " <<d1 << endl;
-      k3 = Rand_In_Range_Exp_k3();
+      k3 = Rand_In_Range_Exp(data.min_k3, data.max_k3);
       cout <<"k3 is: " <<k3 << endl;
-      d3 = Rand_In_Range_Exp_d3();
+      d3 = Rand_In_Range_Exp(data.min_d3, data.max_d3);
       cout <<"d3 is: " <<d3 << endl;
 
     //  k3 = 0;
@@ -399,19 +396,40 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
     cout << "Outer fixed node 1 " << no_of_points_per_round*(rounds-1) << endl;
     cout << "Outer fixed node 2 " <<(no_of_points_per_round/2) + no_of_points_per_round*(rounds-1) << endl;
 
+    //Fixed nodes 8 and 14
+
+    //Get win from Matlab sim
+    //When the matlab comes up duhhhh.
+    /*
+    win = Uniform(data.min_input_weight, data.max_input_weight);
+    n[3].init_Input_Node(data.ux, data.uy, win);
+
+    win = Uniform(data.min_input_weight, data.max_input_weight);
+    n[16].init_Input_Node(data.ux, data.uy, win);
+    */
+
+  //  win = Uniform(data.min_input_weight, data.max_input_weight);
+  //  n[18].init_Input_Node(data.ux, data.uy, win);
+
+
+//Temporarily, input nodes will be fixed for this spider web.
+
+
     for(int i=0; i<N; i++)
      {
       //Input weights for the number of input_connectivitiy nodes.
-      win = Uniform(data.min_input_weight, data.max_input_weight);
+  //    win = Uniform(data.min_input_weight, data.max_input_weight);
     //  randomnum = (int)Uniform(0, N);
 
-      randomnum = (int)Uniform(0, no_of_points_per_round*(rounds-1));
+//      randomnum = (int)Uniform(0, no_of_points_per_round*(rounds-1));
 
-      if(i<input_node_nums)
-      {
-      n[randomnum].init_Input_Node(data.ux, data.uy, win);
-      cout <<"The input node is:" << randomnum << endl;
-      }
+      //Just
+
+//      if(i<input_node_nums)
+//      {
+//      n[randomnum].init_Input_Node(data.ux, data.uy, win);
+//      cout <<"The input node is:" << randomnum << endl;
+//      }
 
 
 
@@ -469,18 +487,26 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
      Nodes central_node(0, 0);
      n.push_back(central_node);
 
+     win = Uniform(data.min_input_weight, data.max_input_weight);
+     n[5].init_Input_Node(data.ux, data.uy, win);
+
+     cout << "number of nodes is: " << n.size() << endl;
+
+    // win = Uniform(data.min_input_weight, data.max_input_weight);
+  //   n[16].init_Input_Node(data.ux, data.uy, win);
+
 
 
 
      for(int i=0; i<no_of_points_per_round; i++)
      {
-       k1 = Rand_In_Range_Exp_k1();
+       k1 = Rand_In_Range_Exp(data.min_k1, data.max_k1);
        cout <<"k1 is: " <<k1 << endl;
-       d1 = Rand_In_Range_Exp_d1();
+       d1 = Rand_In_Range_Exp(data.min_d1, data.max_d1);
        cout <<"d1 is: " <<d1 << endl;
-       k3 = Rand_In_Range_Exp_k3();
+       k3 = Rand_In_Range_Exp(data.min_k3, data.max_k3);
        cout << "k3 is: " <<k3 << endl;
-       d3 = Rand_In_Range_Exp_d3();
+       d3 = Rand_In_Range_Exp(data.min_d3, data.max_d3);
        cout << "d3 is: " <<d3 << endl;
 
        l0 = Eucl_Dist(0, 0, n[i].get_x_position(), n[i].get_y_position());
@@ -567,7 +593,7 @@ void Simulation::input_Magnitude_of_Chaos_Force(double k, const std::string& inp
   str = input;
   str2 = input2;
 }
-
+/*
 void Simulation::Reset_Simulation()
 {
 
@@ -585,8 +611,8 @@ void Simulation::Reset_Simulation()
 
     s[i].set_Force_0();
 
-    k1_new = Rand_In_Range_Exp_k1();
-    d1_new = Rand_In_Range_Exp_d1();
+    k1_new = Rand_In_Range_Exp();
+    d1_new = Rand_In_Range_Exp();
     k3_new = 0;
     d3_new = 0;
 
@@ -624,7 +650,7 @@ void Simulation::Reset_Simulation()
 
 
 }
-
+*/
 
 void Simulation::execute(bool bias_learning)
 {
@@ -707,6 +733,8 @@ cout << "The number of springs is: " << s.size() << endl;
 
 bool wcheck = 0;
 
+double l0 =0;
+
    for(int i=0; i<maxtimesteps; i++)
     {
   //      cout << "Time step " << i << endl;
@@ -745,15 +773,16 @@ bool wcheck = 0;
             d1 = s[j].get_d1();
             k3 = s[j].get_k3();
             d3 = s[j].get_d3();
-/*
+            l0 = s[j].return_Initial_Length();
 
-            cout << "k1 is: " <<k1 << endl;
-            cout << "d1 is: " <<d1 << endl;
+            if(i==(maxtimesteps-1))
+            {
+            cout << "k1 is: " <<s[j].get_k1() << endl;
+            cout << "d1 is: " <<s[j].get_d1() << endl;
 
-            cout << "k3 is: " <<k3 << endl;
-            cout << "d3 is: " <<d3 << endl;
-
-*/
+            cout << "k3 is: " <<s[j].get_k3() << endl;
+            cout << "d3 is: " <<s[j].get_d3()<< endl;
+            }
 
 
             x1new = l - s[j].return_Initial_Length();
@@ -806,7 +835,8 @@ bool wcheck = 0;
 
               //Input force to input nodes
               //Decrease magnitude by 10^-3
-            if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
+          //  if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
+            if(n[l].is_Input_Node()==true && i==0) n[l].Input_Force(1,0);
               //if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
           //    if(n[l].is_Input_Node()==true && i==0) n[l].Input_Force(0.0001,0);
 
@@ -1066,55 +1096,11 @@ MSE = (1/Total)*MSEsum;
 return MSE;
 }
 
-double Simulation::Rand_In_Range_Exp_k1()
+
+double Simulation::Rand_In_Range_Exp(double min, double max)
 {
-  cout << "min is:" << min_k1 << endl;
-  cout << "max is:" << max_k1 << endl;
-
-  double log10min = log10(min_k1);
-  double log10max = log10(max_k1);
-
-  cout << log10min << endl;
-  cout << log10max << endl;
-
-  double return_value = ((log10max-log10min)*Uniform(0,1))+log10min;
-  return pow(10, return_value);
-}
-
-double Simulation::Rand_In_Range_Exp_d1()
-{
-  cout << "min is:" << min_d1 << endl;
-  cout << "max is:" << max_d1 << endl;
-
-  double log10min = log10(min_d1);
-  double log10max = log10(max_d1);
-
-  cout << log10min << endl;
-  cout << log10max << endl;
-
-  double return_value = ((log10max-log10min)*Uniform(0,1))+log10min;
-  return pow(10, return_value);;
-}
-
-double Simulation::Rand_In_Range_Exp_k3()
-{
-  cout << "min is:" << min_k3 << endl;
-  cout << "max is:" << max_k3 << endl;
-
-  double log10min = log10(min_k3);
-  double log10max = log10(max_k3);
-
-  cout << log10min << endl;
-  cout << log10max << endl;
-  double return_value = ((log10max-log10min)*Uniform(0,1))+log10min;
-  return pow(10, return_value);
-}
-
-double Simulation::Rand_In_Range_Exp_d3()
-{
-
-  double log10min = log10(min_d3);
-  double log10max = log10(max_d3);
+  double log10min = log10(min);
+  double log10max = log10(max);
   double return_value = ((log10max-log10min)*Uniform(0,1))+log10min;
   return pow(10, return_value);
 }
@@ -1245,7 +1231,7 @@ void Simulation::Output_Spring_And_Node_Positions()
   }
 }
 
-void Simulation::Initialize_Springs()
+void Simulation::Initialize_Springs(InitialDataValues &data)
 {
   //cout <<"The number of edges for: " <<N << " mass points is: " << EdgeList.size() << endl;
   //cout <<"The number of unduplicated edges should be " << EdgeList.size() << endl;
@@ -1299,10 +1285,10 @@ void Simulation::Initialize_Springs()
       y1 = n[arraysubscript2].get_y_position();
 
       //These spring and damping coefficients are not giving different values
-      k1 = Rand_In_Range_Exp_k1();
-      d1 = Rand_In_Range_Exp_d1();
-      k3 = Rand_In_Range_Exp_k3();
-      d3 = Rand_In_Range_Exp_d3();
+      k1 = Rand_In_Range_Exp(data.min_k1, data.max_k1);
+      d1 = Rand_In_Range_Exp(data.min_d1, data.max_d1);
+      k3 = Rand_In_Range_Exp(data.min_k3, data.max_d3);
+      d3 = Rand_In_Range_Exp(data.min_d3, data.max_d3);
 
       //Just for Test
     //  d3 = 0;

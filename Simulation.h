@@ -185,16 +185,7 @@ class Simulation
         void execute(bool bias_learning);
 
         //Range in Range, required.
-        double Rand_In_Range_Exp_k1();
-
-        //Range in Range, required.
-        double Rand_In_Range_Exp_k3();
-
-        //Range in Range, required.
-        double Rand_In_Range_Exp_d1();
-
-        //Range in Range, required.
-        double Rand_In_Range_Exp_d3();
+        double Rand_In_Range_Exp(double min, double max);
 
         //This does the delaunay triangulation for the two dimensional case and creates the springs for the reservoir computer, not the radial spider web
         void Delaunay_Triangulation_and_Spring_Creation();
@@ -213,7 +204,7 @@ class Simulation
         void Get_Triangles(DelaunayTriangulation &Delaunay);
 
         //Create springs for reservoir computer nonlinear mass spring system
-        void Initialize_Springs();
+        void Initialize_Springs(InitialDataValues &data);
 
         //Does the Moore-Penrose pseudoinverse from Eigen library
         void Moore_Penrose_Pseudoinverse(MatrixXd& L);

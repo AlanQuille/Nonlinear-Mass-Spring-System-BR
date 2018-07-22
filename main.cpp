@@ -99,23 +99,27 @@ int main(int argc, char** argv)
     learning_time_test = 15000;
     // setting parameters for simulation
     // This should be possible to read in from a text file
-    data.N = 15;
+    data.N = 25;
     data.ux=0;
     data.uy= 0;
 
-    data.input_connectivity = 0.08;
+    data.input_connectivity = 0.05;
     //data.w_in_initial = -1;
-    /*
-    data.min_input_weight = -1;
-    data.max_input_weight = 1;
-    */
+
+//    data.min_input_weight = -1;
+//    data.max_input_weight = 1;
+
     data.min_input_weight = -0.0001 * 1;
     data.max_input_weight = 0.0001 * 1;
+
+    data.min_input_weight = -0.005 * 1;
+    data.max_input_weight = -0.005 * 1;
 
     data.min_x_position = 0;
     data.max_x_position = 10;
     data.min_y_position  = 0;
     data.max_y_position = 10;
+    /*
 
     data.min_k3 = 1;
     data.max_k3  = 100;
@@ -131,6 +135,20 @@ int main(int argc, char** argv)
     //Increase d3 and d1.
     data.min_d1 = 1+range_d1_d3;
     data.max_d1  = 200+range_d1_d3;
+    */
+
+    data.min_k3 = 50;
+    data.max_k3  = 50;
+
+    data.min_d3 = 50;
+    data.max_d3  =50;
+
+    data.min_k1 = 100;
+    data.max_k1  = 100;
+
+    //Increase d3 and d1.
+    data.min_d1 = 100;
+    data.max_d1  = 100;
 
 
     data.dt = 0.001;
@@ -188,8 +206,8 @@ int main(int argc, char** argv)
 
 
 
-  double radius = 2.0;
-  int rounds = 5;
+  double radius = 10.0;
+  int rounds = 1;
 //  int rounds = 24;
   int no_of_points_per_round= 5;
 
@@ -202,7 +220,7 @@ int main(int argc, char** argv)
 
 //  range_d1_d3 = 5000000;
   //best_range_d1_d3 = 5000;
-  range_d1_d3 = 0;
+  //ange_d1_d3 = 0;
   double a = 100;
 
 //  range_d1_d3 += a;

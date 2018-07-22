@@ -2,7 +2,6 @@
 tic
 
 targetsignal = csvread("volterra.csv");
-targetsignal10 = targetsignal(1:end-1);
 %targetsignal2 = csvread("targetsignal2.csv");
 %targetsignal3 = csvread("targetsignal3.csv");
 
@@ -36,13 +35,9 @@ plot(targetsignal3)
 %plot(OutputVector)
 %hold on
 %plot(OutputVector2)
-learningweightstest = learningmatrix\targetsignal10;
-OutputVector10 = learningmatrix*learningweightstest;
-figure(10);
-plot(OutputVector10)
-
-
-
+learningweightstest = learningmatrix\targetsignal;
+figure(10)'
+plot(learningmatrix*learningweightstest);
 
 %learningmatrix*(learningmatrix\targetsignal)
 
