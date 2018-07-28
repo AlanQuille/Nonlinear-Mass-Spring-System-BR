@@ -111,8 +111,8 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
   Target_Signal = TS;
   Input_Signal = IS;
 
-  execute(true);
-  Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
+  //execute(true);
+//  Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
   Output_For_Plot();
 }
 
@@ -197,6 +197,9 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
 
      int k =0;
 
+     //Introudce randomness to the springs.
+  //   Uniform()
+
     for(int j=0; j<rounds; j++)
     {
       x0 = (j+1)*radius*cos((0));
@@ -250,7 +253,7 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
        //  wout = Uniform(data.w_out_initial, data.w_out_final);
          wout = 0;
 
-         s.push_back(Springs(k1, d1, k3, d3, l0, k, k-1, wout));
+         s.push_back(Springs(k1, k3, d1, d3, l0, k, k-1, wout));
          }
 
          //For radial pattern.
@@ -298,7 +301,7 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
 
 */
 
-         s.push_back(Springs(k1, d1, k3, d3, l0, k, k-no_of_points_per_round, wout));
+         s.push_back(Springs(k1, k3, d1, d3, l0, k, k-no_of_points_per_round, wout));
 
 
 
@@ -333,7 +336,7 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
 
       if(no_of_points_per_round>2)
       {
-      s.push_back(Springs(k1, d1, k3, d3, l0, (k-no_of_points_per_round), k-1, wout));
+      s.push_back(Springs(k1, k3, d1, d3, l0, (k-no_of_points_per_round), k-1, wout));
       }
     }
 
@@ -513,7 +516,7 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
 
        wout = 0;
 
-       s.push_back(Springs(k1, d1, k3, d3, l0, n.size()-1, i, wout));
+       s.push_back(Springs(k1, k3, d1, d3, l0, n.size()-1, i, wout));
 
      }
 
@@ -764,6 +767,8 @@ double l0 =0;
 
 
             LearningMatrix(i,j) = l;  // Todo: update is not needed for target signal
+
+            cout << "l is: " << l << endl;
 
           //  cout << l << endl;
             if(i>=wash_out_time && i<(wash_out_time+learning_time)) LearningMatrix2(i-wash_out_time, j) = l;
@@ -1026,6 +1031,7 @@ double Simulation::output_LearningMatrix_and_MeanSquaredError()
 
 void Simulation::output_Output_Signal(string& s)
 {
+  //Change all of them to them
   string str = s + "_" + "outputsignal.csv";
   ofstream learningweights("learningweights.csv"); learningweights.precision(15);
   ofstream targetsignal("targetsignal.csv");  targetsignal.precision(15);

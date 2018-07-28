@@ -7,7 +7,9 @@ class Nodes
 
 private:
     // mass is 1 by default
-	double m = 1;
+		//For the spideb simulation this will be chanmg
+	 //  double m = 1;
+	  double m = 0.12;
 
 		//Original positions
 		double original_px;
