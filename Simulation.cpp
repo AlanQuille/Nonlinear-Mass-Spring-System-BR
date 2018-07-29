@@ -197,6 +197,8 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
 
      int k =0;
 
+
+
     for(int j=0; j<rounds; j++)
     {
       x0 = (j+1)*radius*cos((0));
@@ -205,8 +207,9 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
       for(int i=0; i<no_of_points_per_round; i++)
       {
          //So this
-         x_position = (j+1)*radius*cos((i*angle));
-         y_position = (j+1)*radius*sin((i*angle));
+         //Add in random factor here.
+         x_position = (j+1)*radius*cos((i*angle))+Uniform(-1,1);
+         y_position = (j+1)*radius*sin((i*angle))+Uniform(-1,1);
 
 
          Nodes node(x_position, y_position);

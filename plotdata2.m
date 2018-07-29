@@ -36,10 +36,10 @@ plot(targetsignal3)
 %plot(OutputVector)
 %hold on
 %plot(OutputVector2)
-learningweightstest = learningmatrix\targetsignal10;
-OutputVector10 = learningmatrix*learningweightstest;
-figure(10);
-plot(OutputVector10)
+%learningweightstest = learningmatrix\targetsignal10;
+%OutputVector10 = learningmatrix*learningweightstest;
+%figure(10);
+%plot(OutputVector10)
 
 
 
@@ -52,6 +52,7 @@ plot(OutputVector10)
 %newmatrix = (learningmatrix3 - repmat(mean(learningmatrix3), size(learningmatrix3,1), 1)) ./ repmat(std(learningmatrix3), size(learningmatrix3,1), 1);
 newmatrix2 = (learningmatrix - repmat(mean(learningmatrix), size(learningmatrix,1), 1)) ./ repmat(std(learningmatrix), size(learningmatrix,1), 1);
 newmatrix3 = (learningmatrix - repmat(mean(learningmatrix), size(learningmatrix,1), 1));
+newmatrix4 = sum(learningmatrix,2);
 %plot(OutputMatrix, "Color", "Blue")
 %hold on
 %plot(targetsignal)
