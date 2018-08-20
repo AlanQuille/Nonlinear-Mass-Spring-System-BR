@@ -8,6 +8,11 @@
 #include "Simulation.cpp"
 #include "Eigen/Dense"
 #include "Eigen/QR"
+//Matlab
+#include "mat.h"
+#include "matrix.h"
+#include "tmwtypes.h"
+
 
 
 using namespace std;
@@ -24,6 +29,129 @@ unsigned long long rdtsc()
 
 int main(int argc, char** argv)
 {
+
+  //Matlab inputs
+  MATFile * pmat; char ** you ; int ndir; int ndir2; mxArray * pa; mxArray * qa; mxArray *ra; mxArray *sa; mxArray *ta; mxArray *ua; mxArray *va; mxArray *xa;  mxArray *ya; mxArray *za; mxArray *zb; mxArray *in; mxArray *in2; const char * name; char ** dir;
+  char ** dir2;
+  pmat = matOpen ("init_net.mat", "r" ) ;
+  //dir = matGetDir ( pmat, &ndir ) ;
+  //double * paData;
+  //Double and bool vectors for .mat input.
+  double * qaData;
+  double * raData;
+  double * saData;
+  double * taData;
+  double * uaData;
+  double * xaData;
+  double * yaData;
+
+  double * zaData;
+  double * zbData;
+
+  double * inData;
+
+  double * inData2;
+
+  //Get positions of nodes
+pa = matGetVariable(pmat, "P");
+qa = mxGetField(pa, 0, "states");
+in = mxGetField(pa, 0, "fixed");
+
+//For input nodes
+in2 = matGetVariable(pmat, "W_in");
+
+//Get spring variables.
+ra = matGetVariable(pmat, "W");
+sa = mxGetField(ra, 0, "k1");
+ta = mxGetField(ra, 0, "k3");
+ua = mxGetField(ra, 0, "d1");
+xa = mxGetField(ra, 0, "d3");
+ya = mxGetField(ra, 0, "l0");
+
+za = mxGetField(ra, 0, "from");
+zb = mxGetField(ra, 0, "to");
+
+//in = mxGetField(ra, 0, "fixed");
+
+qaData = ( double * ) mxGetData ( qa ) ;
+
+raData = ( double * ) mxGetData ( ra ) ;
+saData = ( double * ) mxGetData ( sa ) ;
+taData = ( double * ) mxGetData ( ta ) ;
+uaData = ( double * ) mxGetData ( ua ) ;
+xaData = ( double * ) mxGetData ( xa ) ;
+yaData = ( double * ) mxGetData ( ya ) ;
+
+zaData = ( double * ) mxGetData ( za ) ;
+zbData = ( double * ) mxGetData ( zb ) ;
+
+inData = ( double * ) mxGetData ( in ) ;
+inData2 = ( double * ) mxGetData ( in2 ) ;
+//X positions of nodes
+vector<double> x_nodes;
+vector<double> y_nodes;
+//input nodes.
+//vector<bool> input_nodes;
+
+//Get k1, k3, d1, d3, l0, from, to
+vector<double> k1;
+vector<double> k3;
+vector<double> d1;
+vector<double> d3;
+vector<double> l0;
+vector<int> node1;
+vector<int> node2;
+
+vector<bool> fixed_nodes;
+vector<double> W_in;
+
+for(int i=0; i<78; i++)
+{
+  if(i<30)
+  {
+  x_nodes.push_back(qaData[i]);
+//  cout << x_nodes[i] << endl;
+  }
+  if(i>=30 && i<60)
+  {
+  y_nodes.push_back(qaData[i]);
+//  cout << y_nodes[i] << endl;
+  }
+
+  k1.push_back(saData[i]);
+//  cout << k1[i] << endl;
+  k3.push_back(taData[i]);
+//  cout << k3[i] << endl;
+  d1.push_back(uaData[i]);
+//  cout << d1[i] << endl;
+  d3.push_back(xaData[i]);
+//  cout << d3[i] << endl;
+  l0.push_back(yaData[i]);
+//  cout << l0[i] << endl;;
+
+  node1.push_back((int)zaData[i]);
+  //cout << node1[i] << endl;
+  node2.push_back((int)zbData[i]);
+//  cout << node2[i] << endl;
+
+  if(i<30)
+   {
+  fixed_nodes.push_back((bool)inData[i]);
+  cout <<fixed_nodes[i] << endl;
+  //cout << inData[i] << endl;
+   }
+
+   //Number of fixed nodes, manual load in not present yet.
+   if(i<30)
+   {
+   W_in.push_back(inData2[i]);
+   cout <<"W_in is" << W_in[i] << endl;
+   }
+
+}
+
+
+
 
    auto begin = std::chrono::high_resolution_clock::now();
 
@@ -85,22 +213,23 @@ int main(int argc, char** argv)
     }
 
 
+
+
     cout <<"Size of input signal is: "<< Input.size() << endl;
     cout <<"Size of target signal is: "<< Volterra.size() << endl;
 
     double wash_out_time = 20000;
-    wash_out_time = 20000;
     double learning_time = 200000;
     double learning_time_test = 15000;
 
 
     // setting parameters for simulation
     // This should be possible to read in from a text file
-    data.N = 40;
+    data.N = 27;
     data.ux=0;
     data.uy= 0;
 
-    data.input_connectivity_percentage = 5;
+    data.input_connectivity_percentage = 20;
     //data.w_in_initial = -1;
     data.min_input_weight = -1;
     data.max_input_weight = 1;
@@ -111,18 +240,13 @@ int main(int argc, char** argv)
 
     data.min_k3 = 1;
     data.max_k3  = 100;
-
-    //Increase d3 and d1.
-    double range_d1_d3 = 0;
-    data.min_d3 = 1+range_d1_d3;
-    data.max_d3  = 100+range_d1_d3;
+    data.min_d3 = 1;
+    data.max_d3  = 100;
 
     data.min_k1 = 1;
     data.max_k1  = 200;
-
-    //Increase d3 and d1.
-    data.min_d1 = 1+range_d1_d3;
-    data.max_d1  = 200+range_d1_d3;
+    data.min_d1 = 1;
+    data.max_d1  = 200;
 
 
     data.dt = 0.001;
@@ -133,103 +257,28 @@ int main(int argc, char** argv)
 
     cout << "Initial Input is: "<< Input[0] << endl;
 
-    double new_MSE = 0;
-    double old_MSE = 100;
-    vector<double> MSE_list;
-    string st;
+    Simulation(Input, Volterra, wash_out_time, learning_time, learning_time_test, data.min_input_weight, data.max_input_weight, x_nodes, y_nodes, fixed_nodes, W_in, k1, k3, d1, d3, l0, node1, node2, data.dt);
 
-//    Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+   //Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+   //sim.Reset_Simulation();
+   //sim.execute();
+   //sim.output_LearningMatrix_and_MeanSquaredError();
 /*
-  for(int i=0; i<10; i++)
-  {
+   sim.Reset_Simulation();
+   sim.execute();
+   sim.output_LearningMatrix_and_MeanSquaredError();
 
-  //Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
-  new_MSE = sim.return_MSE();
-  MSE_list.push_back(new_MSE);
-  st = to_string(new_MSE);
+   sim.Reset_Simulation();
+   sim.execute();
+   sim.output_LearningMatrix_and_MeanSquaredError();
 
-  if(old_MSE>new_MSE)
-    {
-  sim.Output_For_Plot();
-  sim.output_Output_Signal(st);
-  old_MSE = new_MSE;
-  cout << "New one" << endl;
-  cout << "New one" << endl;
-  cout << "New one" << endl;
-  cout << "New one" << endl;
-    }
+   sim.Reset_Simulation();
+   sim.execute();
+   sim.output_LearningMatrix_and_MeanSquaredError();
+   */
 
-  }
-
-  cout <<"The best MSE is: " << old_MSE << endl;
-  cout <<"The average MSE is: " << accumulate( MSE_list.begin(), MSE_list.end(), 0.0)/ MSE_list.size() << endl;
-*/
-  // sim.Reset_Simulation();
-//   sim.execute();
-//   sim.output_LearningMatrix_and_MeanSquaredError();
-
-
-/*
-  cout <<"The number of nodes is: " << data.N << endl;
-  cout <<"The number of springs is: " << sim.Spring_List() << endl;
-
-  data.min_d3 = 1+range_d1_d3;
-  data.max_d3  = 100+range_d1_d3;
-*/
-
-
-
-
-  double radius = 1.0;
-  int rounds = 5;
-//  int rounds = 24;
-  int no_of_points_per_round= 5;
-
-  string str = "1";
-  new_MSE = 0;
-  old_MSE = 0;
-
-  vector<double> range_d1_d3_list;
-  double best_range_d1_d3;
-
-//  range_d1_d3 = 5000000;
-  //best_range_d1_d3 = 5000;
-  range_d1_d3 = 0;
-  double a = 100;
-
-//  range_d1_d3 += a;
-
-  data.min_d3 = 1;
-  data.max_d3  = 100;
-
-  data.min_d1 = 1;
-  data.max_d1  = 200;
-
-
-    data.min_d3 = 1;
-    data.max_d3  = 100;
-
-    data.min_d1 = 1;
-    data.max_d1  = 200;
-
-/*
-  data.min_d3 = 100000;
-  data.max_d3  =1000000;
-
-  data.min_d1 = 100000;
-  data.max_d1  = 1000000;
-  */
-
-  Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
-  //sim.output_LearningMatrix_and_MeanSquaredError();
-  sim.output_Output_Signal(str);
-
-
-//  sim.output_LearningMatrix_and_MeanSquaredError();
-//  sim.output_Output_Signal(str);
-
-//  cout <<"The number of nodes is: " << data.N << endl;
-//  cout <<"The number of springs is: " << sim.Spring_List() << endl;
+  //cout <<"The number of nodes is: " << data.N << endl;
+  //cout <<"The number of springs is: " << sim.Spring_List() << endl;
 
    auto end = std::chrono::high_resolution_clock::now();
    cout << "The time it took for the programme to run in total in milliseconds: ";
