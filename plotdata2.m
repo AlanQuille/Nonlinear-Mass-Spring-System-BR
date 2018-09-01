@@ -2,8 +2,8 @@
 tic
 
 targetsignal = csvread("targetsignal.csv");
-targetsignal2 = csvread("targetsignal2.csv");
-targetsignal3 = csvread("targetsignal3.csv");
+%targetsignal2 = csvread("targetsignal2.csv");
+%targetsignal3 = csvread("targetsignal3.csv");
 
 inputsignal =csvread("inputsignalcheck.csv");
 %inputsignal2 =csvread("Data/inputsignal.csv");

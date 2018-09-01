@@ -257,7 +257,7 @@ for(int i=0; i<78; i++)
 
     cout << "Initial Input is: "<< Input[0] << endl;
 
-    Simulation(Input, Volterra, wash_out_time, learning_time, learning_time_test, data.min_input_weight, data.max_input_weight, x_nodes, y_nodes, fixed_nodes, W_in, k1, k3, d1, d3, l0, node1, node2, data.dt);
+    Simulation sim(Input, Volterra, wash_out_time, learning_time, learning_time_test, data.min_input_weight, data.max_input_weight, x_nodes, y_nodes, fixed_nodes, W_in, k1, k3, d1, d3, l0, node1, node2, data.dt);
 
    //Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
    //sim.Reset_Simulation();
@@ -283,6 +283,8 @@ for(int i=0; i<78; i++)
    auto end = std::chrono::high_resolution_clock::now();
    cout << "The time it took for the programme to run in total in milliseconds: ";
    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << "ms";
+
+   sim.output_LearningMatrix_and_MeanSquaredError();
 
 
     return 0;

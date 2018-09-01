@@ -637,8 +637,8 @@ cout << "The number of springs is: " << s.size() << endl;
       VectorXd LearningWeightsVector = Cp *TargetSignal2;
       Output = LearningMatrix3*LearningWeightsVector;
 
-      cout << Output(0);
-      cout << endl;
+      //cout << Output(0);
+    //  cout << endl;
 
       //Populate_Learning_Weights(LearningWeightsVector);
 
@@ -737,8 +737,8 @@ double Simulation::output_LearningMatrix_and_MeanSquaredError()
 
       if(i>=(wash_out_time+learning_time))
       {
-        outputsignal << Output(i-wash_out_time-learning_time);
-        outputsignal << endl;
+        output << Output(i-wash_out_time-learning_time);
+        outputl << endl;
 
         targetsignal << Target_Signal.at(i);
         targetsignal << endl;
