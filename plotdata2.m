@@ -36,10 +36,10 @@ plot(targetsignal3)
 %plot(OutputVector)
 %hold on
 %plot(OutputVector2)
-learningweightstest = learningmatrix\targetsignal10;
-OutputVector10 = learningmatrix*learningweightstest;
-figure(10);
-plot(OutputVector10)
+%learningweightstest = learningmatrix\targetsignal10;
+%OutputVector10 = learningmatrix*learningweightstest;
+%figure(10);
+%plot(OutputVector10)
 
 
 

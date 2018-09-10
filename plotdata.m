@@ -40,9 +40,19 @@ G = graph(s,t);
 %y = [test(1,2) test(1,4) test(2,2)];
 
 %test(:,1)
-plot(G,'XData',x,'YData',y);
+h = plot(G,'XData',x,'YData',y);
 xlim([-0.215 -0.19])
 ylim([0.4 0.45])
 pause(0.001);
-drawnow;x
+drawnow;
 axis([-30 30 -30 30]);
+
+highlight(h, 11);
+highlight(h, 11,'NodeColor', 'g');
+
+
+%highlight(h,[6 8 7 10 9]);
+highlight(h,[6 8]);
+ %, 'NodeColor', 'r')
+% highlight(h,[6 8 7 10 9],'NodeColor', 'r');
+highlight(h,[6 8],'NodeColor', 'r');

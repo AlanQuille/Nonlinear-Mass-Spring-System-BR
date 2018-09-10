@@ -6,7 +6,7 @@ addpath('');
 
 L = csvread('learningmatrix.csv');
 % w = csvread('outputweights.csv');
-o = csvread('outputsignal.csv');
+o = csvread('1_outputsignal.csv');
 
 L_ = mapstd(L');
 figure;plot(L_');

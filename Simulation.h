@@ -181,11 +181,16 @@ class Simulation
 
         //This changes position of springs and nodes dynamically in time.
         void Reset_Simulation();
+        
+        
         // Todo: Name is not ideal. Better would be to call it update() or similar
         void execute(bool bias_learning);
 
         //Range in Range, required.
         double Rand_In_Range_Exp(double min, double max);
+        
+        //This is for the treble sinusoidal function.
+        double Treble_Sine_Function(double f1, double f2, double f3, double dt, double t, double T);
 
         //This does the delaunay triangulation for the two dimensional case and creates the springs for the reservoir computer, not the radial spider web
         void Delaunay_Triangulation_and_Spring_Creation();

@@ -207,7 +207,7 @@ int main(int argc, char** argv)
 
 
   double radius = 10.0;
-  int rounds = 1;
+  int rounds = 2;
 //  int rounds = 24;
   int no_of_points_per_round= 5;
 

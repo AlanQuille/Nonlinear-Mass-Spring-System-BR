@@ -70,7 +70,7 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
   Initialize_Springs(data);
   execute(true);
   Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
-  //Output_For_Plot();
+  Output_For_Plot();
 }
 
 
@@ -381,10 +381,10 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
 
 
 
-/*
+
     n[no_of_points_per_round*(rounds-1)].set_Fixed_Node();
     n[(no_of_points_per_round/2)+no_of_points_per_round*(rounds-1)].set_Fixed_Node();
-    */
+
 
     //Also set the very outer ring for the spider web to be fixed.
 
@@ -449,12 +449,14 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
       */
 
     //  }
+// for non fixed, get rid of this.
 
-      if(i>=no_of_points_per_round*(rounds-1) && i<((no_of_points_per_round)+no_of_points_per_round*(rounds-1)))
-      {
-        n[i].set_Fixed_Node();
-        cout <<"The: " <<i <<"th" << " fixed node is fixed." << endl;
-      }
+   //   if(i>=no_of_points_per_round*(rounds-1) && i<((no_of_points_per_round)+no_of_points_per_round*(rounds-1)))
+   //   {
+  //      n[i].set_Fixed_Node();
+  //      cout <<"The: " <<i <<"th" << " fixed node is fixed." << endl;
+  //    }
+    
 
     //        if(i<no_of_points_per_round*(rounds-1) )
       //      {
@@ -488,7 +490,9 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
      n.push_back(central_node);
 
      win = Uniform(data.min_input_weight, data.max_input_weight);
-     n[5].init_Input_Node(data.ux, data.uy, win);
+    // n[5].init_Input_Node(data.ux, data.uy, win);
+    //for another round
+     n[10].init_Input_Node(data.ux, data.uy, win);
 
      cout << "number of nodes is: " << n.size() << endl;
 
@@ -835,8 +839,9 @@ double l0 =0;
 
               //Input force to input nodes
               //Decrease magnitude by 10^-3
-          //  if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
-            if(n[l].is_Input_Node()==true && i==0) n[l].Input_Force(1,0);
+            //if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
+            if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Treble_Sine_Function(2.11, 3.73, 4.33, 0.001, i, 1),0);
+          //  if(n[l].is_Input_Node()==true && i==0) n[l].Input_Force(1,0);
               //if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
           //    if(n[l].is_Input_Node()==true && i==0) n[l].Input_Force(0.0001,0);
 
@@ -1103,6 +1108,11 @@ double Simulation::Rand_In_Range_Exp(double min, double max)
   double log10max = log10(max);
   double return_value = ((log10max-log10min)*Uniform(0,1))+log10min;
   return pow(10, return_value);
+}
+
+double Simulation::Treble_Sine_Function(double f1, double f2, double f3, double dt, double t, double T)
+{
+	return sin((2*M_PI*f1*dt*t)/T)*sin((2*M_PI*f2*dt*t)/T)*sin((2*M_PI*f3*dt*t)/T);
 }
 
 
