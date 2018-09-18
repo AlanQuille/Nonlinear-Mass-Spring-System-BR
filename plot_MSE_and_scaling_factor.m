@@ -1,0 +1,10 @@
+MSE=load("MSE_and_scaling_factor.csv")
+
+%plot(MSE(:,1), MSE(:,2))
+plot(MSE)
+xticks(1:20)
+xticklabels(MSE(:,1))
+%xticklabels([0 10^(-19) 10^(-18) 10^(-17) 10^(-16) 10^(-15) 10^(-14) 10^(-13) 10^(-12) 10^(-11) 10^(-10) 10^(-9) 10^(-8) 10^(-7) 10^(-6) 1])
+ylim([0 1])
+xlabel({'Scaling Factor T','s'})
+ylabel({'MSE'})

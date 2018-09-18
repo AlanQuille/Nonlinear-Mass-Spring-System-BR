@@ -9,6 +9,10 @@ using namespace Eigen;
 struct InitialDataValues
 {
     int     N;   // number of Nodes
+    double mass_of_nodes; //mass of nodes, only valid if  the masses  are all identical
+    
+    double scaling_factor; //this is the scaling factor for the time of the input signal treble sinuosoidal wave (but can be anything else).
+     
     double ux;   // First input values in x direction  TODO: Really needed?
     double uy;   // First input values in y direction
 
@@ -77,6 +81,8 @@ class Simulation
         vector< vector<double> > EdgeList;   // Todo: Is that really part of Simulation class -
         vector<double> NodeList;             // Todo: Is that really part of Simulation class -
         vector<double> EdgeNodeList;         // Todo: Is that really part of Simulation class -
+        
+        double scaling_factor;
 
 		    double input_weight_smallest_value;
 	    	double input_weight_largest_value;

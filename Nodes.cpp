@@ -172,3 +172,13 @@ void Nodes::zero_updatecheck()
 {
    updatecheck = 0;
 }
+
+void Nodes::change_Mass(double new_m)
+{
+	m = new_m;
+}
+
+double Nodes::return_Mass()
+{
+	return m;
+}

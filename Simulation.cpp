@@ -89,6 +89,8 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
   this-> min_k3 = data.min_k3;
   this-> min_d1 = data.min_d1;
   this-> min_d3 = data.min_d3;
+  
+  this->scaling_factor = data.scaling_factor;
 
   this-> max_k1 = data.max_k1;
   this-> max_k3 = data.max_k3;
@@ -214,8 +216,12 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
          //THIS IS NOT GOOD CODING PRACTICE. FIX IT.
          //FIX IT
          //FIX IT
+         
+         node.change_Mass(data.mass_of_nodes);
 
          n.push_back(node);
+         
+
 
          if(i>0)
          {
@@ -839,10 +845,19 @@ double l0 =0;
 
               //Input force to input nodes
               //Decrease magnitude by 10^-3
-            //if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
-            if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Treble_Sine_Function(2.11, 3.73, 4.33, 0.001, i, 1),0);
+          //  if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
+          
+            if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Treble_Sine_Function(2.11, 3.73, 4.33, 0.001, i, scaling_factor),0);
+           
+        //    cout << endl <<i <<" " <<  Treble_Sine_Function(2.11, 3.73, 4.33, 0.001, i, 1) << endl;
+          
+          //  cout << endl <<i <<" " <<  Treble_Sine_Function(1, 0, 0, 0.001, i, 1) << endl;
+           
           //  if(n[l].is_Input_Node()==true && i==0) n[l].Input_Force(1,0);
-              //if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
+            
+          //    if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
+              
+              
           //    if(n[l].is_Input_Node()==true && i==0) n[l].Input_Force(0.0001,0);
 
               //if(n[l].return_Win()!=0) wcheck = true;
@@ -1540,4 +1555,5 @@ void DataSet::SineWave(vector<double> &Sine_Wave)
      Sine_Wave.push_back(sin(t0+i*dt));
      cout <<sin(t0+i*dt) << endl;
   }
+
 }

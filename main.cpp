@@ -67,7 +67,10 @@ int main(int argc, char** argv)
     //  ifstream file2 ("inputsignal.csv"); // declare file stream: http://www.cplusplus.com/reference/iostream/ifstream/
 
   //  ifstream file_Volterra ("/Users/hh14185/Leverhulme_Trust_Proposal_spider_web/Xcode/Nonlinear-Mass-Spring-System-BR/volterra.csv");
-      ifstream file_Volterra ("Data/volterra.csv");
+  
+  //This takes in Volterra.CSV. will change this to narma and it should be the same.
+      ifstream file_Volterra ("Data/narma.csv");
+    //  ifstream file_Volterra ("Data/volterra.csv");
 
     while (getline(file_Volterra, tmp,'\n'))
     {
@@ -88,13 +91,16 @@ int main(int argc, char** argv)
     cout <<"Size of input signal is: "<< Input.size() << endl;
     cout <<"Size of target signal is: "<< Volterra.size() << endl;
 
-    double wash_out_time = 20000;
+    
+	//Original Volterra wash out time etc.
+	double wash_out_time = 20000;
   //  wash_out_time = 20000;
     double learning_time = 200000;
     double learning_time_test = 15000;
 
 
-    wash_out_time = 10000;
+    //Wash out time, learning_time and learning_time_test
+    wash_out_time = 3000;
     learning_time = 400000;
     learning_time_test = 15000;
     // setting parameters for simulation
@@ -149,6 +155,9 @@ int main(int argc, char** argv)
     //Increase d3 and d1.
     data.min_d1 = 100;
     data.max_d1  = 100;
+    
+    data.mass_of_nodes = 1;
+    data.scaling_factor = 0.1;
 
 
     data.dt = 0.001;
@@ -265,9 +274,23 @@ data.max_k1  = 1;
 
 //Input, Volterra.
 //Volterra, Input
- Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+
+// Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+
   //sim.output_LearningMatrix_and_MeanSquaredError();
-  sim.output_Output_Signal(str);
+ // sim.output_Output_Signal(str);
+  
+  ofstream MSE_and_scaling_factor("MSE_and_scaling_factor.csv"); MSE_and_scaling_factor.precision(15);
+  
+  //Simulation for plotting scaling factor with MSE;
+  for(int i=0; i<20; i++)
+  {  
+  data.scaling_factor= 0.0000000000000000001*pow(10, i);
+  cout << data.scaling_factor << endl;
+  Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);  
+  MSE_and_scaling_factor << data.scaling_factor << "," << sim.return_MSE() << endl;
+ // delete sim;
+  }
 
 
 //  sim.output_LearningMatrix_and_MeanSquaredError();

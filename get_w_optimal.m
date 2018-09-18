@@ -9,12 +9,12 @@ addpath('');
 %L = csvread('learningmatrix3.csv');
 %L = L(:, 1:end-1);
 inputsig = csvread('Data/inputsignal.csv');
-targetsig = csvread('Data/volterra.csv');
+targetsig = csvread('Data/narma.csv');
 outputsignal = csvread('1_outputsignal.csv');
 %o = csvread('targetsignal.csv');
 
 figure(2)
-plot(targetsig(410000:425000));
+plot(targetsig(403000:418000));
 hold on
 plot(outputsignal);
 

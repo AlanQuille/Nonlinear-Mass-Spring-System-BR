@@ -108,4 +108,10 @@ private:
 
 	//Check to see if the node has been modified or not
 	void zero_updatecheck();
+	
+	//Change mass of springs
+	void change_Mass(double new_m);
+	
+    //Returns mass of nodes
+	double return_Mass();
 };
