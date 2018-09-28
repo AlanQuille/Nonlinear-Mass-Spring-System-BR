@@ -8,7 +8,7 @@ addpath('');
 %L = L(:, 1:end-1);
 %L = csvread('learningmatrix3.csv');
 %L = L(:, 1:end-1);
-inputsig = csvread('Data/inputsignal.csv');
+inputsig = csvread('InputSignal.csv');
 targetsig = csvread('Data/narma.csv');
 outputsignal = csvread('1_outputsignal.csv');
 %o = csvread('targetsignal.csv');
@@ -17,6 +17,10 @@ figure(2)
 plot(targetsig(403000:418000));
 hold on
 plot(outputsignal);
+
+figure(3)
+plot(inputsig);
+hold on
 
 %i = csvread('input.csv');
 % o = i.*2;

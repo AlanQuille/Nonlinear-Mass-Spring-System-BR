@@ -713,6 +713,8 @@ void Simulation::execute(bool bias_learning)
   ofstream OutputPositionsy("NodePositionsy.csv");
   ofstream OutputVelocitiesy("NodeVelocitiesy.csv");
   ofstream OutputAccelerationsy("NodeAccelerationsy.csv");
+  
+  ofstream InputSignal("InputSignal.csv");
 
   //Learning matrix for entire run, learning phase and testing phase.
   MatrixXd LearningMatrix(maxtimesteps, s.size());
@@ -814,6 +816,8 @@ double l0 =0;
             s[j].set_x1(x1new);
 
             Fsum =-k3*x1new*x1new*x1new - k1*x1new - d3*x2spring*x2spring*x2spring - d1*x2spring;
+            
+          //  cout << Fsum << endl;
 
 
             Fx_nodeb = Fsum*alpha;
@@ -847,9 +851,13 @@ double l0 =0;
               //Decrease magnitude by 10^-3
           //  if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
           
+         // double f1, double f2, double f3, double dt, double t, double T
+          
             if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Treble_Sine_Function(2.11, 3.73, 4.33, 0.001, i, scaling_factor),0);
            
-        //    cout << endl <<i <<" " <<  Treble_Sine_Function(2.11, 3.73, 4.33, 0.001, i, 1) << endl;
+           // cout <<  n[l].return_Win()*Treble_Sine_Function(2.11, 3.73, 4.33, 1, i, scaling_factor) << endl;
+        
+           if(l==10) InputSignal << Treble_Sine_Function(2.11, 3.73, 4.33, 0.001, i, scaling_factor) << endl;
           
           //  cout << endl <<i <<" " <<  Treble_Sine_Function(1, 0, 0, 0.001, i, 1) << endl;
            

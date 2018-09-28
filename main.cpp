@@ -280,9 +280,16 @@ data.max_k1  = 1;
   //sim.output_LearningMatrix_and_MeanSquaredError();
  // sim.output_Output_Signal(str);
   
-  ofstream MSE_and_scaling_factor("MSE_and_scaling_factor.csv"); MSE_and_scaling_factor.precision(15);
+
+   
+   ofstream MSE_and_scaling_factor("MSE_and_scaling_factor_1.csv"); MSE_and_scaling_factor.precision(15);
+  data.scaling_factor = 1;
+  
   
   //Simulation for plotting scaling factor with MSE;
+  
+  /*
+  
   for(int i=0; i<20; i++)
   {  
   data.scaling_factor= 0.0000000000000000001*pow(10, i);
@@ -291,10 +298,45 @@ data.max_k1  = 1;
   MSE_and_scaling_factor << data.scaling_factor << "," << sim.return_MSE() << endl;
  // delete sim;
   }
+  
+  ofstream MSE_and_scaling_factor2("MSE_and_scaling_factor_0.5.csv"); MSE_and_scaling_factor.precision(15);
+  data.scaling_factor = 0.5;
+  
+  for(int i=0; i<20; i++)
+  {  
+  data.scaling_factor= 0.0000000000000000001*pow(10, i);
+  cout << data.scaling_factor << endl;
+  Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);  
+  MSE_and_scaling_factor2 << data.scaling_factor << "," << sim.return_MSE() << endl;
+ // delete sim;
+  }
+  
+  ofstream MSE_and_scaling_factor3("MSE_and_scaling_factor_0.12.csv"); MSE_and_scaling_factor.precision(15);
+  data.scaling_factor = 0.12;
+  
+  for(int i=0; i<20; i++)
+  {  
+  data.scaling_factor= 0.0000000000000000001*pow(10, i);
+  cout << data.scaling_factor << endl;
+  Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);  
+  MSE_and_scaling_factor3 << data.scaling_factor << "," << sim.return_MSE() << endl;
+ // delete sim;
+  }
+  
+  */
+  
+  
+  data.scaling_factor= 1/(pow(10,18));
+
+  // data.scaling_factor = 1;
+  
+   Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test); 
 
 
-//  sim.output_LearningMatrix_and_MeanSquaredError();
+
+  //sim.output_LearningMatrix_and_MeanSquaredError();
 //  sim.output_Output_Signal(str);
+  
 
 //  cout <<"The number of nodes is: " << data.N << endl;
 //  cout <<"The number of springs is: " << sim.Spring_List() << endl;
