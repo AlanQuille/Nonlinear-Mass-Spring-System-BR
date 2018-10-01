@@ -697,6 +697,8 @@ void Simulation::execute(bool bias_learning)
   double beta = 0;
 
   double theta =0;
+  
+  this->bias_learning = bias_learning;
 
   //Input
 
@@ -724,7 +726,16 @@ void Simulation::execute(bool bias_learning)
   //Detto but for Target Signal
   VectorXd TargetSignal(maxtimesteps);
   VectorXd TargetSignal2(learning_time);
-  VectorXd TargetSignal3(learning_time_test);
+  VectorXd TargetSignal3(learning_time_test); 
+  
+
+  
+  vector<double> Bounded_Max_vector;
+  double Bounded_Max = 0;
+  
+  vector<double> Sum_vector;
+  double Sum = 0;
+  
 
   double outputsignal = 0;
 
@@ -853,15 +864,15 @@ double l0 =0;
           
          // double f1, double f2, double f3, double dt, double t, double T
           
-            if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Treble_Sine_Function(2.11, 3.73, 4.33, 0.001, i, scaling_factor),0);
+         //   if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Treble_Sine_Function(2.11, 3.73, 4.33, 0.001, i, scaling_factor),0);
            
            // cout <<  n[l].return_Win()*Treble_Sine_Function(2.11, 3.73, 4.33, 1, i, scaling_factor) << endl;
         
-           if(l==10) InputSignal << Treble_Sine_Function(2.11, 3.73, 4.33, 0.001, i, scaling_factor) << endl;
+         //  if(l==10) InputSignal << Treble_Sine_Function(2.11, 3.73, 4.33, 0.001, i, scaling_factor) << endl;
           
           //  cout << endl <<i <<" " <<  Treble_Sine_Function(1, 0, 0, 0.001, i, 1) << endl;
            
-          //  if(n[l].is_Input_Node()==true && i==0) n[l].Input_Force(1,0);
+            if(n[l].is_Input_Node()==true && i==0) n[l].Input_Force(1,0);
             
           //    if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
               
@@ -884,82 +895,64 @@ double l0 =0;
 
       //Learning test matrix and learning target at end of signal;
   //    LM = LearningMatrix3;
+  
+  
+  
       LM = LearningMatrix;
       LM2 = LearningMatrix2;
       LM3 = LearningMatrix3;
+      
+      TS = TargetSignal;
+      TS2 = TargetSignal2;
+      TS3 = TargetSignal3;
     //  Test_Target = TargetSignal3;
+    
+      
+      Moore_Penrose_Pseudoinverse_and_Learning_Weights();
+}
 
-    if(wcheck == true) cout <<"weheck is: " << wcheck << endl << endl << endl<< endl << endl << endl << endl << endl << endl << endl;
+void Simulation::Moore_Penrose_Pseudoinverse_and_Learning_Weights()
+{
+	  MatrixXd LearningMatrix(maxtimesteps, s.size());
+      MatrixXd LearningMatrix2(learning_time, s.size());
+      MatrixXd LearningMatrix3(learning_time_test, s.size());
+      
+      VectorXd TargetSignal(maxtimesteps);
+      VectorXd TargetSignal2(learning_time);
+      VectorXd TargetSignal3(learning_time_test); 
+      
+      LearningMatrix = LM;
+      LearningMatrix2 = LM2;
+      LearningMatrix3 = LM3;
+      
+      TargetSignal = TS;
+      TargetSignal2 = TS2;
+      TargetSignal3 = TS3;
 
-
-// For bias learning.
-
-      if(bias_learning)
+	
+	 //Add in column for bias learning, linear regression weight.
+	 if(bias_learning)
       {
       LearningMatrix2.conservativeResize(LearningMatrix2.rows(), LearningMatrix2.cols()+1);
       LearningMatrix2.col(LearningMatrix2.cols() - 1) = VectorXd::Ones(learning_time);
       }
 
-      //This is to see if the multiplication is working correctly.
-  //    LearningMatrix2.conservativeResize(LearningMatrix2.rows(), LearningMatrix2.cols()+1);
-  //    LearningMatrix2.col(LearningMatrix2.cols() - 1) = TargetSignal2;
-
-
-
+      //Jacobian singular value decomposition for pseudoinverse.
       JacobiSVD<MatrixXd> svd(LearningMatrix2, ComputeThinU | ComputeThinV);
-      MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
-  //    MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
-      //Moore_Penrose_Pseudoinverse(LearningMatrix2);
-
-
-    //  cout << TargetSignal2.rows() << endl;
-
+      MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();;
       VectorXd LearningWeightsVector = Cp *TargetSignal2;
 
       cout << LearningWeightsVector << endl;
-
-
+      
+      //Add in column for bias learning, linear regression weight.
       if(bias_learning)
       {
       LearningMatrix3.conservativeResize(LearningMatrix3.rows(), LearningMatrix3.cols()+1);
       LearningMatrix3.col(LearningMatrix2.cols()-1) = VectorXd::Ones(learning_time_test);
       }
 
-    //  cout << LearningMatrix3.col(LearningMatrix3.cols()-2) << endl;
-    //  cout << LearningMatrix3.col(LearningMatrix3.cols()-1) << endl;
-
-
-      Output = LearningMatrix3*LearningWeightsVector;
-
-
-      //Populate_Learning_Weights(LearningWeightsVector);
-
-    //  LM = LearningMatrix3;
-  //    MatrixXd LeftInverse = ((LearningMatrix2.transpose()*LearningMatrix2).inverse())*LearningMatrix2.transpose();
-  //    LeftInverse = LeftInverse * TargetSignal2;
-  //    Populate_Learning_Weights(LeftInverse);
-
-     //left inverse
-
-      //LM = LearningMatrix;
-      //MatrixXd LeftInverse = ((LearningMatrix.transpose()*LearningMatrix).inverse())*LearningMatrix.transpose();
-      //VectorXd LearningWeightsVector = LeftInverse * TargetSignal;
-    //  Populate_Learning_Weights(LearningWeightsVector);
-
-
-        //SVF decomp using fast method
-    //  LM = LearningMatrix;
-    //  BDCSVD<MatrixXd> svd(LM, ComputeThinU | ComputeThinV);
-  //    MatrixXd Cp = svd.matrixV() * (svd.singularValues().asDiagonal()).inverse() * svd.matrixU().transpose();
-    //  MatrixXd original = svd.matrixU() * (svd.singularValues().asDiagonal()) * svd.matrixV().transpose();
-    //  Cp = Cp * TargetSignal;
-    //  Populate_Learning_Weights(Cp);
-
-
-    //     LM = LearningMatrix;
-//    Moore_Penrose_Pseudoinverse(LearningMatrix);
-//    LearningMatrix= LearningMatrix * TargetSignal;
-//    Populate_Learning_Weights(LearningMatrix);
+      //Output vector.
+      Output = LearningMatrix3*LearningWeightsVector;	
 }
 
 void Simulation::Moore_Penrose_Pseudoinverse(MatrixXd& L)

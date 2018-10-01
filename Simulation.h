@@ -99,6 +99,9 @@ class Simulation
         int maxtimesteps;
 
         bool input_node;
+        
+        //add in variable for bias learning
+        bool bias_learning = false;
 
         //Ranges for the delaunay triangulation
         double smallest_x_position;     // range0x ?? name is not very descriptive (same for the others below)
@@ -148,6 +151,11 @@ class Simulation
         MatrixXd LM;
         MatrixXd LM2;
         MatrixXd LM3;
+        
+        //Target signals
+        VectorXd TS;
+        VectorXd TS2;
+        VectorXd TS3; 
 
         //Output MatrixXd
         VectorXd Output;
@@ -188,9 +196,11 @@ class Simulation
         //This changes position of springs and nodes dynamically in time.
         void Reset_Simulation();
         
-        
         // Todo: Name is not ideal. Better would be to call it update() or similar
         void execute(bool bias_learning);
+
+        //this is where the Moore Penrose pseudoinverse is done to get learning weights.
+        void Moore_Penrose_Pseudoinverse_and_Learning_Weights();
 
         //Range in Range, required.
         double Rand_In_Range_Exp(double min, double max);
