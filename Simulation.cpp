@@ -736,8 +736,14 @@ void Simulation::execute(bool bias_learning)
   vector<double> Sum_vector;
   double Sum = 0;
   
+ // vector<double> Max_Bounded;
+  
+ // for(int k=0; k<s.size(); k++) Max_Bounded.at(k) = 0;
+  
 
   double outputsignal = 0;
+  
+  int half_time = maxtimesteps/2;
 
   /////////////////////////////////
   //  SIMULATION LOOP
@@ -850,6 +856,12 @@ double l0 =0;
             Fy_nodeb =0;
             x1new = 0;
             x2spring =0;
+            
+            
+            //Sum_vector.at(j) = +l;
+            
+            
+          //  if(i<= half_time) Max_Bounded.at(i) = abs(l);
         }
 
 
@@ -896,7 +908,50 @@ double l0 =0;
       //Learning test matrix and learning target at end of signal;
   //    LM = LearningMatrix3;
   
+       MatrixXd Lee1(maxtimesteps, s.size());
   
+       MatrixXd Lee(half_time, s.size());
+       
+       MatrixXd Le(half_time, s.size());
+       
+       
+       
+       MatrixXd S_A = LearningMatrix.colwise().mean().replicate(maxtimesteps, 1);
+       
+       Lee1 = LearningMatrix - S_A;
+       
+       
+       Lee = Lee1.block(0, 0, half_time, s.size());
+       
+       Le = Lee1.block(half_time, 0, half_time, s.size());
+       
+       Lee =Lee.cwiseAbs();
+       Le = Le.cwiseAbs();
+       
+       cout << "Minimum coefficient" <<" " <<  (Lee.colwise().maxCoeff() - Le.colwise().maxCoeff()).minCoeff();
+       
+       
+       //cout << endl << LearningMatrix - S_A << endl;
+       
+       
+       
+       
+    //   Lee1 = (LearningMatrix).colwise() - S_A.transpose();
+    
+      // MatrixXd Lee2 =  (-Lee1).colwise() + S_A;
+       
+       //cout << endl << endl << LearningMatrix - LearningMatrix << endl << endl;
+    
+       //Lee = Lee.block(0, 0, half_time, s.size());
+       
+       
+      // cout << "Column's maximum: " << std::endl;
+      // cout << LearningMatrix.colwise().maxCoeff() << std::endl;
+  
+       //find max value at a region.
+       
+      // Max_Bounded 
+       
   
       LM = LearningMatrix;
       LM2 = LearningMatrix2;
