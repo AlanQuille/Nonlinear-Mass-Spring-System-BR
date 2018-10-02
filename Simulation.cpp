@@ -114,8 +114,8 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
   Input_Signal = IS;
 
   execute(true);
-  Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
-  Output_For_Plot();
+ // Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
+ // Output_For_Plot();
 }
 
 //Need this function to change input_connectivity input input_connectivity
@@ -701,6 +701,10 @@ void Simulation::execute(bool bias_learning)
   this->bias_learning = bias_learning;
 
   //Input
+  
+  //Global stability check. if l is nAN for instance it is automatically unstable. Default stability = true
+ // bool stability = true;
+ //Now moved to simulation.h
 
 
   // Todo: still needed for debugging DEBUG
@@ -857,6 +861,10 @@ double l0 =0;
             x1new = 0;
             x2spring =0;
             
+            //isnan output
+            if(isnan(l)) stability = false;
+             
+            
             
             //Sum_vector.at(j) = +l;
             
@@ -928,7 +936,17 @@ double l0 =0;
        Lee =Lee.cwiseAbs();
        Le = Le.cwiseAbs();
        
-       cout << "Minimum coefficient" <<" " <<  (Lee.colwise().maxCoeff() - Le.colwise().maxCoeff()).minCoeff();
+       double minCoeff = (Lee.colwise().maxCoeff() - Le.colwise().maxCoeff()).minCoeff();
+       
+       cout << "Minimum coefficient" <<" " <<  minCoeff << endl;
+       
+       
+       if(minCoeff<0 || isnan(minCoeff)) stability = false;
+       
+       if(stability) cout <<"The structure is stable" << endl;
+       else cout <<"The structure is not stable." << endl;
+       
+       //cout <<"Is this NaN" << " " << Lee.isNan() << endl;
        
        
        //cout << endl << LearningMatrix - S_A << endl;
@@ -963,7 +981,7 @@ double l0 =0;
     //  Test_Target = TargetSignal3;
     
       
-      Moore_Penrose_Pseudoinverse_and_Learning_Weights();
+    //  Moore_Penrose_Pseudoinverse_and_Learning_Weights();
 }
 
 void Simulation::Moore_Penrose_Pseudoinverse_and_Learning_Weights()
@@ -1594,6 +1612,11 @@ unsigned int Simulation::Spring_List()
   return EdgeList.size();
 }
 
+bool Simulation::Stability_return()
+{
+	return stability;
+}
+
 //The helper functions for the Dynamical Systems class
 
 DataSet::DataSet(double t0, double tmax, double dt)
@@ -1613,3 +1636,5 @@ void DataSet::SineWave(vector<double> &Sine_Wave)
   }
 
 }
+
+

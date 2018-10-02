@@ -102,6 +102,9 @@ class Simulation
         
         //add in variable for bias learning
         bool bias_learning = false;
+        
+        //stability variable
+        bool stability = true;
 
         //Ranges for the delaunay triangulation
         double smallest_x_position;     // range0x ?? name is not very descriptive (same for the others below)
@@ -301,4 +304,7 @@ class Simulation
         //Return number of edges from the triangle.
         // Todo: Is there really a double neeed and not an unsigend int?
         unsigned int Spring_List();
+        
+        //Return stability
+        bool Stability_return();
 };

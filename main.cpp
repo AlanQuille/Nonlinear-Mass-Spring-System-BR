@@ -330,12 +330,101 @@ data.max_k1  = 1;
 
   // data.scaling_factor = 1;
   
-   Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test); 
+    data.min_k3 = 50;
+    data.max_k3  = 50;
+
+    data.min_d3 = 50;
+    data.max_d3  =50;
+
+    data.min_k1 = 100;
+    data.max_k1  = 100;
+
+    //Increase d3 and d1.
+    data.min_d1 = 100;
+    data.max_d1  = 100;
+    
+    //output k1, d1, k3, d3 etc.
+    
+    ofstream k1_d1_k3_d3_stab("k1_d1_k3_d3_stab.csv"); k1_d1_k3_d3_stab.precision(15);
+    
+    //Spring and damping coefficietns and stability vector of vectors.
+    vector<vector<double>> sdc_and_stability;
+    
+	
+	//This adds in spring and damping coefficients and stabilityu 
+	
+	
+	bool stab = true;
+	int returnk = 0;
+	
+	
+    
+    for(int i=0; i<10; i++)
+    {
+    	for(int j=0; j<10; j++)
+    	{
+    		for(int k=0; k<10; k++)
+    		{
+    			for(int l=0; l<10; l++)
+    			{
+    				
+    				data.min_k1 = 0.0000001 * pow(10, i);
+    				data.max_k1 = 0.0000001 *  pow(10, i);
+    				
+                    data.min_k3 = 0.0000001 * pow(10, j);
+    				data.max_k3 = 0.0000001 * pow(10, j);
+    				
+    				data.min_d1 = 0.0000001 * pow(10, k);
+    				data.max_d1 =  0.0000001 * pow(10, k);
+    				
+    			    data.min_d3 = 0.0000001* pow(10, l);
+    				data.max_d3 = 0.0000001* pow(10, l);
+    				
+    				Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test); 
+    				
+    				stab = sim.Stability_return();
+    				
+    				k1_d1_k3_d3_stab <<data.min_k1 <<"," << data.min_k3 <<"," <<data.min_d1 <<"," << data.min_d3 << stab << endl;
+    				
+
+					 
+
+				}
+			}
+		}
+	}
+	
+
+	
+	/*
+	data.min_k3 =0.0000001;
+    data.max_k3  = 0.0000001;
+
+    data.min_d3 = 0.0000001;
+    data.max_d3  =0.0000001;
+
+    data.min_k1 = 0.0000001;
+    data.max_k1  = 0.0000001;
+
+    //Increase d3 and d1.
+    data.min_d1 = 0.0000001;
+    data.max_d1  = 0.0000001;
+
+  */
+  
+  
+ //  Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test); 
+   
+ //  cout <<"Is this structure stable: " << sim.Stability_return() << endl;
+   
+ //   sim.output_LearningMatrix_and_MeanSquaredError();
+  //  sim.output_Output_Signal(str);
+   
 
 
 
-  //sim.output_LearningMatrix_and_MeanSquaredError();
-//  sim.output_Output_Signal(str);
+
+
   
 
 //  cout <<"The number of nodes is: " << data.N << endl;

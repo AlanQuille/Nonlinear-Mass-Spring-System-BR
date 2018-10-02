@@ -7,8 +7,9 @@ class Nodes
 
 private:
     // mass is 1 by default
-    double m = 1;
-	//double m = 0.12;
+    //double m = 1;
+	double m = 1;
+//	double m = 0.01;
 
 		//Original positions
 		double original_px;
