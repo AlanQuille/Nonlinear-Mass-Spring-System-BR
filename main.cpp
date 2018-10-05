@@ -25,7 +25,7 @@ unsigned long long rdtsc()
 int main(int argc, char** argv)
 {
 
-   auto begin = std::chrono::high_resolution_clock::now();
+  // auto begin = std::chrono::high_resolution_clock::now();
 
 
     InitialDataValues data;
@@ -357,6 +357,8 @@ data.max_k1  = 1;
 	bool stab = true;
 	int returnk = 0;
 	
+	auto begin = std::chrono::high_resolution_clock::now();
+	
 	
     
     for(int i=0; i<10; i++)
@@ -367,6 +369,7 @@ data.max_k1  = 1;
     		{
     			for(int l=0; l<10; l++)
     			{
+    				   //auto begin = std::chrono::high_resolution_clock::now();
     				
     				data.min_k1 = 0.0000001 * pow(10, i);
     				data.max_k1 = 0.0000001 *  pow(10, i);
@@ -384,7 +387,7 @@ data.max_k1  = 1;
     				
     				stab = sim.Stability_return();
     				
-    				k1_d1_k3_d3_stab <<data.min_k1 <<"," << data.min_k3 <<"," <<data.min_d1 <<"," << data.min_d3 << stab << endl;
+    				k1_d1_k3_d3_stab <<data.min_k1 <<"," << data.min_k3 <<"," <<data.min_d1 <<"," << data.min_d3 <<","<< stab << endl;
     				
 
 					 
@@ -393,6 +396,10 @@ data.max_k1  = 1;
 			}
 		}
 	}
+	
+	   auto end = std::chrono::high_resolution_clock::now();
+	   cout << "The time it took for the programme to run in total in milliseconds: ";
+       std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << "ms";
 	
 
 	
@@ -430,9 +437,9 @@ data.max_k1  = 1;
 //  cout <<"The number of nodes is: " << data.N << endl;
 //  cout <<"The number of springs is: " << sim.Spring_List() << endl;
 
-   auto end = std::chrono::high_resolution_clock::now();
-   cout << "The time it took for the programme to run in total in milliseconds: ";
-   std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << "ms";
+ //  auto end = std::chrono::high_resolution_clock::now();
+ //  cout << "The time it took for the programme to run in total in milliseconds: ";
+ //  std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << "ms";
 
 
     return 0;
