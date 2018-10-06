@@ -345,7 +345,7 @@ data.max_k1  = 1;
     
     //output k1, d1, k3, d3 etc.
     
-    ofstream k1_d1_k3_d3_stab("k1_d1_k3_d3_stab.csv"); k1_d1_k3_d3_stab.precision(15);
+   // ofstream k1_d1_k3_d3_stab("k1_d1_k3_d3_stab.csv"); k1_d1_k3_d3_stab.precision(15);
     
     //Spring and damping coefficietns and stability vector of vectors.
     vector<vector<double>> sdc_and_stability;
@@ -354,12 +354,12 @@ data.max_k1  = 1;
 	//This adds in spring and damping coefficients and stabilityu 
 	
 	
-	bool stab = true;
-	int returnk = 0;
+//	bool stab = true;
+//	int returnk = 0;
 	
-	auto begin = std::chrono::high_resolution_clock::now();
+//	auto begin = std::chrono::high_resolution_clock::now();
 	
-	
+	/*
     
     for(int i=0; i<10; i++)
     {
@@ -396,10 +396,10 @@ data.max_k1  = 1;
 			}
 		}
 	}
-	
-	   auto end = std::chrono::high_resolution_clock::now();
-	   cout << "The time it took for the programme to run in total in milliseconds: ";
-       std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << "ms";
+	*/
+	 //  auto end = std::chrono::high_resolution_clock::now();
+//	   cout << "The time it took for the programme to run in total in milliseconds: ";
+    //   std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << "ms";
 	
 
 	
@@ -418,6 +418,92 @@ data.max_k1  = 1;
     data.max_d1  = 0.0000001;
 
   */
+  
+    ifstream k1_d1_k3_d3( "k1_d1_k3_d3_stab.csv" );k1_d1_k3_d3.precision(15);
+    string tmp2;
+
+    vector<string> k1_k3_d1_d3_stab;
+
+    while (getline(k1_d1_k3_d3, tmp2,'\n'))
+    {
+        k1_k3_d1_d3_stab.push_back(tmp2); //Get each line of the file as a string
+      //  cout <<tmp2;
+    }
+    
+    
+    string tmp1;
+   // string tmp2;
+
+    s = k1_k3_d1_d3_stab.size();
+    vector<vector<double>> k1_d1_k3_d3;
+    vector<booL> stab;
+    
+    for (unsigned int i=1; i<2; ++i)
+    {
+    //	cout << k1_k3_d1_d3_stab.at(i) << endl;
+
+        size_t pos = k1_k3_d1_d3_stab[i].find(",");      // position of the end of the name of each one in the respective string
+        
+        tmp1 = k1_k3_d1_d3_stab[i].substr(0, pos);
+        tmp2 = k1_k3_d1_d3_stab[i].substr(pos+1, k1_k3_d1_d3_stab.size());
+        
+        cout << tmp1;
+        
+        
+        
+        pos = tmp2.find(",");
+        
+        tmp1 = tmp2.substr(0, pos);
+        tmp2 = tmp2.substr(pos+1, tmp2.size());
+        
+       
+        
+        pos = tmp2.find(",");
+        
+        tmp1 = tmp2.substr(0, pos);
+        tmp2 = tmp2.substr(pos+1, tmp2.size());
+        
+        pos = tmp2.find(",");
+        
+         
+        
+        tmp1 = tmp2.substr(0, pos);
+        tmp2 = tmp2.substr(pos+1, tmp2.size());
+
+        
+        pos = tmp2.find(",");
+        
+        tmp1 = tmp2.substr(0, pos);
+        tmp2 = tmp2.substr(pos+1, tmp2.size());
+        
+        pos = tmp2.find(",");
+        
+        tmp1 = tmp2.substr(0, pos);
+        tmp2 = tmp2.substr(pos+1, tmp2.size());
+    
+ 
+
+        
+        
+        
+        //size_t pos = k1_k3_d1_d3_stab[i].find(",");       
+       // tmp3 = k1_k3_d1_d3_stab[i].substr(0, pos);
+      //  cout << tmp3 <<",";
+        
+       // cout << pos <<",";
+       // size_t pos += pos2;
+        x = stod(k1_k3_d1_d3_stab[i].substr(pos+1,k1_k3_d1_d3_stab[i].size()));
+        x = x*1;
+      //  Volterra.push_back(x); // convert string age to a double
+     //   cout << x << ",";
+
+       
+       cout << endl;
+       
+    }
+
+
+
   
   
  //  Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test); 
