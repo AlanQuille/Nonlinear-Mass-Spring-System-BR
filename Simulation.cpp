@@ -114,7 +114,7 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
   Input_Signal = IS;
 
   execute(true);
- // Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
+  Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
  // Output_For_Plot();
 }
 
@@ -880,7 +880,7 @@ double l0 =0;
 
               //Input force to input nodes
               //Decrease magnitude by 10^-3
-          //  if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
+        //   if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
           
          // double f1, double f2, double f3, double dt, double t, double T
           
@@ -981,7 +981,7 @@ double l0 =0;
     //  Test_Target = TargetSignal3;
     
       
-    //  Moore_Penrose_Pseudoinverse_and_Learning_Weights();
+      Moore_Penrose_Pseudoinverse_and_Learning_Weights();
 }
 
 void Simulation::Moore_Penrose_Pseudoinverse_and_Learning_Weights()

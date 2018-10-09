@@ -345,7 +345,7 @@ data.max_k1  = 1;
     
     //output k1, d1, k3, d3 etc.
     
-   // ofstream k1_d1_k3_d3_stab("k1_d1_k3_d3_stab.csv"); k1_d1_k3_d3_stab.precision(15);
+    ofstream k1_d1_k3_d3_stab("k1_d1_k3_d3_stab_2.csv"); k1_d1_k3_d3_stab.precision(15);
     
     //Spring and damping coefficietns and stability vector of vectors.
     vector<vector<double>> sdc_and_stability;
@@ -354,20 +354,20 @@ data.max_k1  = 1;
 	//This adds in spring and damping coefficients and stabilityu 
 	
 	
-//	bool stab = true;
+	bool stab = true;
 //	int returnk = 0;
 	
 //	auto begin = std::chrono::high_resolution_clock::now();
 	
-	/*
-    
-    for(int i=0; i<10; i++)
+	
+    //i,j,k,l are initially 0. Move it up to 10, max 20.
+    for(int i=9; i<20; i++)
     {
-    	for(int j=0; j<10; j++)
+    	for(int j=9; j<20; j++)
     	{
-    		for(int k=0; k<10; k++)
+    		for(int k=9; k<20; k++)
     		{
-    			for(int l=0; l<10; l++)
+    			for(int l=9; l<20; l++)
     			{
     				   //auto begin = std::chrono::high_resolution_clock::now();
     				
@@ -396,7 +396,7 @@ data.max_k1  = 1;
 			}
 		}
 	}
-	*/
+	
 	 //  auto end = std::chrono::high_resolution_clock::now();
 //	   cout << "The time it took for the programme to run in total in milliseconds: ";
     //   std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << "ms";
@@ -419,26 +419,47 @@ data.max_k1  = 1;
 
   */
   
-    ifstream k1_d1_k3_d3( "k1_d1_k3_d3_stab.csv" );k1_d1_k3_d3.precision(15);
+    ifstream k1_d1_k3_d3( "k1_d1_k3_d3_stab.csv" ); k1_d1_k3_d3.precision(15);
     string tmp2;
 
     vector<string> k1_k3_d1_d3_stab;
 
-    while (getline(k1_d1_k3_d3, tmp2,'\n'))
-    {
-        k1_k3_d1_d3_stab.push_back(tmp2); //Get each line of the file as a string
+  //  while (getline(k1_d1_k3_d3, tmp2,'\n'))
+  //  {
+  //      k1_k3_d1_d3_stab.push_back(tmp2); //Get each line of the file as a string
       //  cout <<tmp2;
-    }
+  //  }
     
     
     string tmp1;
    // string tmp2;
 
     s = k1_k3_d1_d3_stab.size();
-    vector<vector<double>> k1_d1_k3_d3;
-    vector<booL> stab;
     
-    for (unsigned int i=1; i<2; ++i)
+    double k1_old=100;
+    double k3_old=100;
+    
+    double d1_old=100;
+    double d3_old=100;
+        
+	double k1=0;
+    double k3=0;
+    
+    double d1=0;
+    double d3=0;
+   // vector<vector<double>> k1_d1_k3_d3;
+    //vector<bool> stab;
+    
+    bool stab_trigger = 0;
+    
+   // bool stab = 0;
+    
+    //ofstream MSE_output("MSE_output.csv");
+    
+    
+    
+    /*
+    for (int i=1; i<s; ++i)
     {
     //	cout << k1_k3_d1_d3_stab.at(i) << endl;
 
@@ -447,7 +468,9 @@ data.max_k1  = 1;
         tmp1 = k1_k3_d1_d3_stab[i].substr(0, pos);
         tmp2 = k1_k3_d1_d3_stab[i].substr(pos+1, k1_k3_d1_d3_stab.size());
         
-        cout << tmp1;
+       // cout << tmp1 << ",";
+        
+        k1 = stod(tmp1);
         
         
         
@@ -456,7 +479,10 @@ data.max_k1  = 1;
         tmp1 = tmp2.substr(0, pos);
         tmp2 = tmp2.substr(pos+1, tmp2.size());
         
-       
+      //  cout <<tmp1 <<",";
+        
+        k3 = stod(tmp1);
+        
         
         pos = tmp2.find(",");
         
@@ -464,6 +490,10 @@ data.max_k1  = 1;
         tmp2 = tmp2.substr(pos+1, tmp2.size());
         
         pos = tmp2.find(",");
+        
+       // cout <<tmp1 <<",";
+        
+        d1 = stod(tmp1);
         
          
         
@@ -473,6 +503,10 @@ data.max_k1  = 1;
         
         pos = tmp2.find(",");
         
+       // cout <<tmp1 <<",";
+        
+        d3 = stod(tmp1);
+        
         tmp1 = tmp2.substr(0, pos);
         tmp2 = tmp2.substr(pos+1, tmp2.size());
         
@@ -480,10 +514,68 @@ data.max_k1  = 1;
         
         tmp1 = tmp2.substr(0, pos);
         tmp2 = tmp2.substr(pos+1, tmp2.size());
+        
+      //  cout <<tmp1 <<",";
+        
+        stab = stod(tmp1);
+        
+        
+     //   cout <<k1 << "," <<d1 << "," << k3 << "," << d3 <<"," << stab;
+     //   cout << endl;
+        
+        data.min_k3 =k3;
+        data.max_k3  = k3;
+
+        data.min_d3 = d3;
+        data.max_d3 = d3;
+
+        data.min_k1 = k1;
+        data.max_k1  = k1;
+
+    //Increase d3 and d1.
+        data.min_d1 = d1;
+        data.max_d1  = d1;
+        
+        if(stab == 1 && stab_trigger == 0) 
+        {
+		
+		cout << k1 <<"," << k3 << "," << d1 <<", "<< d3 << endl;
+		stab_trigger = 1;	
+        
+        /*
+        if(k1_old > k1)
+        {
+        	k1_old = k1;
+		}
+		
+		if(d1_old > d1)
+        {
+        	d1_old = d1;
+		}
+		
+		if(k3_old > k3)
+        {
+        	k3_old = k3;
+        	
+		}
+		
+		if(d3_old > d3)
+        {
+            d3_old = d3;
+		}
+		*/
+	//	Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test); 
+        //MSE_output << k1 << "," << d1 << "," << k3 << "," << d3<<"," <<  sim.return_MSE() << endl;
+      //  cout <<"MSE is: " << sim.return_MSE() << endl;
+         
+    //    } 
+        
+      //  else cout <<"Unstable structure" << endl;
+        
+        
+        
     
  
-
-        
         
         
         //size_t pos = k1_k3_d1_d3_stab[i].find(",");       
@@ -492,15 +584,19 @@ data.max_k1  = 1;
         
        // cout << pos <<",";
        // size_t pos += pos2;
-        x = stod(k1_k3_d1_d3_stab[i].substr(pos+1,k1_k3_d1_d3_stab[i].size()));
-        x = x*1;
+     //   x = stod(k1_k3_d1_d3_stab[i].substr(pos+1,k1_k3_d1_d3_stab[i].size()));
+    //    x = x*1;
       //  Volterra.push_back(x); // convert string age to a double
      //   cout << x << ",";
 
        
-       cout << endl;
+     //  cout << endl;
        
-    }
+  //  }
+    
+  
+    
+    cout <<"minimum k1 k d1 d3: " << k1_old <<" " << d1_old <<" " << k3_old << " " << d3_old << endl; 
 
 
 
