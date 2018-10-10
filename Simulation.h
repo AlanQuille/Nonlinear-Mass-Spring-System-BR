@@ -18,15 +18,14 @@ struct InitialDataValues
 
     double input_connectivity;  // [0,1] percentage of nodes that receive input
     // lower and upper range for input weights
-    double min_input_weight;
-    double max_input_weight;
+    double min_input_weight; //The lowest value for the input weight
+    double max_input_weight; //The highest value for the input weight
 
-    // Parameters to set area where nodes can be placed in
-    // Todo: maybe change to min_x... and max... also below with probabilties
-    double min_x_position;     // range0x ?? name is not very descriptive (same for the others below)
-    double max_x_position;
-    double min_y_position;
-    double max_y_position;
+ 
+    double min_x_position;   // minimum value for the x position
+    double max_x_position;  //maximum value for the x position
+    double min_y_position;  //minimum value for the y position
+    double max_y_position;  //maximum value for the y position
 
 
 
@@ -46,10 +45,6 @@ struct InitialDataValues
     double max_d1;
 };
 
-// Todo: You make a class DynamicalSystem or class DynSysData, but then you have functions like Volterra in there
-// I would have thought Voleterra would be a derived class from DynamicalSystem
-// Also, is the name DynamicalSystem descriptive? At the end it seems to be only a container of data
-// Would it be better called DataSet or something along these lines?
 
 class DataSet
 {
@@ -74,21 +69,29 @@ class Simulation
 
     private:
         int N;                                  // Number of mass points
-        double input_connectivity;
+        double input_connectivity;       //The proportion of nodes that are connected
         int num_input_nodes;    // Number of input nodes
         vector<Nodes> n;        // List of all nodes
         vector<Springs> s;      // List of all springs
-        vector< vector<double> > EdgeList;   // Todo: Is that really part of Simulation class -
-        vector<double> NodeList;             // Todo: Is that really part of Simulation class -
-        vector<double> EdgeNodeList;         // Todo: Is that really part of Simulation class -
         
+        //Not sure I want to change the structure of the code at this point, esp down the line for checking.
+        vector< vector<double> > EdgeList;   // Todo: Is that really part of Simulation class - yes
+        vector<double> NodeList;             // Todo: Is that really part of Simulation class - yes
+        vector<double> EdgeNodeList;         // Todo: Is that really part of Simulation class - yes
+        
+
+        //scaling factor for Treble Sinusoidal function
         double scaling_factor;
 
-		    double input_weight_smallest_value;
-	    	double input_weight_largest_value;
+        //max and min values for the input weight w_in
+		double input_weight_smallest_value;
+	    double input_weight_largest_value;
 
+       //starting value for t
         double t0;
+        //maximum value for t
         double tmax;
+        //dt, the timestep
         double dt;
 
         //These time variables are for the washout, learning phase and test data for the weights calcualated in learning phase.
@@ -96,10 +99,10 @@ class Simulation
         int learning_time;
         int learning_time_test;
 
+        //the total time including washout time, learning time and testing time.
         int maxtimesteps;
 
-        bool input_node;
-        
+
         //add in variable for bias learning
         bool bias_learning = false;
         
@@ -107,13 +110,14 @@ class Simulation
         bool stability = true;
 
         //Ranges for the delaunay triangulation
-        double smallest_x_position;     // range0x ?? name is not very descriptive (same for the others below)
-	    	double largest_x_position;
-	    	double smallest_y_position;
-	     	double largest_y_position;
+        double smallest_x_position;    
+	    double largest_x_position;
+	    double smallest_y_position;
+	    double largest_y_position;
 
         //These are constant horizontal forces on the input nodes. If this changes so each input node receives a unique force we will have to modify the code
         // Todo: Better to call them Fx and Fy
+        //The code at the moment does not use these.
         double ux;
         double uy;
 
@@ -122,7 +126,9 @@ class Simulation
         double max_k3;
         double min_d3;
         double max_d3;
-
+        
+        
+        //min and max k1 and d1 values
         double min_k1;
         double max_k1;
         double min_d1;
@@ -133,8 +139,6 @@ class Simulation
         string str ="chaoscheck.csv";
         string str2 = "LM.csv";
 
-        //This is for the first phase of reservoir computing
-        //bool is_learning_phase_over = false;
 
         //This is the final function which SHOULD be like the target signal.
         vector<double> Output_Signal;
@@ -180,6 +184,7 @@ class Simulation
 
         //This is an overloaded default constructor. This is not randomly initialized mass spring system, this is a determined one.
         // Todo: Maybe derive a class for spiderweb simulation
+        //That's probably a good idea.
         Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Input_Signal, vector<double> &Target_Signal);
 
         //radius rounds etc.
@@ -190,7 +195,6 @@ class Simulation
         void Initialize_Nodes(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data);
 
         //This initializes the nodes and puts in appropriate values for the ranges and the weights
-        // Todo: change variable names here
         void Initialize_Nodes(double smallest_x_position, double largest_x_position, double smallest_y_position, double largest_y_position);
 
         //This is for the csv files to test if there is chaos.
@@ -200,7 +204,7 @@ class Simulation
         void Reset_Simulation();
         
         // Todo: Name is not ideal. Better would be to call it update() or similar
-        void execute(bool bias_learning);
+        void update(bool bias_learning);
 
         //this is where the Moore Penrose pseudoinverse is done to get learning weights.
         void Moore_Penrose_Pseudoinverse_and_Learning_Weights();
@@ -294,15 +298,15 @@ class Simulation
 
         //Return number of springs
         // Todo: Does it return number of springs (int) or an object of class spring?
-        // Thi
+        // This returns the objects directly.
         Springs Spring_Return(int i);
 
         //Return number of nodes
         //Todp: Same question here
+        //This returns the nodes directly.
         Nodes Node_Return(int i);
 
-        //Return number of edges from the triangle.
-        // Todo: Is there really a double neeed and not an unsigend int?
+        //Return number of edges from the triangle.    
         unsigned int Spring_List();
         
         //Return stability

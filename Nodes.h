@@ -29,7 +29,6 @@ private:
     double pydotdot = 0;
 
 	// The velocity of the nodes initially it is zero.
-    // int connections;  // TODO: Still needed
     bool input_node = false;
 
 	// Input force applied to the Node
@@ -67,7 +66,7 @@ private:
 	bool is_Fixed_Node();
 
   //Save original position in x and y of nodes.
-	void original_positions();
+	void original_Positions();
 
     // Return input weight w_in for the node
 	double return_Win();
@@ -76,40 +75,41 @@ private:
 	void set_Fixed_Node();
 
     //Show current position
-	void print_position();
+	void print_Position();
 
     //Show xposition
-    // Todo: Same here: get_x_Position()
-	double get_x_position();
+	double get_x_Position();
 
     //Show yposition
-    // Todo: detto
-	double get_y_position();
+	double get_y_Position();
 
-	double get_x_velocity();
-	double get_y_velocity();
+	double get_x_Velocity();
+	double get_y_Velocity();
 
-	double get_x_acceleration();
-	double get_y_acceleration();
+	double get_x_Acceleration();
+	double get_y_Acceleration();
 
 	//This is the function that incrementally changes the nodes position in the next timestep;
-    // maybe instead of "change" use "update"
-	void Input_Force(double Fx, double Fy);
 
-	void Zero_Force();
+	void input_Force(double Fx, double Fy);
 
-	void Update(double dt);
+    // make force 0.
+	void zero_Force();
 
+    //update state of system, acceleration, velocity and position
+	void update(double dt);
+
+    //halt the node, no velocity or acceleration after this is applied.
 	void zero_Accel_and_Vel();
 
   //At every timestep, a node should be changed only once. A node should not be changed at every tiem
-	void change_updatecheck();
+	void change_Updatecheck();
 
 	//Check to see if the node has been modified or not
-	bool return_updatecheck();
+	bool return_Updatecheck();
 
 	//Check to see if the node has been modified or not
-	void zero_updatecheck();
+	void zero_Updatecheck();
 	
 	//Change mass of springs
 	void change_Mass(double new_m);

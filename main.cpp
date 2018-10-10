@@ -200,7 +200,7 @@ int main(int argc, char** argv)
   cout <<"The average MSE is: " << accumulate( MSE_list.begin(), MSE_list.end(), 0.0)/ MSE_list.size() << endl;
 */
   // sim.Reset_Simulation();
-//   sim.execute();
+//   sim.update();
 //   sim.output_LearningMatrix_and_MeanSquaredError();
 
 

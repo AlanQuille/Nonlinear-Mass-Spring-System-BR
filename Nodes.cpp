@@ -38,7 +38,7 @@ double Nodes::return_Win()
 
 
 
-void Nodes::original_positions()
+void Nodes::original_Positions()
 {
   px = original_px;
   py = original_py;
@@ -50,37 +50,37 @@ void Nodes::set_Fixed_Node()
   this->fixednode = true;
 }
 
-void Nodes::print_position()
+void Nodes::print_Position()
 {
   cout <<"X_position" << px << " " <<"Y_Position" << py <<" " << input_node;
 }
 
-double Nodes::get_x_position()
+double Nodes::get_x_Position()
 {
   return px;
 }
 
-double Nodes::get_y_position()
+double Nodes::get_y_Position()
 {
   return py;
 }
 
-double Nodes::get_x_velocity()
+double Nodes::get_x_Velocity()
 {
   return pxdot;
 }
 
-double Nodes::get_y_velocity()
+double Nodes::get_y_Velocity()
 {
   return pydot;
 }
 
-double Nodes::get_x_acceleration()
+double Nodes::get_x_Acceleration()
 {
   return pxdotdot;
 }
 
-double Nodes::get_y_acceleration()
+double Nodes::get_y_Acceleration()
 {
   return pydotdot;
 }
@@ -88,7 +88,7 @@ double Nodes::get_y_acceleration()
 
 //This is the function that incrementally changes the nodes position in the next timestep;
 
-void Nodes::Input_Force(double Fx, double Fy)
+void Nodes::input_Force(double Fx, double Fy)
 {
   if(fixednode == false)
   {
@@ -97,13 +97,13 @@ void Nodes::Input_Force(double Fx, double Fy)
   }
 }
 
-void Nodes::Zero_Force()
+void Nodes::zero_Force()
 {
   F_in_x = 0;
   F_in_y = 0;
 }
 
-void Nodes::Update(double dt)
+void Nodes::update(double dt)
 {
 
   //Standard Euler's
@@ -158,17 +158,17 @@ void Nodes::zero_Accel_and_Vel()
   pydotdot = 0;
 }
 
-void Nodes::change_updatecheck()
+void Nodes::change_Updatecheck()
 {
     updatecheck = 1;
 }
 
-bool Nodes::return_updatecheck()
+bool Nodes::return_Updatecheck()
 {
     return updatecheck;
 }
 
-void Nodes::zero_updatecheck()
+void Nodes::zero_Updatecheck()
 {
    updatecheck = 0;
 }

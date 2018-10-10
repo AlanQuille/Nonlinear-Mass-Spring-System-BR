@@ -68,7 +68,7 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
   Delaunay_Triangulation_and_Spring_Creation();
 
   Initialize_Springs(data);
-  execute(true);
+  update(true);
   Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
   Output_For_Plot();
 }
@@ -90,8 +90,6 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
   this-> min_d1 = data.min_d1;
   this-> min_d3 = data.min_d3;
   
-  this->scaling_factor = data.scaling_factor;
-
   this-> max_k1 = data.max_k1;
   this-> max_k3 = data.max_k3;
   this-> max_d1 = data.max_d1;
@@ -113,7 +111,7 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
   Target_Signal = TS;
   Input_Signal = IS;
 
-  execute(true);
+  update(true);
   Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
  // Output_For_Plot();
 }
@@ -519,7 +517,7 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
        d3 = Rand_In_Range_Exp(data.min_d3, data.max_d3);
        cout << "d3 is: " <<d3 << endl;
 
-       l0 = Eucl_Dist(0, 0, n[i].get_x_position(), n[i].get_y_position());
+       l0 = Eucl_Dist(0, 0, n[i].get_x_Position(), n[i].get_y_Position());
 
        wout = 0;
 
@@ -586,7 +584,7 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
 
 
 
-      DT.AddPoint(Point(n[i].get_x_position(),n[i].get_y_position(),0));
+      DT.AddPoint(Point(n[i].get_x_Position(),n[i].get_y_Position(),0));
 
     }
 
@@ -662,7 +660,7 @@ void Simulation::Reset_Simulation()
 }
 */
 
-void Simulation::execute(bool bias_learning)
+void Simulation::update(bool bias_learning)
 {
   double Fsum =0;
   double Fx_nodea =0;
@@ -781,11 +779,11 @@ double l0 =0;
             nodea = s[j].Nodea();
             nodeb = s[j].Nodeb();
 
-            x0 = n[nodea].get_x_position();
-            x1 = n[nodeb].get_x_position();
+            x0 = n[nodea].get_x_Position();
+            x1 = n[nodeb].get_x_Position();
 
-            y0 = n[nodea].get_y_position();
-            y1 = n[nodeb].get_y_position();
+            y0 = n[nodea].get_y_Position();
+            y1 = n[nodeb].get_y_Position();
 
             vector_x = x1 - x0;
             vector_y = y1 - y0;
@@ -847,8 +845,8 @@ double l0 =0;
             Fy_nodeb = Fsum*beta;
             Fy_nodea = -Fy_nodeb;
 
-            n[nodea].Input_Force(Fx_nodea, Fy_nodea);
-            n[nodeb].Input_Force(Fx_nodeb, Fy_nodeb);
+            n[nodea].input_Force(Fx_nodea, Fy_nodea);
+            n[nodeb].input_Force(Fx_nodeb, Fy_nodeb);
 
 
 
@@ -892,7 +890,7 @@ double l0 =0;
           
           //  cout << endl <<i <<" " <<  Treble_Sine_Function(1, 0, 0, 0.001, i, 1) << endl;
            
-            if(n[l].is_Input_Node()==true && i==0) n[l].Input_Force(1,0);
+            if(n[l].is_Input_Node()==true && i==0) n[l].input_Force(1,0);
             
           //    if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
               
@@ -903,9 +901,9 @@ double l0 =0;
             //  if(i>=1 && n[l].is_Input_Node()==true) n[l].Input_Force(1,0);
           //    if(i==1 && n[l].is_Input_Node()==true) n[l].Input_Force(1,0);
               //Change the node position, velocity and acceleration in response.
-              n[l].Update(dt);
+              n[l].update(dt);
               //At the end of the loop, each node has no force acting on it.
-              n[l].Zero_Force();
+              n[l].zero_Force();
          }
 
        }
@@ -1378,10 +1376,10 @@ void Simulation::Initialize_Springs(InitialDataValues &data)
       arraysubscript1 = EdgeList[i].at(0) - 4;
       arraysubscript2 = EdgeList[i].at(1) - 4;
 
-      x0 = n[arraysubscript1].get_x_position();
-      x1 = n[arraysubscript2].get_x_position();
-      y0 = n[arraysubscript1].get_y_position();
-      y1 = n[arraysubscript2].get_y_position();
+      x0 = n[arraysubscript1].get_x_Position();
+      x1 = n[arraysubscript2].get_x_Position();
+      y0 = n[arraysubscript1].get_y_Position();
+      y1 = n[arraysubscript2].get_y_Position();
 
       //These spring and damping coefficients are not giving different values
       k1 = Rand_In_Range_Exp(data.min_k1, data.max_k1);
@@ -1585,9 +1583,9 @@ void Simulation::Output_For_Plot()
   int j=0;
   while(j<n.size())
   {
-    nodesX << n[j].get_x_position();
+    nodesX << n[j].get_x_Position();
     if(j<n.size()-1) nodesX<<",";
-    nodesY << n[j].get_y_position();
+    nodesY << n[j].get_y_Position();
     if(j<n.size()-1) nodesY<<",";
     j++;
   }

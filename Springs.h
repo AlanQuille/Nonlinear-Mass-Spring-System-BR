@@ -2,10 +2,12 @@
 using namespace std;
 
 // TODO: Maybe it would make sense to make a base class called connection and dervie spring from that
+//Will do.
 class Springs
 {
 
     //Todo: natural length of each spring, i.e., distance between mass nodes as time 0. This might not be necessary to include.
+    //I'd like to include l0 just as a reference.
     private:
 
         double l0;  // resting length
@@ -28,31 +30,17 @@ class Springs
         int nodea;
         int nodeb;
 
-        // output weight assigned to this spring
-        double wout;
-
-        // Total force on spring
-        // Todo: Clean up code
-        double F_total = 0;
-        double p; // Todo: still needed?
-        double q; // Todo: still needed?
-
-
     public:
 
         // Default constructor to load in spring and damping coefficeints
         // Todo: We should make this classe more general - the stiffness and damping functiosn should be overloaded
+        //What exactly do you mean?
         // So we can implement variations of that
         Springs(double k1, double k3, double d1, double d3, double l0, int nodea, int nodeb, double wout);
 
         //The equation to change the force due to the spring
-        // Todo: Better name is needed, what does it do acutally? get_force? update_force, etc..
-
         void get_Force(double &Fsum);
 
-
-        // This could be overloaded
-        // void ForceEq(double &Fsum);
 
 
         // Change the length and velocity of the spring
@@ -63,7 +51,8 @@ class Springs
         // get resting length l0
         double return_Initial_Length();
 
-        void set_original_length();
+        //return all springs to the original length l0.
+        void set_Original_Length();
 
         //Make total force 0 for reset.
         void set_Force_0();

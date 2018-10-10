@@ -12,7 +12,6 @@ Springs::Springs(double k1, double k3, double d1, double d3, double l0, int node
     this->d3=d3;
     this->nodea = nodea;
     this->nodeb = nodeb;
-    this->wout = wout;
 
     cout <<nodea << endl;
     cout <<nodeb << endl;
@@ -33,21 +32,15 @@ void Springs::update_Spring_State(double &dt, double &l)
     x1 = x1new;
 };
 */
-void Springs::set_original_length()
+void Springs::set_Original_Length()
 {
   l = l0;
-}
-
-void Springs::set_Force_0()
-{
-  F_total = 0;
 }
 
 double Springs::return_Initial_Length()
 {
     return l0;
 }
-
 
 double Springs::return_x1()
 {
@@ -86,10 +79,6 @@ int Springs::Nodeb()
     return nodeb;
 }
 
-double Springs::get_Output_Weight()
-{
-return wout;
-}
 
 double Springs::get_k1()
 {
