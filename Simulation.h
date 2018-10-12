@@ -46,23 +46,6 @@ struct InitialDataValues
 };
 
 
-class DataSet
-{
-    private:
-        double t0;
-        double dt;
-        double tmax;
-        int maxtimesteps;
-
-    public:
-        //This loads in the initial values for the signal, t0, tmax and dt
-        DataSet(double t0, double tmax, double dt);
-
-        //A simple sinewave to test target signal;
-        void SineWave(vector<double> &SineWave);
-};
-
-
 
 class Simulation
 {
@@ -200,7 +183,7 @@ class Simulation
         //This is for the csv files to test if there is chaos.
         void input_Magnitude_of_Chaos_Force(double k, const std::string& input, const std::string& input2);
 
-        //This changes position of springs and nodes dynamically in time.
+        //This resets the positions of the springs and the nodes
         void Reset_Simulation();
         
         // Todo: Name is not ideal. Better would be to call it update() or similar
@@ -319,7 +302,9 @@ class Spider_Web_Simulation: public Simulation
 		double radius;
 		int rounds; 
 		int no_of_points_per_round;
-		
+				
 		public:
-		Spider_Web_Simulation(double radius, int rounds, int no_of_points_per_round);		
+		Spider_Web_Simulation(double radius, int rounds, int no_of_points_per_round);
+		
+		        void Initialize_Nodes();		
 };
