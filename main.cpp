@@ -345,7 +345,7 @@ data.max_k1  = 1;
     
     //output k1, d1, k3, d3 etc.
     
-    ofstream k1_d1_k3_d3_stab("k1_d1_k3_d3_stab_2.csv"); k1_d1_k3_d3_stab.precision(15);
+    ofstream k1_d1_k3_d3_stab("k1_d1_k3_d3_stab_3.csv"); k1_d1_k3_d3_stab.precision(15);
     
     //Spring and damping coefficietns and stability vector of vectors.
     vector<vector<double>> sdc_and_stability;
@@ -361,13 +361,13 @@ data.max_k1  = 1;
 	
 	
     //i,j,k,l are initially 0. Move it up to 10, max 20.
-    for(int i=9; i<20; i++)
+    for(int i=0; i<10; i++)
     {
-    	for(int j=9; j<20; j++)
+    	for(int j=0; j<10; j++)
     	{
-    		for(int k=9; k<20; k++)
+    		for(int k=0; k<10; k++)
     		{
-    			for(int l=9; l<20; l++)
+    			for(int l=0; l<10; l++)
     			{
     				   //auto begin = std::chrono::high_resolution_clock::now();
     				
@@ -397,11 +397,62 @@ data.max_k1  = 1;
 		}
 	}
 	
+	
+		   //auto begin = std::chrono::high_resolution_clock::now();
+
+		   stab = 0;
+		   
+		   while(stab == 0)
+		   {
+		   	for(int i = 0; i<10; i++)
+		   	{
+		   		for(int j=0; j<10; j++)
+		   		{
+		   			for(int k=0; k<10; k++)
+		   			{
+		   				for(int l=0; l<10; l++)
+		   				{
+						   
+					   
+		   		
+	
+    				data.min_k1 = 0.0000001 * pow(10, i);
+    				data.max_k1 = 0.0000001 *  pow(10, i);
+    				
+                    data.min_k3 = 0.0000001 * pow(10, j);
+    				data.max_k3 = 0.0000001 * pow(10, j);
+    				
+    				data.min_d1 = 0.0000001 * pow(10, k);
+    				data.max_d1 =  0.0000001 * pow(10, k);
+    				
+    			    data.min_d3 = 0.0000001* pow(10, l);
+    				data.max_d3 = 0.0000001* pow(10, l);
+    				
+    				Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test); 
+    				
+    			//	Spider_Web_Simulation(double radius, int rounds, int no_of_points_per_round);
+    				
+    				cout <<data.min_k1 <<"," << data.min_k3 <<"," <<data.min_d1 <<"," << data.min_d3 <<","<< stab << endl;
+    				
+    				stab = sim.Stability_return();
+    				
+    	
+				  }
+    				
+    				
+    		   }
+    		}
+     	}
+     }
+
+    	   
+  
+    				
+	
+	
 	 //  auto end = std::chrono::high_resolution_clock::now();
 //	   cout << "The time it took for the programme to run in total in milliseconds: ";
     //   std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << "ms";
-	
-
 	
 	/*
 	data.min_k3 =0.0000001;
@@ -424,11 +475,11 @@ data.max_k1  = 1;
 
     vector<string> k1_k3_d1_d3_stab;
 
-  //  while (getline(k1_d1_k3_d3, tmp2,'\n'))
-  //  {
-  //      k1_k3_d1_d3_stab.push_back(tmp2); //Get each line of the file as a string
-      //  cout <<tmp2;
-  //  }
+    while (getline(k1_d1_k3_d3, tmp2,'\n'))
+    {
+        k1_k3_d1_d3_stab.push_back(tmp2); //Get each line of the file as a string
+     //    cout <<tmp2;
+    }
     
     
     string tmp1;
@@ -456,12 +507,20 @@ data.max_k1  = 1;
     
     //ofstream MSE_output("MSE_output.csv");
     
+    vector<double> k1_vec;
+    vector<double> k3_vec;
+    vector<double> d1_vec;
+    vector<double> d3_vec;
+    
+    vector<vector<double>> k1_k3_d1_d3_vec;
+    vector<double> row;
     
     
     /*
-    for (int i=1; i<s; ++i)
+    
+    for (int i=1; i<s; i++)
     {
-    //	cout << k1_k3_d1_d3_stab.at(i) << endl;
+    	cout << k1_k3_d1_d3_stab.at(i) << endl;
 
         size_t pos = k1_k3_d1_d3_stab[i].find(",");      // position of the end of the name of each one in the respective string
         
@@ -520,8 +579,8 @@ data.max_k1  = 1;
         stab = stod(tmp1);
         
         
-     //   cout <<k1 << "," <<d1 << "," << k3 << "," << d3 <<"," << stab;
-     //   cout << endl;
+      //  cout <<k1 << "," <<d1 << "," << k3 << "," << d3 <<"," << stab;
+    //    cout << endl;
         
         data.min_k3 =k3;
         data.max_k3  = k3;
@@ -536,34 +595,59 @@ data.max_k1  = 1;
         data.min_d1 = d1;
         data.max_d1  = d1;
         
-        if(stab == 1 && stab_trigger == 0) 
-        {
+	//	cout << k1 <<"," << k3 << "," << d1 <<", "<< d3 << "," << stab << endl;	
 		
-		cout << k1 <<"," << k3 << "," << d1 <<", "<< d3 << endl;
-		stab_trigger = 1;	
+		if(stab==1)
+		{
+			row.push_back(k1);
+			row.push_back(d1);
+			row.push_back(k3);
+			row.push_back(d3);
+			k1_k3_d1_d3_vec.push_back(row);
+			row.clear();
+		}
+
+			
+	}
+	
+	for(int i=0; i<k1_k3_d1_d3_vec.size(); i++)
+	{
+		k1_vec.push_back(k1_k3_d1_d3_vec[i][0]);
+		d1_vec.push_back(k1_k3_d1_d3_vec[i][1]);
+		k3_vec.push_back(k1_k3_d1_d3_vec[i][2]);
+		d3_vec.push_back(k1_k3_d1_d3_vec[i][3]);
+		
+
+	
+	}
+	
+    cout << k1_k3_d1_d3_vec[0][0] << endl;
+    cout << k1_k3_d1_d3_vec[0][1] << endl;
+    cout << k1_k3_d1_d3_vec[0][2] << endl;
+    cout << k1_k3_d1_d3_vec[0][3] << endl;
+	
+	/*
+	double max = *min_element(k1_vec.begin(), k1_vec.end());
+    cout<<"Min value k1: "<<max<<endl;
+	cout <<max << endl;
+	
+	max = *min_element(d1_vec.begin(), d1_vec.end());
+    cout<<"Min value d1: "<<max<<endl;
+	cout <<max << endl;
+	
+	max = *min_element(k3_vec.begin(), k3_vec.end());
+    cout<<"Min value k3: "<<max<<endl;
+	cout <<max << endl;
+	
+	max = *min_element(k3_vec.begin(), k3_vec.end());
+    cout<<"Min value d3: "<<max<<endl;
+	cout <<max << endl;
+	*/
+	
+	
         
-        /*
-        if(k1_old > k1)
-        {
-        	k1_old = k1;
-		}
+        
 		
-		if(d1_old > d1)
-        {
-        	d1_old = d1;
-		}
-		
-		if(k3_old > k3)
-        {
-        	k3_old = k3;
-        	
-		}
-		
-		if(d3_old > d3)
-        {
-            d3_old = d3;
-		}
-		*/
 	//	Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test); 
         //MSE_output << k1 << "," << d1 << "," << k3 << "," << d3<<"," <<  sim.return_MSE() << endl;
       //  cout <<"MSE is: " << sim.return_MSE() << endl;
@@ -596,7 +680,7 @@ data.max_k1  = 1;
     
   
     
-    cout <<"minimum k1 k d1 d3: " << k1_old <<" " << d1_old <<" " << k3_old << " " << d3_old << endl; 
+   // cout <<"minimum k1 k d1 d3: " << k1_old <<" " << d1_old <<" " << k3_old << " " << d3_old << endl; 
 
 
 
@@ -626,3 +710,4 @@ data.max_k1  = 1;
 
     return 0;
 }
+

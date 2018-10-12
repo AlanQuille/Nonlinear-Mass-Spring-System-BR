@@ -312,3 +312,14 @@ class Simulation
         //Return stability
         bool Stability_return();
 };
+
+class Spider_Web_Simulation: public Simulation
+{
+	private:
+		double radius;
+		int rounds; 
+		int no_of_points_per_round;
+		
+		public:
+		Spider_Web_Simulation(double radius, int rounds, int no_of_points_per_round);		
+};
