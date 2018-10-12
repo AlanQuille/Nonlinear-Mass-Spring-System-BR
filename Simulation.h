@@ -188,6 +188,9 @@ class Simulation
         
         // Todo: Name is not ideal. Better would be to call it update() or similar
         void update(bool bias_learning);
+        
+        //Check stability of the spider web structure
+        void stability_Check();
 
         //this is where the Moore Penrose pseudoinverse is done to get learning weights.
         void Moore_Penrose_Pseudoinverse_and_Learning_Weights();
@@ -294,8 +297,11 @@ class Simulation
         
         //Return stability
         bool Stability_return();
+        
+    
 };
 
+/*
 class Spider_Web_Simulation: public Simulation
 {
 	private:
@@ -306,5 +312,6 @@ class Spider_Web_Simulation: public Simulation
 		public:
 		Spider_Web_Simulation(double radius, int rounds, int no_of_points_per_round);
 		
-		        void Initialize_Nodes();		
+		void Initialize_Nodes();		
 };
+*/

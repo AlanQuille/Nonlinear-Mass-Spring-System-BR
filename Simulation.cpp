@@ -536,6 +536,8 @@ void Simulation::input_Magnitude_of_Chaos_Force(double k, const std::string& inp
   str2 = input2;
 }
 
+/*
+
 void Simulation::Reset_Simulation()
 {
 
@@ -571,7 +573,7 @@ void Simulation::Reset_Simulation()
 
 
 }
-
+*/
 
 void Simulation::update(bool bias_learning)
 {
@@ -802,7 +804,7 @@ double l0 =0;
 
        }
        
-      stability_Check();
+      
 
       LM = LearningMatrix;
       LM2 = LearningMatrix2;
@@ -812,11 +814,13 @@ double l0 =0;
       TS2 = TargetSignal2;
       TS3 = TargetSignal3;
       
+      //Check for stability and than perform Moore_Penrose pseudoinverse
+      stability_Check();
       Moore_Penrose_Pseudoinverse_and_Learning_Weights();
 }
 
 
-void stability_Check()
+void Simulation::stability_Check()
 {
 	   int half_time = maxtimesteps/2;
 	   
@@ -828,9 +832,9 @@ void stability_Check()
        
        
        
-       MatrixXd S_A = LearningMatrix.colwise().mean().replicate(maxtimesteps, 1);
+       MatrixXd S_A = LM.colwise().mean().replicate(maxtimesteps, 1);
        
-       Lee1 = LearningMatrix - S_A;
+       Lee1 = LM - S_A;
        
        
        Lee = Lee1.block(0, 0, half_time, s.size());
@@ -1427,7 +1431,7 @@ bool Simulation::Stability_return()
 {
 	return stability;
 }
-
+/*
 Spider_Web_Simulation::Spider_Web_Simulation(double radius, int rounds, int no_of_points_per_round)
 {
 	this->radius = radius;
@@ -1439,8 +1443,8 @@ Spider_Web_Simulation::Spider_Web_Simulation(double radius, int rounds, int no_o
   
   
 }
-
-Spider_Web_Simulation::Initialize_Nodes()
+/*
+void Spider_Web_Simulation::Initialize_Nodes()
 {
 	 double angle = ((2*M_PI)/no_of_points_per_round);
      double x_position;
@@ -1557,7 +1561,7 @@ Spider_Web_Simulation::Initialize_Nodes()
 
 
 */
-
+/*
          s.push_back(Springs(k1, d1, k3, d3, l0, k, k-no_of_points_per_round, wout));
 
 
@@ -1699,13 +1703,13 @@ Spider_Web_Simulation::Initialize_Nodes()
       //       }
 
 
-     }
+//     }
 
      // add in central node here.
 
-     cout << randomnum << endl;
+//     cout << randomnum << endl;
 
-
+/*
 
 
      Nodes central_node(0, 0);
@@ -1744,7 +1748,7 @@ Spider_Web_Simulation::Initialize_Nodes()
      }
 }
 
-
+*/
 
 
 

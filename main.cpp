@@ -353,7 +353,7 @@ data.max_k1  = 1;
     
     
     
-    ofstream k1_d1_k3_d3_stab("k1_d1_k3_d3_stab_3.csv"); k1_d1_k3_d3_stab.precision(15);
+    ofstream k1_d1_k3_d3_stab("k1_d1_k3_d3_stab_4.csv"); k1_d1_k3_d3_stab.precision(15);
     
     
     
@@ -381,13 +381,13 @@ data.max_k1  = 1;
 	
 	
     //i,j,k,l are initially 0. Move it up to 10, max 20.
-    for(int i=0; i<10; i++)
+    for(int i=7; i<10; i++)
     {
-    	for(int j=0; j<10; j++)
+    	for(int j=7; j<10; j++)
     	{
-    		for(int k=0; k<10; k++)
+    		for(int k=7; k<10; k++)
     		{
-    			for(int l=0; l<10; l++)
+    			for(int l=7; l<10; l++)
     			{
     				   //auto begin = std::chrono::high_resolution_clock::now();
     				
