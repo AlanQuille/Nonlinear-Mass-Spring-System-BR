@@ -429,16 +429,16 @@ for(int i=0; i<10; i++)
 {
 
                   	data.min_k1 = 1e-007;
-    				data.max_k1 = 100;
+    				data.max_k1 = 1e-006;
     								
                     data.min_k3 = 0.01;
-    				data.max_k3 = 10000;
+    				data.max_k3 = 0.1;
     				
     				data.min_d1 =100;
-    				data.max_d1 = 100;
+    				data.max_d1 = 1000;
     				
     			    data.min_d3 = 1e-007;
-    				data.max_d3 = 1000;
+    				data.max_d3 = 1e-006;
 	
 	    	Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test); 
     		
