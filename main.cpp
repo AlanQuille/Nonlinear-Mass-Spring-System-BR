@@ -353,7 +353,7 @@ data.max_k1  = 1;
     
     
     
-    ofstream k1_d1_k3_d3_stab("k1_d1_k3_d3_stab_4.csv"); k1_d1_k3_d3_stab.precision(15);
+    ofstream k1_d1_k3_d3_stab("k1_d1_k3_d3_stab_6.csv"); k1_d1_k3_d3_stab.precision(15);
     
     
     
@@ -381,6 +381,7 @@ data.max_k1  = 1;
 	
 	
     //i,j,k,l are initially 0. Move it up to 10, max 20.
+    /*
     for(int i=7; i<10; i++)
     {
     	for(int j=7; j<10; j++)
@@ -407,7 +408,7 @@ data.max_k1  = 1;
     				
     				stab = sim.Stability_return();
     				
-    				k1_d1_k3_d3_stab <<data.min_k1 <<"," << data.min_k3 <<"," <<data.min_d1 <<"," << data.min_d3 <<","<< stab << endl;
+    			//	k1_d1_k3_d3_stab <<data.min_k1 <<"," << data.min_k3 <<"," <<data.min_d1 <<"," << data.min_d3 <<","<< stab << endl;
     				
 
 					 
@@ -417,11 +418,39 @@ data.max_k1  = 1;
 		}
 	}
 	
+	100,100,100000,1000
+	
+	*/
+
+//1e-007, 0.01, 100, 1e-007
+//100,100000,100,1000
+
+for(int i=0; i<10; i++)
+{
+
+                  	data.min_k1 = 1e-007;
+    				data.max_k1 = 100;
+    								
+                    data.min_k3 = 0.01;
+    				data.max_k3 = 10000;
+    				
+    				data.min_d1 =100;
+    				data.max_d1 = 100;
+    				
+    			    data.min_d3 = 1e-007;
+    				data.max_d3 = 1000;
+	
+	    	Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test); 
+    		
+    		cout << sim.return_MSE() << " " << sim.return_MSE();
+	
+
 	
 		   //auto begin = std::chrono::high_resolution_clock::now();
 
-		   stab = 0;
+		 //  stab = 0;
 		   
+}
 
 
     	   

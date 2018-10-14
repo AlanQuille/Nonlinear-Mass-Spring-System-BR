@@ -791,10 +791,10 @@ double l0 =0;
           {
 
               //Input force to input nodes from input signal.
-        //   if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Input_Signal[i],0);
+           if(n[l].is_Input_Node()==true) n[l].input_Force(n[l].return_Win()*Input_Signal[i],0);
          //   if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Treble_Sine_Function(2.11, 3.73, 4.33, 0.001, i, scaling_factor),0);
            // Input impulse esponse.
-            if(n[l].is_Input_Node()==true && i==0) n[l].input_Force(1,0);
+            //if(n[l].is_Input_Node()==true && i==0) n[l].input_Force(1,0);
             
               //Change the node position, velocity and acceleration in response.
               n[l].update(dt);
