@@ -43,6 +43,8 @@ struct InitialDataValues
     double max_k1;
     double min_d1;
     double max_d1;
+    
+   
 };
 
 
@@ -158,6 +160,16 @@ class Simulation
 
         //Record of number of threads/webs independant of s for bug fixing.
         int number_of_threads_or_webs = 0;
+        
+        //All springs identical or not.
+        bool identical = 0;
+        
+         //k1 d1 k3 d3  if the structure is identical.
+    
+        double k1_identical =0;
+        double k3_identical =0;
+        double d1_identical =0;
+        double d3_identical =0;
 
 
     public:
@@ -171,10 +183,14 @@ class Simulation
         Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Input_Signal, vector<double> &Target_Signal);
 
         //radius rounds etc.
-        Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test);
+        Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test,  bool springs_identical);
 
         //This creates the nodes for the reservoir computer implementation
         // Todo: Maybe derive a class for spiderweb simulation
+        
+        //Make all sprigns have same sprign and damping coefficients;
+        void Springs_Identical(bool on);
+        
         void Initialize_Nodes(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data);
 
         //This initializes the nodes and puts in appropriate values for the ranges and the weights
@@ -187,7 +203,7 @@ class Simulation
         void Reset_Simulation();
         
         // Todo: Name is not ideal. Better would be to call it update() or similar
-        void update(bool bias_learning);
+        void update(bool bias_learning, bool impulse_response_or_input_signal);
         
         //Check stability of the spider web structure
         void stability_Check();
@@ -297,6 +313,12 @@ class Simulation
         
         //Return stability
         bool Stability_return();
+        
+        //For structures with identical spring and damping coefficients, return k1, d1, k3, d3 etc.
+        double return_k1();
+        double return_k3();
+        double return_d1();
+        double return_d3();
         
     
 };

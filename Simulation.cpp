@@ -68,14 +68,15 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
   Delaunay_Triangulation_and_Spring_Creation();
 
   Initialize_Springs(data);
-  update(true);
+  update(true, false);
   Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
   Output_For_Plot();
 }
 
 
 
-Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test)
+
+Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test, bool springs_identical)
 {
   //this->input_connectivity_percentage = data.input_connectivity_percentage;
   this->num_input_nodes = (data.input_connectivity)*rounds*no_of_points_per_round;
@@ -94,6 +95,9 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
   this-> max_k3 = data.max_k3;
   this-> max_d1 = data.max_d1;
   this-> max_d3 = data.max_d3;
+  
+  if(springs_identical) identical = 1;
+  else identical = 0;
 
   //Learning phase
   Initialize_Nodes(radius, rounds, no_of_points_per_round, data);
@@ -107,16 +111,18 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
   this->learning_time_test = learning_time_test;
 
   this->maxtimesteps = wash_out_time + learning_time + learning_time_test;
-
+  
   Target_Signal = TS;
   Input_Signal = IS;
+  
 
-  update(true);
-  Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
+  //update(true);
+  //Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
  // Output_For_Plot();
 }
 
 //Need this function to change input_connectivity input input_connectivity
+
 
 
 void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_position, double smallest_y_position, double largest_y_position)
@@ -168,6 +174,7 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
  		//Just one node for test;
  		 //Fixed the leftmost and rightmost nodes.
    }
+   
 
    void Simulation::Initialize_Nodes(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data)
    {
@@ -196,6 +203,19 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
 
 
      int k =0;
+     
+     
+     //If the springs/threads are all identical, only do the spring and damping coefficients once.
+    k1 = Rand_In_Range_Exp(data.min_k1, data.max_k1);
+    d1 = Rand_In_Range_Exp(data.min_d1, data.max_d1);
+
+    k3 = Rand_In_Range_Exp(data.min_k3, data.max_k3);
+    d3 = Rand_In_Range_Exp(data.min_d3, data.max_d3);
+    
+    k1_identical = k1;
+    d1_identical = d1;
+    
+     
 
     for(int j=0; j<rounds; j++)
     {
@@ -222,14 +242,14 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
          if(i>0)
          {
 
-         k1 = Rand_In_Range_Exp(data.min_k1, data.max_k1);
-         d1 = Rand_In_Range_Exp(data.min_d1, data.max_d1);
+         if(!identical) k1 = Rand_In_Range_Exp(data.min_k1, data.max_k1);
+         if(!identical) d1 = Rand_In_Range_Exp(data.min_d1, data.max_d1);
 
          cout << k1 << endl;
          cout << d1 << endl;
 
-         k3 = Rand_In_Range_Exp(data.min_k3, data.max_k3);
-         d3 = Rand_In_Range_Exp(data.min_d3, data.max_d3);
+         if(!identical) k3 = Rand_In_Range_Exp(data.min_k3, data.max_k3);
+         if(!identical) d3 = Rand_In_Range_Exp(data.min_d3, data.max_d3);
 
 
       cout << k3 << endl;
@@ -246,10 +266,10 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
          if(j>0)
          {
 
-         k1 = Rand_In_Range_Exp(data.min_k1, data.max_k1);
-         d1 = Rand_In_Range_Exp(data.min_d1, data.max_d1);
-         k3 = Rand_In_Range_Exp(data.min_k3, data.max_d3);
-         d3 = Rand_In_Range_Exp(data.min_d3, data.max_d3);
+         if(!identical) k1 = Rand_In_Range_Exp(data.min_k1, data.max_k1);
+         if(!identical) d1 = Rand_In_Range_Exp(data.min_d1, data.max_d1);
+         if(!identical) k3 = Rand_In_Range_Exp(data.min_k3, data.max_d3);
+         if(!identical) d3 = Rand_In_Range_Exp(data.min_d3, data.max_d3);
          cout << "d3 is: " << d3 << endl;
 
       //   k3 = 0;
@@ -301,13 +321,13 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
       x_position = (j+1)*radius*cos((0));
       y_position = (j+1)*radius*sin((0));
 
-      k1 = Rand_In_Range_Exp(data.min_k1, data.max_k1);
+      if(!identical) k1 = Rand_In_Range_Exp(data.min_k1, data.max_k1);
       cout <<"k1 is: " <<k1 << endl;
-      d1 = Rand_In_Range_Exp(data.min_d1, data.max_d1);
+      if(!identical) d1 = Rand_In_Range_Exp(data.min_d1, data.max_d1);
       cout <<"d1 is: " <<d1 << endl;
-      k3 = Rand_In_Range_Exp(data.min_k3, data.max_k3);
+      if(!identical) k3 = Rand_In_Range_Exp(data.min_k3, data.max_k3);
       cout <<"k3 is: " <<k3 << endl;
-      d3 = Rand_In_Range_Exp(data.min_d3, data.max_d3);
+      if(identical) d3 = Rand_In_Range_Exp(data.min_d3, data.max_d3);
       cout <<"d3 is: " <<d3 << endl;
 
     //  k3 = 0;
@@ -575,7 +595,7 @@ void Simulation::Reset_Simulation()
 }
 */
 
-void Simulation::update(bool bias_learning)
+void Simulation::update(bool bias_learning, bool impulse_response_or_input_signal)
 {
   double Fsum =0;
   double Fx_nodea =0;
@@ -790,8 +810,18 @@ double l0 =0;
           for(int l=0; l<n.size(); l++)
           {
 
-              //Input force to input nodes from input signal.
-           if(n[l].is_Input_Node()==true) n[l].input_Force(n[l].return_Win()*Input_Signal[i],0);
+              //Input force to input nodes from input signal. If impulse_response_or_input_signal is true or 1, than input impulse response. If false, input inputsisgnal
+            if(impulse_response_or_input_signal)      
+			{
+		        if(n[l].is_Input_Node()==true && i==0) n[l].input_Force(1,0);	
+			} 
+			else 
+			{
+				if(n[l].is_Input_Node()==true) n[l].input_Force(n[l].return_Win()*Input_Signal[i],0);	
+			}
+			 
+			
+			//if(n[l].is_Input_Node()==true && i==0) n[l].input_Force(1,0);
          //   if(n[l].is_Input_Node()==true) n[l].Input_Force(n[l].return_Win()*Treble_Sine_Function(2.11, 3.73, 4.33, 0.001, i, scaling_factor),0);
            // Input impulse esponse.
             //if(n[l].is_Input_Node()==true && i==0) n[l].input_Force(1,0);
@@ -815,7 +845,7 @@ double l0 =0;
       TS3 = TargetSignal3;
       
       //Check for stability and than perform Moore_Penrose pseudoinverse
-      stability_Check();
+      //stability_Check();
       Moore_Penrose_Pseudoinverse_and_Learning_Weights();
 }
 
@@ -1430,6 +1460,11 @@ unsigned int Simulation::Spring_List()
 bool Simulation::Stability_return()
 {
 	return stability;
+}
+
+double return_k1()
+{
+	return k1_
 }
 /*
 Spider_Web_Simulation::Spider_Web_Simulation(double radius, int rounds, int no_of_points_per_round)

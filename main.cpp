@@ -353,7 +353,7 @@ data.max_k1  = 1;
     
     
     
-    ofstream k1_d1_k3_d3_stab("k1_d1_k3_d3_stab_6.csv"); k1_d1_k3_d3_stab.precision(15);
+    //ofstream k1_d1_k3_d3_stab("k1_d1_k3_d3_stab_2.csv"); k1_d1_k3_d3_stab.precision(15);
     
     
     
@@ -381,14 +381,21 @@ data.max_k1  = 1;
 	
 	
     //i,j,k,l are initially 0. Move it up to 10, max 20.
-    /*
-    for(int i=7; i<10; i++)
+    
+    //Get all springs to have identical spring and damping coefficients. 
+    bool springs_identical = 1;
+    
+    bool bias_learning = true;
+	bool impulse_response_or_input_signal = true;
+	/*
+    
+    for(int i=9; i<15; i++)
     {
-    	for(int j=7; j<10; j++)
+    	for(int j=9; j<15; j++)
     	{
-    		for(int k=7; k<10; k++)
+    		for(int k=9; k<15; k++)
     		{
-    			for(int l=7; l<10; l++)
+    			for(int l=9; l<15; l++)
     			{
     				   //auto begin = std::chrono::high_resolution_clock::now();
     				
@@ -404,11 +411,13 @@ data.max_k1  = 1;
     			    data.min_d3 = 0.0000001* pow(10, l);
     				data.max_d3 = 0.0000001* pow(10, l);
     				
-    				Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test); 
+    				Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test, springs_identical); 
+    				
+                 	sim.update(bias_learning,impulse_response_or_input_signal);    
     				
     				stab = sim.Stability_return();
     				
-    			//	k1_d1_k3_d3_stab <<data.min_k1 <<"," << data.min_k3 <<"," <<data.min_d1 <<"," << data.min_d3 <<","<< stab << endl;
+    				k1_d1_k3_d3_stab <<data.min_k1 <<"," << data.min_k3 <<"," <<data.min_d1 <<"," << data.min_d3 <<","<< stab << endl;
     				
 
 					 
@@ -417,13 +426,75 @@ data.max_k1  = 1;
 			}
 		}
 	}
-	
-	100,100,100000,1000
-	
 	*/
+//	100,100,100000,1000
+	
+	
+//	100,100000,100,1000
 
-//1e-007, 0.01, 100, 1e-007
-//100,100000,100,1000
+//m1 max: 100,1000,100,100
+
+
+                   	data.min_k1 = 10;
+                   	data.max_k1 =1000;
+    								
+                    data.min_k3 =  100;
+    				data.max_k3 =  1000;
+    				
+    				data.min_d1 =10;
+    				data.max_d1 = 100;
+    				
+    			    data.min_d3 = 10;
+    				data.max_d3 = 100;
+    				
+
+//	
+	
+	
+//	bool bias_learning = true;
+//	bool impulse_response_or_input_signal = true;
+
+int stable_struct = 0;
+
+vector<double> k1_stable;
+vector<double> k1_unstable;
+
+vector<double> k3_stable;
+vector<double> k3_unstable;
+
+vector<double> d1_stable;
+vector<double> d1_unstable;
+
+vector<double> d3_stable;
+vector<double> d3_unstable;
+
+for(int k=0; k<10; k++)
+{
+	
+	Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test, springs_identical); 
+	
+	sim.update(bias_learning,impulse_response_or_input_signal);
+    sim.stability_Check();
+	sim.update(true, true);
+	
+	stab = sim.Stability_return();
+	
+	if(stab) 
+	{
+	stable_struct ++;
+	k1_stable.push_back()
+	  
+	
+}
+
+cout << "Number of stable structures for this range " << stable_struct << endl;
+  //Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
+	
+	
+    		
+  //  cout << sim.return_MSE() << " " << sim.return_MSE();
+	
+/*
 
 for(int i=0; i<10; i++)
 {
@@ -452,7 +523,7 @@ for(int i=0; i<10; i++)
 		   
 }
 
-
+*/
     	   
   
     				
