@@ -215,6 +215,9 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
     k1_identical = k1;
     d1_identical = d1;
     
+    k3_identical = k3;
+    d3_identical = d3;
+    
      
 
     for(int j=0; j<rounds; j++)
@@ -1462,9 +1465,24 @@ bool Simulation::Stability_return()
 	return stability;
 }
 
-double return_k1()
+double Simulation::return_k1()
 {
-	return k1_
+	return k1_identical;
+}
+
+double Simulation::return_k3()
+{
+	return k3_identical;
+}
+
+double Simulation::return_d1()
+{
+	return d1_identical;
+}
+
+double Simulation::return_d3()
+{
+	return d3_identical;
 }
 /*
 Spider_Web_Simulation::Spider_Web_Simulation(double radius, int rounds, int no_of_points_per_round)

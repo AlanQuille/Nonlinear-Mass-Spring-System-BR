@@ -435,6 +435,7 @@ data.max_k1  = 1;
 //m1 max: 100,1000,100,100
 
 
+/*
                    	data.min_k1 = 10;
                    	data.max_k1 =1000;
     								
@@ -447,6 +448,19 @@ data.max_k1  = 1;
     			    data.min_d3 = 10;
     				data.max_d3 = 100;
     				
+    				*/
+    				
+    				data.min_k1 = 100;
+                   	data.max_k1 =1000;
+    								
+                    data.min_k3 =  100;
+    				data.max_k3 =  1000;
+    				
+    				data.min_d1 =100;
+    				data.max_d1 = 1000;
+    				
+    			    data.min_d3 = 100;
+    				data.max_d3 = 1000;
 
 //	
 	
@@ -456,19 +470,11 @@ data.max_k1  = 1;
 
 int stable_struct = 0;
 
-vector<double> k1_stable;
-vector<double> k1_unstable;
 
-vector<double> k3_stable;
-vector<double> k3_unstable;
+ofstream buffer_zone_stable("buffer_zone_stable_6_m01.csv"); buffer_zone_stable.precision(15);
+ofstream buffer_zone_unstable("buffer_zone_unstable_6_m01.csv"); buffer_zone_unstable.precision(15);
 
-vector<double> d1_stable;
-vector<double> d1_unstable;
-
-vector<double> d3_stable;
-vector<double> d3_unstable;
-
-for(int k=0; k<10; k++)
+for(int k=0; k<25; k++)
 {
 	
 	Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test, springs_identical); 
@@ -482,7 +488,15 @@ for(int k=0; k<10; k++)
 	if(stab) 
 	{
 	stable_struct ++;
-	k1_stable.push_back()
+	buffer_zone_stable << sim.return_k1() <<"," <<sim.return_k3() <<"," << sim.return_d1() << "," << sim.return_d3();
+	buffer_zone_stable << endl;
+    }
+    
+    else
+    {
+	buffer_zone_unstable <<  sim.return_k1() <<"," <<sim.return_k3() <<"," << sim.return_d1() << "," << sim.return_d3();
+	buffer_zone_unstable << endl;
+	}
 	  
 	
 }
