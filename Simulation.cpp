@@ -559,28 +559,23 @@ void Simulation::input_Magnitude_of_Chaos_Force(double k, const std::string& inp
   str2 = input2;
 }
 
-/*
+
 
 void Simulation::Reset_Simulation()
 {
 
-  double k1_new;
-  double d1_new;
-  double k3_new;
-  double d3_new;
-
   for(int i=0; i<s.size(); i++)
   {
-    s[i].set_original_length();
+    s[i].set_Original_Length();
 
     s[i].set_x1(0);
     s[i].set_x2(0);
 
-    s[i].set_Force_0();
+   // s[i].set_Force_0();
 
 
-    n[s[i].Nodea()].original_positions();
-    n[s[i].Nodeb()].original_positions();
+    n[s[i].Nodea()].original_Positions();
+    n[s[i].Nodeb()].original_Positions();
 
 
 
@@ -590,13 +585,13 @@ void Simulation::Reset_Simulation()
 
   for(int j=0; j<n.size(); j++)
   {
-    n[j].original_positions();
+    n[j].original_Positions();
     n[j].zero_Accel_and_Vel();
   }
 
 
 }
-*/
+
 
 void Simulation::update(bool bias_learning, bool impulse_response_or_input_signal)
 {
@@ -849,7 +844,7 @@ double l0 =0;
       
       //Check for stability and than perform Moore_Penrose pseudoinverse
       //stability_Check();
-      Moore_Penrose_Pseudoinverse_and_Learning_Weights();
+      if(!impulse_response_or_input_signal) Moore_Penrose_Pseudoinverse_and_Learning_Weights();
 }
 
 

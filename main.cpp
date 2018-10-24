@@ -25,7 +25,7 @@ unsigned long long rdtsc()
 int main(int argc, char** argv)
 {
 
-  // auto begin = std::chrono::high_resolution_clock::now();
+   auto begin = std::chrono::high_resolution_clock::now();
 
 
     InitialDataValues data;
@@ -173,45 +173,6 @@ int main(int argc, char** argv)
     vector<double> MSE_list;
     string st;
 
-  //  Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
-/*
-  for(int i=0; i<10; i++)
-  {
-
-  //Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
-  new_MSE = sim.return_MSE();
-  MSE_list.push_back(new_MSE);
-  st = to_string(new_MSE);
-
-  if(old_MSE>new_MSE)
-    {
-  sim.Output_For_Plot();
-  sim.output_Output_Signal(st);
-  old_MSE = new_MSE;
-  cout << "New one" << endl;
-  cout << "New one" << endl;
-  cout << "New one" << endl;
-  cout << "New one" << endl;
-    }
-
-  }
-
-  cout <<"The best MSE is: " << old_MSE << endl;
-  cout <<"The average MSE is: " << accumulate( MSE_list.begin(), MSE_list.end(), 0.0)/ MSE_list.size() << endl;
-*/
-  // sim.Reset_Simulation();
-//   sim.update();
-//   sim.output_LearningMatrix_and_MeanSquaredError();
-
-
-/*
-  cout <<"The number of nodes is: " << data.N << endl;
-  cout <<"The number of springs is: " << sim.Spring_List() << endl;
-
-  data.min_d3 = 1+range_d1_d3;
-  data.max_d3  = 100+range_d1_d3;
-*/
-
 
 
 
@@ -227,106 +188,83 @@ int main(int argc, char** argv)
   vector<double> range_d1_d3_list;
   double best_range_d1_d3;
 
-//  range_d1_d3 = 5000000;
-  //best_range_d1_d3 = 5000;
-  //ange_d1_d3 = 0;
   double a = 100;
 
-//  range_d1_d3 += a;
 
-//data.k_lim = [10 50;0.1 1];
+data.min_k1 = 6.666;
+data.max_k1  = 9.999;
 
-/*
-data.k_lim = [10 50;0.1 1];
-data.d_lim = [10 500;100 500];
-*/
-/*
-data.min_k1 = 10;
-data.max_k1  = 50;
+data.min_k3 = 6.666;
+data.max_k3  = 9.999;
 
-data.min_k3 = 0.1;
-data.max_k3  = 1;
-*/
-/*
-data.min_k3 = 10;
-data.max_k3  = 50;
 
-data.min_k1 = 0.1;
-data.max_k1  = 1;
+  data.min_d1 = 6.666;
+  data.max_d1  = 9.999;
 
-  data.min_d1 = 100;
-  data.max_d1  = 500;
+  data.min_d3 = 6.666;
+  data.max_d3  = 9.999;
+  
+  
+  
+  
+    bool springs_identical = false;
+    bool bias_learning = true;
+	bool impulse_response_or_input_signal = true;
+	
+	int counter = 0;
+	double total_MSE = 0;
+	double average_MSE = 0;
+	double current_MSE = 0;
+	
+	for(int i=0; i<10; i++)
+	{
+	springs_identical = false;
+    bias_learning = true;
+	impulse_response_or_input_signal = true;
 
-  data.min_d3 = 10;
-  data.max_d3  = 500;
-  */
+ Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test, springs_identical);
+ sim.update(bias_learning, impulse_response_or_input_signal);
+ 
+  sim.stability_Check();
+  if(sim.Stability_return()) 
+  {
+  	counter++;
+   sim.Reset_Simulation();
+   impulse_response_or_input_signal = false;
+   sim.update(bias_learning, impulse_response_or_input_signal);
+ //sim.Output_For_Plot();
 
-  //data.min_d1 = 100;
-//  data.max_d1  = 20000;
+  current_MSE = sim.output_LearningMatrix_and_MeanSquaredError();
+  total_MSE += current_MSE;
+  average_MSE = total_MSE/counter;
+  
+}
 
-/*
-  data.min_d3 = 100000;
-  data.max_d3  =1000000;
 
-  data.min_d1 = 100000;
-  data.max_d1  = 1000000;
-  */
-
-//Input, Volterra.
-//Volterra, Input
-
-// Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
-
-  //sim.output_LearningMatrix_and_MeanSquaredError();
- // sim.output_Output_Signal(str);
+  }
+  
+  cout <<"The average MSE is: " << average_MSE << endl;
+  cout <<"The counter is: " << counter << endl;
+  
+     auto end = std::chrono::high_resolution_clock::now();
+   cout << "The time it took for the programme to run in total in milliseconds: ";
+   std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << "ms";
+  
   
 
+  //sim.output_Output_Signal(str);
+  
+ // sim.Reset_Simulation();
+  // impulse_response_or_input_signal = true;
+ //  sim.update(bias_learning, impulse_response_or_input_signal);
    
-   ofstream MSE_and_scaling_factor("MSE_and_scaling_factor_1.csv"); MSE_and_scaling_factor.precision(15);
-  data.scaling_factor = 1;
+  // sim.output_LearningMatrix_and_MeanSquaredError();
+
+  
+
   
   
-  //Simulation for plotting scaling factor with MSE;
-  
-  /*
-  
-  for(int i=0; i<20; i++)
-  {  
-  data.scaling_factor= 0.0000000000000000001*pow(10, i);
-  cout << data.scaling_factor << endl;
-  Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);  
-  MSE_and_scaling_factor << data.scaling_factor << "," << sim.return_MSE() << endl;
- // delete sim;
-  }
-  
-  ofstream MSE_and_scaling_factor2("MSE_and_scaling_factor_0.5.csv"); MSE_and_scaling_factor.precision(15);
-  data.scaling_factor = 0.5;
-  
-  for(int i=0; i<20; i++)
-  {  
-  data.scaling_factor= 0.0000000000000000001*pow(10, i);
-  cout << data.scaling_factor << endl;
-  Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);  
-  MSE_and_scaling_factor2 << data.scaling_factor << "," << sim.return_MSE() << endl;
- // delete sim;
-  }
-  
-  ofstream MSE_and_scaling_factor3("MSE_and_scaling_factor_0.12.csv"); MSE_and_scaling_factor.precision(15);
-  data.scaling_factor = 0.12;
-  
-  for(int i=0; i<20; i++)
-  {  
-  data.scaling_factor= 0.0000000000000000001*pow(10, i);
-  cout << data.scaling_factor << endl;
-  Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test);  
-  MSE_and_scaling_factor3 << data.scaling_factor << "," << sim.return_MSE() << endl;
- // delete sim;
-  }
-  
-  */
-  
-  
-  data.scaling_factor= 1/(pow(10,18));
+ // data.scaling_factor= 1/(pow(10,18));
 
   // data.scaling_factor = 1;
   
@@ -370,423 +308,13 @@ data.max_k1  = 1;
     //Spring and damping coefficietns and stability vector of vectors.
     vector<vector<double>> sdc_and_stability;
     
-	
-	//This adds in spring and damping coefficients and stabilityu 
-	
-	
-	bool stab = true;
-//	int returnk = 0;
-	
-//	auto begin = std::chrono::high_resolution_clock::now();
-	
-	
-    //i,j,k,l are initially 0. Move it up to 10, max 20.
-    
-    //Get all springs to have identical spring and damping coefficients. 
-    bool springs_identical = 1;
-    
-    bool bias_learning = true;
-	bool impulse_response_or_input_signal = true;
-	/*
-    
-    for(int i=9; i<15; i++)
-    {
-    	for(int j=9; j<15; j++)
-    	{
-    		for(int k=9; k<15; k++)
-    		{
-    			for(int l=9; l<15; l++)
-    			{
-    				   //auto begin = std::chrono::high_resolution_clock::now();
-    				
-    				data.min_k1 = 0.0000001 * pow(10, i);
-    				data.max_k1 = 0.0000001 *  pow(10, i);
-    				
-                    data.min_k3 = 0.0000001 * pow(10, j);
-    				data.max_k3 = 0.0000001 * pow(10, j);
-    				
-    				data.min_d1 = 0.0000001 * pow(10, k);
-    				data.max_d1 =  0.0000001 * pow(10, k);
-    				
-    			    data.min_d3 = 0.0000001* pow(10, l);
-    				data.max_d3 = 0.0000001* pow(10, l);
-    				
-    				Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test, springs_identical); 
-    				
-                 	sim.update(bias_learning,impulse_response_or_input_signal);    
-    				
-    				stab = sim.Stability_return();
-    				
-    				k1_d1_k3_d3_stab <<data.min_k1 <<"," << data.min_k3 <<"," <<data.min_d1 <<"," << data.min_d3 <<","<< stab << endl;
-    				
 
-					 
-
-				}
-			}
-		}
-	}
-	*/
-//	100,100,100000,1000
-	
-	
-//	100,100000,100,1000
-
-//m1 max: 100,1000,100,100
-
-
-/*
-                   	data.min_k1 = 10;
-                   	data.max_k1 =1000;
-    								
-                    data.min_k3 =  100;
-    				data.max_k3 =  1000;
-    				
-    				data.min_d1 =10;
-    				data.max_d1 = 100;
-    				
-    			    data.min_d3 = 10;
-    				data.max_d3 = 100;
-    				
-    				*/
-    				
-    				data.min_k1 = 100;
-                   	data.max_k1 =1000;
-    								
-                    data.min_k3 =  100;
-    				data.max_k3 =  1000;
-    				
-    				data.min_d1 =100;
-    				data.max_d1 = 1000;
-    				
-    			    data.min_d3 = 100;
-    				data.max_d3 = 1000;
-
-//	
-	
-	
-//	bool bias_learning = true;
-//	bool impulse_response_or_input_signal = true;
-
-int stable_struct = 0;
-
-
-ofstream buffer_zone_stable("buffer_zone_stable_6_m01.csv"); buffer_zone_stable.precision(15);
-ofstream buffer_zone_unstable("buffer_zone_unstable_6_m01.csv"); buffer_zone_unstable.precision(15);
-
-for(int k=0; k<25; k++)
-{
-	
-	Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test, springs_identical); 
-	
-	sim.update(bias_learning,impulse_response_or_input_signal);
-    sim.stability_Check();
-	sim.update(true, true);
-	
-	stab = sim.Stability_return();
-	
-	if(stab) 
-	{
-	stable_struct ++;
-	buffer_zone_stable << sim.return_k1() <<"," <<sim.return_k3() <<"," << sim.return_d1() << "," << sim.return_d3();
-	buffer_zone_stable << endl;
-    }
-    
-    else
-    {
-	buffer_zone_unstable <<  sim.return_k1() <<"," <<sim.return_k3() <<"," << sim.return_d1() << "," << sim.return_d3();
-	buffer_zone_unstable << endl;
-	}
-	  
-	
-}
-
-cout << "Number of stable structures for this range " << stable_struct << endl;
-  //Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
-	
-	
-    		
-  //  cout << sim.return_MSE() << " " << sim.return_MSE();
-	
-/*
-
-for(int i=0; i<10; i++)
-{
-
-                  	data.min_k1 = 1e-007;
-    				data.max_k1 = 1e-006;
-    								
-                    data.min_k3 = 0.01;
-    				data.max_k3 = 0.1;
-    				
-    				data.min_d1 =100;
-    				data.max_d1 = 1000;
-    				
-    			    data.min_d3 = 1e-007;
-    				data.max_d3 = 1e-006;
-	
-	    	Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test); 
-    		
-    		cout << sim.return_MSE() << " " << sim.return_MSE();
-	
 
 	
-		   //auto begin = std::chrono::high_resolution_clock::now();
-
-		 //  stab = 0;
-		   
-}
-
-*/
-    	   
-  
-    				
+//	Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
 	
 	
-	 //  auto end = std::chrono::high_resolution_clock::now();
-//	   cout << "The time it took for the programme to run in total in milliseconds: ";
-    //   std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << "ms";
 	
-	/*
-	data.min_k3 =0.0000001;
-    data.max_k3  = 0.0000001;
-
-    data.min_d3 = 0.0000001;
-    data.max_d3  =0.0000001;
-
-    data.min_k1 = 0.0000001;
-    data.max_k1  = 0.0000001;
-
-    //Increase d3 and d1.
-    data.min_d1 = 0.0000001;
-    data.max_d1  = 0.0000001;
-
-  */
-  
-    ifstream k1_d1_k3_d3( "k1_d1_k3_d3_stab.csv" ); k1_d1_k3_d3.precision(15);
-    string tmp2;
-
-    vector<string> k1_k3_d1_d3_stab;
-
-    while (getline(k1_d1_k3_d3, tmp2,'\n'))
-    {
-        k1_k3_d1_d3_stab.push_back(tmp2); //Get each line of the file as a string
-     //    cout <<tmp2;
-    }
-    
-    
-    string tmp1;
-   // string tmp2;
-
-    s = k1_k3_d1_d3_stab.size();
-    
-    double k1_old=100;
-    double k3_old=100;
-    
-    double d1_old=100;
-    double d3_old=100;
-        
-	double k1=0;
-    double k3=0;
-    
-    double d1=0;
-    double d3=0;
-   // vector<vector<double>> k1_d1_k3_d3;
-    //vector<bool> stab;
-    
-    bool stab_trigger = 0;
-    
-   // bool stab = 0;
-    
-    //ofstream MSE_output("MSE_output.csv");
-    
-    vector<double> k1_vec;
-    vector<double> k3_vec;
-    vector<double> d1_vec;
-    vector<double> d3_vec;
-    
-    vector<vector<double>> k1_k3_d1_d3_vec;
-    vector<double> row;
-    
-    
-    /*
-    
-    for (int i=1; i<s; i++)
-    {
-    	cout << k1_k3_d1_d3_stab.at(i) << endl;
-
-        size_t pos = k1_k3_d1_d3_stab[i].find(",");      // position of the end of the name of each one in the respective string
-        
-        tmp1 = k1_k3_d1_d3_stab[i].substr(0, pos);
-        tmp2 = k1_k3_d1_d3_stab[i].substr(pos+1, k1_k3_d1_d3_stab.size());
-        
-       // cout << tmp1 << ",";
-        
-        k1 = stod(tmp1);
-        
-        
-        
-        pos = tmp2.find(",");
-        
-        tmp1 = tmp2.substr(0, pos);
-        tmp2 = tmp2.substr(pos+1, tmp2.size());
-        
-      //  cout <<tmp1 <<",";
-        
-        k3 = stod(tmp1);
-        
-        
-        pos = tmp2.find(",");
-        
-        tmp1 = tmp2.substr(0, pos);
-        tmp2 = tmp2.substr(pos+1, tmp2.size());
-        
-        pos = tmp2.find(",");
-        
-       // cout <<tmp1 <<",";
-        
-        d1 = stod(tmp1);
-        
-         
-        
-        tmp1 = tmp2.substr(0, pos);
-        tmp2 = tmp2.substr(pos+1, tmp2.size());
-
-        
-        pos = tmp2.find(",");
-        
-       // cout <<tmp1 <<",";
-        
-        d3 = stod(tmp1);
-        
-        tmp1 = tmp2.substr(0, pos);
-        tmp2 = tmp2.substr(pos+1, tmp2.size());
-        
-        pos = tmp2.find(",");
-        
-        tmp1 = tmp2.substr(0, pos);
-        tmp2 = tmp2.substr(pos+1, tmp2.size());
-        
-      //  cout <<tmp1 <<",";
-        
-        stab = stod(tmp1);
-        
-        
-      //  cout <<k1 << "," <<d1 << "," << k3 << "," << d3 <<"," << stab;
-    //    cout << endl;
-        
-        data.min_k3 =k3;
-        data.max_k3  = k3;
-
-        data.min_d3 = d3;
-        data.max_d3 = d3;
-
-        data.min_k1 = k1;
-        data.max_k1  = k1;
-
-    //Increase d3 and d1.
-        data.min_d1 = d1;
-        data.max_d1  = d1;
-        
-	//	cout << k1 <<"," << k3 << "," << d1 <<", "<< d3 << "," << stab << endl;	
-		
-		if(stab==1)
-		{
-			row.push_back(k1);
-			row.push_back(d1);
-			row.push_back(k3);
-			row.push_back(d3);
-			k1_k3_d1_d3_vec.push_back(row);
-			row.clear();
-		}
-
-			
-	}
-	
-	for(int i=0; i<k1_k3_d1_d3_vec.size(); i++)
-	{
-		k1_vec.push_back(k1_k3_d1_d3_vec[i][0]);
-		d1_vec.push_back(k1_k3_d1_d3_vec[i][1]);
-		k3_vec.push_back(k1_k3_d1_d3_vec[i][2]);
-		d3_vec.push_back(k1_k3_d1_d3_vec[i][3]);
-		
-
-	
-	}
-	
-    cout << k1_k3_d1_d3_vec[0][0] << endl;
-    cout << k1_k3_d1_d3_vec[0][1] << endl;
-    cout << k1_k3_d1_d3_vec[0][2] << endl;
-    cout << k1_k3_d1_d3_vec[0][3] << endl;
-	
-	/*
-	double max = *min_element(k1_vec.begin(), k1_vec.end());
-    cout<<"Min value k1: "<<max<<endl;
-	cout <<max << endl;
-	
-	max = *min_element(d1_vec.begin(), d1_vec.end());
-    cout<<"Min value d1: "<<max<<endl;
-	cout <<max << endl;
-	
-	max = *min_element(k3_vec.begin(), k3_vec.end());
-    cout<<"Min value k3: "<<max<<endl;
-	cout <<max << endl;
-	
-	max = *min_element(k3_vec.begin(), k3_vec.end());
-    cout<<"Min value d3: "<<max<<endl;
-	cout <<max << endl;
-	*/
-	
-	
-        
-        
-		
-	//	Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test); 
-        //MSE_output << k1 << "," << d1 << "," << k3 << "," << d3<<"," <<  sim.return_MSE() << endl;
-      //  cout <<"MSE is: " << sim.return_MSE() << endl;
-         
-    //    } 
-        
-      //  else cout <<"Unstable structure" << endl;
-        
-        
-        
-    
- 
-        
-        
-        //size_t pos = k1_k3_d1_d3_stab[i].find(",");       
-       // tmp3 = k1_k3_d1_d3_stab[i].substr(0, pos);
-      //  cout << tmp3 <<",";
-        
-       // cout << pos <<",";
-       // size_t pos += pos2;
-     //   x = stod(k1_k3_d1_d3_stab[i].substr(pos+1,k1_k3_d1_d3_stab[i].size()));
-    //    x = x*1;
-      //  Volterra.push_back(x); // convert string age to a double
-     //   cout << x << ",";
-
-       
-     //  cout << endl;
-       
-  //  }
-    
-  
-    
-   // cout <<"minimum k1 k d1 d3: " << k1_old <<" " << d1_old <<" " << k3_old << " " << d3_old << endl; 
-
-
-
-  
-  
- //  Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test); 
-   
- //  cout <<"Is this structure stable: " << sim.Stability_return() << endl;
-   
- //   sim.output_LearningMatrix_and_MeanSquaredError();
-  //  sim.output_Output_Signal(str);
-   
-
 
 
 
@@ -796,9 +324,11 @@ for(int i=0; i<10; i++)
 //  cout <<"The number of nodes is: " << data.N << endl;
 //  cout <<"The number of springs is: " << sim.Spring_List() << endl;
 
- //  auto end = std::chrono::high_resolution_clock::now();
+//     auto end = std::chrono::high_resolution_clock::now();
  //  cout << "The time it took for the programme to run in total in milliseconds: ";
- //  std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << "ms";
+//   std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << "ms";
+
+
 
 
     return 0;
