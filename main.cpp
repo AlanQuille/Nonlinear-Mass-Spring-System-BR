@@ -235,44 +235,6 @@ data.max_k3  = 1;
  //Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
  sim.update(bias_learning, impulse_response_or_input_signal);
 
-   
-  sim.stability_Check();
-  if(sim.Stability_return()) 
-  {
-  	counter++;
-   sim.Reset_Simulation();
-   impulse_response_or_input_signal = false;
-   sim.update(bias_learning, impulse_response_or_input_signal);
-   sim.Output_For_Plot();
-   cout << "The input node is: " << sim.return_input_Node() << endl;
-   current_MSE = sim.output_LearningMatrix_and_MeanSquaredError();
-    
-
-    
-   if(current_MSE<1.0) 
-   {
-   sim.output_Learning_Matrix_CSVFile();
-   break;
-  }   
-
-
-  total_MSE += current_MSE;
-  average_MSE = total_MSE/counter;
-  
-  if(current_MSE> highest_MSE) highest_MSE = current_MSE;
-  if(current_MSE<lowest_MSE) lowest_MSE = current_MSE;
-  
- }
-
-}
-  
-  cout <<"The average MSE is: " << average_MSE << endl;
-  cout <<"The total MSE is: " << total_MSE << endl;
-  cout <<"The counter is: " << counter << endl;
-  cout <<"Higest MSE is " << highest_MSE << endl;
-  cout <<"Lowest MSE is " << lowest_MSE << endl;
-
-
   
 auto end = std::chrono::high_resolution_clock::now();
    cout << "The time it took for the programme to run in total in milliseconds: ";
