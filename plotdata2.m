@@ -16,16 +16,16 @@ learningmatrix = csvread("learningmatrix.csv");
 learningmatrix2 = csvread("learningmatrix2.csv");
 learningmatrix3 = csvread("learningmatrix3.csv");
 
-learningmatrix = learningmatrix(:, 1:end-1);
+%learningmatrix = learningmatrix(:, 1:end-1);
 %learningmatrix2 = learningmatrix(10000:410000, 1:end-1);
 %learningmatrix3 = learningmatrix(410000:425000, 1:end-1);
 
 %learningmatrix2(:, end+1) = ones(1, 200000);
 %learningmatrix3(:, end+1) = ones(1,15000);
 
-targetsignal2 = targetsignal(10000:410000);
-targetsignal3 = targetsignal(410000:425000);
-learningweights2 = learningmatrix2\targetsignal2;
+%targetsignal2 = targetsignal(10000:410000);
+%targetsignal3 = targetsignal(410000:425000);
+%learningweights2 = learningmatrix2\targetsignal2;
 
 %OutputVector = legarningmatrix3*learningweights;
 %OutputVector2 = learningmatrix3*learningweights2;

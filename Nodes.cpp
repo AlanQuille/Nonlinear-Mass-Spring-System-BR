@@ -37,7 +37,6 @@ double Nodes::return_Win()
 }
 
 
-
 void Nodes::original_Positions()
 {
   px = original_px;

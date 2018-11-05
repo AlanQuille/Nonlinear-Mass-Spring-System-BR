@@ -68,15 +68,15 @@ Simulation::Simulation(InitialDataValues &data, vector<double> &IS, vector<doubl
   Delaunay_Triangulation_and_Spring_Creation();
 
   Initialize_Springs(data);
-  update(true, false);
-  Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
-  Output_For_Plot();
+  //update(true, false);
+ // Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
+//  Output_For_Plot();
 }
 
 
 
 
-Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test, bool springs_identical)
+Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test, bool springs_identical, bool random_node_positions, double mean, double stdev)
 {
   //this->input_connectivity_percentage = data.input_connectivity_percentage;
   this->num_input_nodes = (data.input_connectivity)*rounds*no_of_points_per_round;
@@ -115,6 +115,9 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
   Target_Signal = TS;
   Input_Signal = IS;
   
+  random_positions = random_node_positions;
+  mu = mean;
+  sigma = stdev;
 
   //update(true);
   //Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
@@ -230,6 +233,10 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
          //So this
          x_position = (j+1)*radius*cos((i*angle));
          y_position = (j+1)*radius*sin((i*angle));
+         
+         //Add in gaussian noise
+         x_position += generate_Gaussian_Noise(mu, sigma);
+         y_position += generate_Gaussian_Noise(mu, sigma);
 
 
          Nodes node(x_position, y_position);
@@ -389,8 +396,8 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
 
 
 //This fixed the outer ring of the nodes. Will get user access for this.
-    for(int i=0; i<N; i++)
-     {
+  //  for(int i=0; i<N; i++)
+  //   {
       //Input weights for the number of input_connectivitiy nodes.
   //    win = Uniform(data.min_input_weight, data.max_input_weight);
     //  randomnum = (int)Uniform(0, N);
@@ -409,24 +416,24 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
 
       //Make sure fixed nodes are not input nodes
 
-//      if(i<input_node_nums)
-//      {
-      //If it is not a fixed node.
-      /*
-      while(n[randomnum].is_Fixed_Node())
-        {
+  //    if(i<input_node_nums)
+  //    {
+    //  If it is not a fixed node.
+      
+   //   while(n[randomnum].is_Fixed_Node())
+   //     {
         //C++ typecasting rounds down (truncates) but this is fine going from 0 to N-1.
-        randomnum = (int)Uniform(0, N);
-        }
+    //    randomnum = (int)Uniform(0, N);
+    //    }
 
-      n[randomnum].init_Input_Node(data.ux, data.uy, win);
-      */
+    //  n[randomnum].init_Input_Node(data.ux, data.uy, win);
+      
 
-    //  }
+   //   }
 // for non fixed, get rid of this.
 
-   //   if(i>=no_of_points_per_round*(rounds-1) && i<((no_of_points_per_round)+no_of_points_per_round*(rounds-1)))
-   //   {
+  //    if(i>=no_of_points_per_round*(rounds-1) && i<((no_of_points_per_round)+no_of_points_per_round*(rounds-1)))
+  //    {
   //      n[i].set_Fixed_Node();
   //      cout <<"The: " <<i <<"th" << " fixed node is fixed." << endl;
   //    }
@@ -451,7 +458,7 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
       //       }
 
 
-     }
+   //  }
 
      // add in central node here.
 
@@ -466,7 +473,26 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
      win = Uniform(data.min_input_weight, data.max_input_weight);
     // n[5].init_Input_Node(data.ux, data.uy, win);
     //for another round
-     n[10].init_Input_Node(data.ux, data.uy, win);
+    // randomnum = (int)Uniform(0, n.size());
+       randomnum = 10;
+       
+      while(randomnum!=no_of_points_per_round*(rounds-1) && randomnum!=((no_of_points_per_round/2)+no_of_points_per_round*(rounds-1)))
+     {
+	 randomnum = (int)Uniform(0, n.size());
+     }
+     randomnum = 6;
+     
+     //n[10].init_Input_Node(data.ux, data.uy, win);
+     n[randomnum].init_Input_Node(data.ux, data.uy, win);
+     //n[10].init_Input_Node(data.ux, data.uy, win);
+     
+    
+  
+     
+     
+    // n[randomnum].init_Input_Node(data.ux, data.uy, win);
+     
+     no_of_input_node = randomnum;
 
      cout << "number of nodes is: " << n.size() << endl;
 
@@ -498,6 +524,11 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
 
 
    }
+   
+int Simulation::return_input_Node()
+{
+   	return no_of_input_node;
+}
 
 void Simulation::Delaunay_Triangulation_and_Spring_Creation()
 {
@@ -563,7 +594,9 @@ void Simulation::input_Magnitude_of_Chaos_Force(double k, const std::string& inp
 
 void Simulation::Reset_Simulation()
 {
-
+	
+	
+  //Springs
   for(int i=0; i<s.size(); i++)
   {
     s[i].set_Original_Length();
@@ -572,17 +605,10 @@ void Simulation::Reset_Simulation()
     s[i].set_x2(0);
 
    // s[i].set_Force_0();
-
-
-    n[s[i].Nodea()].original_Positions();
-    n[s[i].Nodeb()].original_Positions();
-
-
-
   //  n[s[i].Nodea()].print_position();
 
   }
-
+  
   for(int j=0; j<n.size(); j++)
   {
     n[j].original_Positions();
@@ -779,7 +805,9 @@ double l0 =0;
 
             n[nodea].input_Force(Fx_nodea, Fy_nodea);
             n[nodeb].input_Force(Fx_nodeb, Fy_nodeb);
-
+            
+            
+           // if(nodea == 9 || nodeb ==9) cout << l << endl;  
 
 
 
@@ -817,6 +845,8 @@ double l0 =0;
 			{
 				if(n[l].is_Input_Node()==true) n[l].input_Force(n[l].return_Win()*Input_Signal[i],0);	
 			}
+			 
+			 
 			 
 			
 			//if(n[l].is_Input_Node()==true && i==0) n[l].input_Force(1,0);
@@ -1046,6 +1076,7 @@ void Simulation::output_Output_Signal(string& s)
      for(int j = 0; j<number_of_threads_or_webs; j++)
      {
        learningmatrix << LM(i, j) <<",";
+       //cout << LM(i,j) << endl;
        if(i>=wash_out_time && i<(wash_out_time+learning_time)) learningmatrix2 << LM2(i-wash_out_time, j) <<",";
        if(i>=(wash_out_time+learning_time)) learningmatrix3 << LM3(i-wash_out_time-learning_time, j) << ",";
      }
@@ -1070,6 +1101,34 @@ void Simulation::output_Output_Signal(string& s)
 
 }
 
+
+void Simulation::output_Learning_Matrix_CSVFile()
+{
+	ofstream learningmatrix("learningmatrix.csv");  learningmatrix.precision(15);
+    ofstream learningmatrix2("learningmatrix2.csv");  learningmatrix.precision(15);
+    ofstream learningmatrix3("learningmatrix3.csv");  learningmatrix.precision(15);
+	
+	
+	for(int i=0; i<maxtimesteps; i++)
+ // for(int i=0; i<learning_time_test; i++)
+ {
+
+     //Use number_of_threads_or_webs isntead of s.size()
+    for(int j = 0; j<s.size(); j++)
+    // for(int j = 0; j<number_of_threads_or_webs; j++)
+     {
+       learningmatrix << LM(i, j) <<",";
+       //cout << LM(i,j) << endl;
+       if(i>=wash_out_time && i<(wash_out_time+learning_time)) learningmatrix2 << LM2(i-wash_out_time, j) <<",";
+       if(i>=(wash_out_time+learning_time)) learningmatrix3 << LM3(i-wash_out_time-learning_time, j) << ",";
+     }
+
+     learningmatrix << endl;
+     if(i>=wash_out_time && i<(wash_out_time+learning_time)) learningmatrix2 << endl;
+     if(i>=(wash_out_time+learning_time)) learningmatrix3 << endl;
+ }
+
+}
 
 
 double Simulation::MSE(vector<double>& A, vector<double>& Ahat)
@@ -1113,6 +1172,31 @@ int Simulation::Random_Input_Nodes(int N)
 }
 
 
+double Simulation::generate_Gaussian_Noise(double mu, double sigma)
+{
+	static const double epsilon = std::numeric_limits<double>::min();
+	static const double two_pi = 2.0*3.14159265358979323846;
+
+	thread_local double z1;
+	thread_local bool generate;
+	generate = !generate;
+
+	if (!generate)
+	   return z1 * sigma + mu;
+
+	double u1, u2;
+	do
+	 {
+	   u1 = Uniform(0, 1);
+	   u2 = Uniform(0, 1);
+	 }
+	while ( u1 <= epsilon );
+
+	double z0;
+	z0 = sqrt(-2.0 * log(u1)) * cos(two_pi * u2);
+	z1 = sqrt(-2.0 * log(u1)) * sin(two_pi * u2);
+	return z0 * sigma + mu;
+}
 
 double Simulation::Uniform(double M, double N)
 {

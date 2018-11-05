@@ -159,7 +159,7 @@ class Simulation
         double Mean_Squared_Error;
 
         //Record of number of threads/webs independant of s for bug fixing.
-        int number_of_threads_or_webs = 0;
+        int number_of_threads_or_webs = 20;
         
         //All springs identical or not.
         bool identical = 0;
@@ -170,6 +170,14 @@ class Simulation
         double k3_identical =0;
         double d1_identical =0;
         double d3_identical =0;
+        
+        //random positions of nodes, mu and sigma for the mean and standard debviation of the gaussian distribution
+        bool random_positions;
+        double mu;
+        double sigma;
+        
+        //Random input node
+        int no_of_input_node;
 
 
     public:
@@ -183,7 +191,7 @@ class Simulation
         Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Input_Signal, vector<double> &Target_Signal);
 
         //radius rounds etc.
-        Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test,  bool springs_identical);
+        Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test,  bool springs_identical, bool random_node_positions, double mean, double stdev);
 
         //This creates the nodes for the reservoir computer implementation
         // Todo: Maybe derive a class for spiderweb simulation
@@ -219,6 +227,9 @@ class Simulation
 
         //This does the delaunay triangulation for the two dimensional case and creates the springs for the reservoir computer, not the radial spider web
         void Delaunay_Triangulation_and_Spring_Creation();
+        
+        //Return which node has the input node
+        int return_input_Node();
 
         //Create EdgeNodeList, defunct function don't want to get rid of it.
         void Create_EdgeNodeList();
@@ -256,6 +267,9 @@ class Simulation
 
         //Return output signal on its own, for MSE test.
         void output_Output_Signal(string& s);
+        
+        //output learning matrix
+        void output_Learning_Matrix_CSVFile();
 
         //Return the weights after learning phase as a vector
         vector<double>& Return_Learning_Weights();
@@ -265,6 +279,9 @@ class Simulation
 
         //Have N random input nodes.
         int Random_Input_Nodes(int N);
+        
+        //Generate a gaussian number with mean mu and standard deviation sigma. This was forked from Wikipedia: Box Muller Transform
+        double generate_Gaussian_Noise(double mu, double sigma);
 
         //Randomly chosen number between N and M
         double Uniform(double M, double N);

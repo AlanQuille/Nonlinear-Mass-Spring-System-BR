@@ -69,8 +69,8 @@ int main(int argc, char** argv)
   //  ifstream file_Volterra ("/Users/hh14185/Leverhulme_Trust_Proposal_spider_web/Xcode/Nonlinear-Mass-Spring-System-BR/volterra.csv");
   
   //This takes in Volterra.CSV. will change this to narma and it should be the same.
-      ifstream file_Volterra ("Data/narma.csv");
-    //  ifstream file_Volterra ("Data/volterra.csv");
+   //   ifstream file_Volterra ("Data/narma.csv");
+     ifstream file_Volterra ("Data/volterra.csv");
 
     while (getline(file_Volterra, tmp,'\n'))
     {
@@ -93,6 +93,7 @@ int main(int argc, char** argv)
 
     
 	//Original Volterra wash out time etc.
+	
 	double wash_out_time = 20000;
   //  wash_out_time = 20000;
     double learning_time = 200000;
@@ -100,9 +101,10 @@ int main(int argc, char** argv)
 
 
     //Wash out time, learning_time and learning_time_test
-    wash_out_time = 3000;
-    learning_time = 400000;
-    learning_time_test = 15000;
+ //   wash_out_time = 3000;
+ //   learning_time = 400000;
+ //   learning_time_test = 15000;
+    
     // setting parameters for simulation
     // This should be possible to read in from a text file
     data.N = 25;
@@ -191,40 +193,49 @@ int main(int argc, char** argv)
   double a = 100;
 
 
-data.min_k1 = 6.666;
-data.max_k1  = 9.999;
+ data.min_k1 = 1;
+data.max_k1  = 1;
 
-data.min_k3 = 6.666;
-data.max_k3  = 9.999;
+data.min_k3 = 1;
+data.max_k3  = 1;
 
 
-  data.min_d1 = 6.666;
-  data.max_d1  = 9.999;
+  data.min_d1 = 1;
+  data.max_d1  = 1;
 
-  data.min_d3 = 6.666;
-  data.max_d3  = 9.999;
+  data.min_d3 = 1;
+  data.max_d3  = 1;
   
-  
-  
-  
+
     bool springs_identical = false;
     bool bias_learning = true;
 	bool impulse_response_or_input_signal = true;
+	bool random_node_positions = true;
+	double mean = 0;
+	double stdev = 0.01;
 	
 	int counter = 0;
 	double total_MSE = 0;
 	double average_MSE = 0;
 	double current_MSE = 0;
 	
-	for(int i=0; i<10; i++)
+	double highest_MSE = 0;
+	double lowest_MSE = 1000000000000000;
+	
+	string stri("random_positions");
+	
+	for(int i=0; i<1; i++)
 	{
 	springs_identical = false;
     bias_learning = true;
 	impulse_response_or_input_signal = true;
 
- Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test, springs_identical);
+ Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test, springs_identical, random_node_positions, mean, stdev);
+
+ //Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
  sim.update(bias_learning, impulse_response_or_input_signal);
- 
+
+   
   sim.stability_Check();
   if(sim.Stability_return()) 
   {
@@ -232,21 +243,38 @@ data.max_k3  = 9.999;
    sim.Reset_Simulation();
    impulse_response_or_input_signal = false;
    sim.update(bias_learning, impulse_response_or_input_signal);
- //sim.Output_For_Plot();
+   sim.Output_For_Plot();
+   cout << "The input node is: " << sim.return_input_Node() << endl;
+   current_MSE = sim.output_LearningMatrix_and_MeanSquaredError();
+    
 
-  current_MSE = sim.output_LearningMatrix_and_MeanSquaredError();
+    
+   if(current_MSE<1.0) 
+   {
+   sim.output_Learning_Matrix_CSVFile();
+   break;
+  }   
+
+
   total_MSE += current_MSE;
   average_MSE = total_MSE/counter;
   
+  if(current_MSE> highest_MSE) highest_MSE = current_MSE;
+  if(current_MSE<lowest_MSE) lowest_MSE = current_MSE;
+  
+ }
+
 }
-
-
-  }
   
   cout <<"The average MSE is: " << average_MSE << endl;
+  cout <<"The total MSE is: " << total_MSE << endl;
   cout <<"The counter is: " << counter << endl;
+  cout <<"Higest MSE is " << highest_MSE << endl;
+  cout <<"Lowest MSE is " << lowest_MSE << endl;
+
+
   
-     auto end = std::chrono::high_resolution_clock::now();
+auto end = std::chrono::high_resolution_clock::now();
    cout << "The time it took for the programme to run in total in milliseconds: ";
    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << "ms";
   
