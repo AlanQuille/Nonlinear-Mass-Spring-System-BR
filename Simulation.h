@@ -213,6 +213,9 @@ class Simulation
         // Todo: Name is not ideal. Better would be to call it update() or similar
         void update(bool bias_learning, bool impulse_response_or_input_signal);
         
+        //this returns which thread has the node number
+        int return_thread_Number(int nodea, int nodeb);
+        
         //Check stability of the spider web structure
         void stability_Check();
 

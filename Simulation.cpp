@@ -877,6 +877,22 @@ double l0 =0;
       if(!impulse_response_or_input_signal) Moore_Penrose_Pseudoinverse_and_Learning_Weights();
 }
 
+int Simulation::return_thread_Number(int nodea, int nodeb)
+{
+	int k=0;
+	for(int i=0; i<s.size(); i++)
+	{
+		s[i].Nodea();
+		s[i].Nodeb();
+		
+	    if(s[i].Nodea() == nodea && s[i].Nodeb() == nodeb) k = i;
+	    if(s[i].Nodea() == nodeb && s[i].Nodeb() == nodea) k = i;
+		
+	}
+	
+	return k;
+}
+
 
 void Simulation::stability_Check()
 {
@@ -919,6 +935,22 @@ void Simulation::stability_Check()
 
 void Simulation::Moore_Penrose_Pseudoinverse_and_Learning_Weights()
 {
+/*	
+	 cout << sim.return_thread_Number(0, 1) << endl;
+  cout << sim.return_thread_Number(1, 2) << endl;
+   cout << sim.return_thread_Number(2, 3) << endl;
+  cout << sim.return_thread_Number(3, 4) << endl;
+    cout << sim.return_thread_Number(4, 0) << endl;
+      cout << sim.return_thread_Number(0, 10) << endl;
+          cout << sim.return_thread_Number(1, 10) << endl;
+           cout << sim.return_thread_Number(2, 10) << endl;
+             cout << sim.return_thread_Number(3, 10) << endl;
+             cout << sim.return_thread_Number(4, 10) << endl;
+             */
+             
+             //https://stackoverflow.com/questions/21496157/eigen-how-to-concatenate-matrix-along-a-specific-dimension
+             //https://eigen.tuxfamily.org/dox/group__TutorialBlockOperations.html
+ 
 	  MatrixXd LearningMatrix(maxtimesteps, s.size());
       MatrixXd LearningMatrix2(learning_time, s.size());
       MatrixXd LearningMatrix3(learning_time_test, s.size());

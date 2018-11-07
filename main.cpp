@@ -209,23 +209,12 @@ data.max_k3  = 1;
 
     bool springs_identical = false;
     bool bias_learning = true;
-	bool impulse_response_or_input_signal = true;
-	bool random_node_positions = true;
-	double mean = 0;
-	double stdev = 0.01;
+	bool impulse_response_or_input_signal = false;
+	bool random_node_positions = false;
 	
-	int counter = 0;
-	double total_MSE = 0;
-	double average_MSE = 0;
-	double current_MSE = 0;
-	
-	double highest_MSE = 0;
-	double lowest_MSE = 1000000000000000;
-	
-	string stri("random_positions");
-	
-	for(int i=0; i<1; i++)
-	{
+	double mean =0;
+	double stdev = 0;
+
 	springs_identical = false;
     bias_learning = true;
 	impulse_response_or_input_signal = true;
@@ -233,7 +222,22 @@ data.max_k3  = 1;
  Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test, springs_identical, random_node_positions, mean, stdev);
 
  //Simulation sim(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+ 
+
  sim.update(bias_learning, impulse_response_or_input_signal);
+ 
+ cout << sim.return_thread_Number(0, 1) << endl;
+  cout << sim.return_thread_Number(1, 2) << endl;
+   cout << sim.return_thread_Number(2, 3) << endl;
+  cout << sim.return_thread_Number(3, 4) << endl;
+    cout << sim.return_thread_Number(4, 0) << endl;
+      cout << sim.return_thread_Number(0, 10) << endl;
+          cout << sim.return_thread_Number(1, 10) << endl;
+           cout << sim.return_thread_Number(2, 10) << endl;
+             cout << sim.return_thread_Number(3, 10) << endl;
+             cout << sim.return_thread_Number(4, 10) << endl;
+ 
+ 
 
   
 auto end = std::chrono::high_resolution_clock::now();
