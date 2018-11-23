@@ -210,10 +210,10 @@ class Simulation
         //This resets the positions of the springs and the nodes
         void Reset_Simulation();
         
-        // Todo: Name is not ideal. Better would be to call it update() or similar
+        // This carries out the simulation in time.
         void update(bool bias_learning, bool impulse_response_or_input_signal);
         
-        //this returns which thread has the node number
+        //this returns the thread number for the thread which has two particular nodes with node numbers nodea and nodeb. 
         int return_thread_Number(int nodea, int nodeb);
         
         //Check stability of the spider web structure

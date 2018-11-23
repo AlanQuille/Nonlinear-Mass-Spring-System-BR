@@ -872,8 +872,8 @@ double l0 =0;
       TS2 = TargetSignal2;
       TS3 = TargetSignal3;
       
-      //Check for stability and than perform Moore_Penrose pseudoinverse
-      //stability_Check();
+      //Check for stability if an impulse response is applied. If the input signal (not the impulse response) is applied, than perform Moore Penrose Pseudoinverse)
+      if(impulse_response_or_input_signal) stability_Check();
       if(!impulse_response_or_input_signal) Moore_Penrose_Pseudoinverse_and_Learning_Weights();
 }
 
@@ -935,22 +935,7 @@ void Simulation::stability_Check()
 
 void Simulation::Moore_Penrose_Pseudoinverse_and_Learning_Weights()
 {
-/*	
-	 cout << sim.return_thread_Number(0, 1) << endl;
-  cout << sim.return_thread_Number(1, 2) << endl;
-   cout << sim.return_thread_Number(2, 3) << endl;
-  cout << sim.return_thread_Number(3, 4) << endl;
-    cout << sim.return_thread_Number(4, 0) << endl;
-      cout << sim.return_thread_Number(0, 10) << endl;
-          cout << sim.return_thread_Number(1, 10) << endl;
-           cout << sim.return_thread_Number(2, 10) << endl;
-             cout << sim.return_thread_Number(3, 10) << endl;
-             cout << sim.return_thread_Number(4, 10) << endl;
-             */
-             
-             //https://stackoverflow.com/questions/21496157/eigen-how-to-concatenate-matrix-along-a-specific-dimension
-             //https://eigen.tuxfamily.org/dox/group__TutorialBlockOperations.html
- 
+
 	  MatrixXd LearningMatrix(maxtimesteps, s.size());
       MatrixXd LearningMatrix2(learning_time, s.size());
       MatrixXd LearningMatrix3(learning_time_test, s.size());
