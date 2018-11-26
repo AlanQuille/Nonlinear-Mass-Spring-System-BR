@@ -8,32 +8,41 @@ using namespace Eigen;
 
 struct InitialDataValues
 {
-    int     N;   // number of Nodes
-    double mass_of_nodes; //mass of nodes, only valid if  the masses  are all identical
+	//Number of nodes for random recurrent neural network (RNN)
+    int     N;   
     
-    double scaling_factor; //this is the scaling factor for the time of the input signal treble sinuosoidal wave (but can be anything else).
+    //The user can change the mass of the nodes with this variable. Only valid if all nodes are identical.
+    double mass_of_nodes; 
+    
+    //This is the scaling factor T for the treble sinusoidal function.
+    double scaling_factor; 
      
+    //Horizontal and vertical forces for the randomly initialised RNN. 
+    //These are not necessary as Input_Signal does the same job and better (These are real numbers not a set of numbers) but might be useful for simple tests.
     double ux;   // First input values in x direction  TODO: Really needed?
     double uy;   // First input values in y direction
 
-    double input_connectivity;  // [0,1] percentage of nodes that receive input
+    //percentage of nodes that receive nodes.
+    double input_connectivity; 
+    
     // lower and upper range for input weights
     double min_input_weight; //The lowest value for the input weight
     double max_input_weight; //The highest value for the input weight
 
  
-    double min_x_position;   // minimum value for the x position
-    double max_x_position;  //maximum value for the x position
-    double min_y_position;  //minimum value for the y position
-    double max_y_position;  //maximum value for the y position
+    //Minimum and maximum value for randomly initialsed x and y positions for random RNN
+    double min_x_position;  
+    double max_x_position;  
+    double min_y_position;  
+    double max_y_position;  
 
 
+    // first time step t0, maximum time tmax, dt is the timestep
+    double t0;      
+    double tmax;    
+    double dt;    
 
-    double t0;      // time for first time step [s]
-    double tmax;    // maximum time step [s]
-    double dt;      // time step in seconds
-
-    //The min and max values for k1, k3, d1, d3 values, either log uniform or uniform depending.
+    //The min and max values for k1, k3, d1, d3 values, either log uniform or uniform depending on the function used.
     double min_k3;
     double max_k3;
     double min_d3;
@@ -43,8 +52,6 @@ struct InitialDataValues
     double max_k1;
     double min_d1;
     double max_d1;
-    
-   
 };
 
 
@@ -182,15 +189,13 @@ class Simulation
 
     public:
 
-        //Default constructor
+        //Default constructor. It takes in the input signal, the target signal, the relvant data
         Simulation(InitialDataValues &data, vector<double> &Input_Signal, vector<double> &Target_Signal, int wash_out_time, int learning_time, int learning_time_test);
 
-        //This is an overloaded default constructor. This is not randomly initialized mass spring system, this is a determined one.
-        // Todo: Maybe derive a class for spiderweb simulation
-        //That's probably a good idea.
+        //This is an overloaded constructor. This is not randomly initialized mass spring system, this is a determined one.
         Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Input_Signal, vector<double> &Target_Signal);
 
-        //radius rounds etc.
+        //This is another overloaded 
         Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test,  bool springs_identical, bool random_node_positions, double mean, double stdev);
 
         //This creates the nodes for the reservoir computer implementation
@@ -343,17 +348,4 @@ class Simulation
     
 };
 
-/*
-class Spider_Web_Simulation: public Simulation
-{
-	private:
-		double radius;
-		int rounds; 
-		int no_of_points_per_round;
-				
-		public:
-		Spider_Web_Simulation(double radius, int rounds, int no_of_points_per_round);
-		
-		void Initialize_Nodes();		
-};
-*/
+
