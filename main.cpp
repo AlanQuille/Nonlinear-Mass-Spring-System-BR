@@ -174,7 +174,7 @@ int main(int argc, char** argv)
  //////////////////////////////////////////////////////////////////////////////////////////////////
  //THIS SIMULATES THE  RANDOM DYNAMICAL RESERVOIR RNN (recurrent neural network), NOT THE SPIDER WEB
  //////////////////////////////////////////////////////////////////////////////////////////////////
- Simulation sim1(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+ //Simulation sim1(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
 
 //radius of the threads in the spider web
 double radius = 10.0;
@@ -262,15 +262,15 @@ cout << sim.return_thread_Number(4, 10) << endl;
 
   
 //This resets the simulation so that all positions of threads and nodes are what they were at time t=0.
-sim.Reset_Simulation();
-impulse_response_or_input_signal = true;
+//sim.Reset_Simulation();
+////impulse_response_or_input_signal = true;
  //  sim.update(bias_learning, impulse_response_or_input_signal);
    
 //This outputs the mean squared error and loads the Output vector and Target vector in the Simulatino Object RENAME THIS IT DOES NOT OUTPUT LEARNING MATRIX
-sim.output_LearningMatrix_and_MeanSquaredError();
+//sim.output_LearningMatrix_and_MeanSquaredError();
 
 //This outputs the output signal, target signal (to check if loaded in correctly) and the learning matrix.
-sim.output_Output_Signal(str);
+//sim.output_Output_Signal(str);
   
   //This is to measure how long the code has taken in total to execute  
 auto end = std::chrono::high_resolution_clock::now();

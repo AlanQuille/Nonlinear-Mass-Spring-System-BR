@@ -872,7 +872,7 @@ double l0 =0;
       TS2 = TargetSignal2;
       TS3 = TargetSignal3;
       
-      //Check for stability if an impulse response is applied. If the input signal (not the impulse response) is applied, than perform Moore Penrose Pseudoinverse)
+      //Check for stability if an impulse response is applied. If the input signal (not the impulse response) is applied, than perform Moore Penrose Pseudoinverse
       if(impulse_response_or_input_signal) stability_Check();
       if(!impulse_response_or_input_signal) Moore_Penrose_Pseudoinverse_and_Learning_Weights();
 }

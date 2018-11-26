@@ -104,7 +104,6 @@ void Nodes::zero_Force()
 
 void Nodes::update(double dt)
 {
-
   //Standard Euler's
     pxdotdot = (F_in_x)/m;
   //  cout <<"acceleration x is: " << pxdotdot << endl;
@@ -120,32 +119,6 @@ void Nodes::update(double dt)
   //  cout <<"velocity y is: " << pydot << endl;
     px += dt*pxdot;
 //    cout <<"position x is: " <<px << endl;
-
-
-
-/*
-  double k1x, k1v, k2x, k2v, k3x, k3v, k4x, k4v;
-
-  k1x = pxdot;
-//  k1v = feval(func, t(i)    , x(i)         , v(i)        ,F );
-  k1v = F_in_x_saved;
-
-  k2x = pxdot+k1v*dt/2;
-  k2v = (F_in_x_saved+F_in_x)/2;
-
-  k3x = pxdot+k2v*dt/2;
-  k3v =(F_in_x_saved+F_in_x)/2;
-
-  k4x = pxdot+k3v*dt;
-  k4v = F_in_x;
-
-  px += (k1x + 2*k2x + 2*k3x + k4x)*dt/6;
-  pxdot += (k1v + 2*k2v + 2*k3v + k4v)*dt/6;
-
-  F_in_x_saved = F_in_x;
-  */
-
-
 }
 
 void Nodes::zero_Accel_and_Vel()
@@ -157,20 +130,6 @@ void Nodes::zero_Accel_and_Vel()
   pydotdot = 0;
 }
 
-void Nodes::change_Updatecheck()
-{
-    updatecheck = 1;
-}
-
-bool Nodes::return_Updatecheck()
-{
-    return updatecheck;
-}
-
-void Nodes::zero_Updatecheck()
-{
-   updatecheck = 0;
-}
 
 void Nodes::change_Mass(double new_m)
 {
