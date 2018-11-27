@@ -185,6 +185,9 @@ class Simulation
         
         //Random input node
         int no_of_input_node;
+        
+        //Fixed nodes vector for the spider web
+        vector<int> fixed_nodes;
 
 
     public:
@@ -196,7 +199,7 @@ class Simulation
         Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &Input_Signal, vector<double> &Target_Signal);
 
         //This is another overloaded 
-        Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test,  bool springs_identical, bool random_node_positions, double mean, double stdev);
+        Simulation(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<double> &IS, vector<double> &TS, int wash_out_time, int learning_time, int learning_time_test,  bool springs_identical, bool random_node_positions, double mean, double stdev, vector<int> &Fixed_Nodes);
 
         //This creates the nodes for the reservoir computer implementation
         // Todo: Maybe derive a class for spiderweb simulation
@@ -204,13 +207,12 @@ class Simulation
         //Make all sprigns have same sprign and damping coefficients;
         void Springs_Identical(bool on);
         
-        void Initialize_Nodes(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data);
+        //This initialises the nodes and springs for the spider web simulation
+        void Initialize_Nodes_and_Springs(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<int> &Fixed_Nodes);
 
-        //This initializes the nodes and puts in appropriate values for the ranges and the weights
+        //This initializes the nodes and puts in appropriate values for the ranges and the weights for the random RNN.
         void Initialize_Nodes(double smallest_x_position, double largest_x_position, double smallest_y_position, double largest_y_position);
 
-        //This is for the csv files to test if there is chaos.
-        void input_Magnitude_of_Chaos_Force(double k, const std::string& input, const std::string& input2);
 
         //This resets the positions of the springs and the nodes
         void Reset_Simulation();
@@ -233,7 +235,7 @@ class Simulation
         //This is for the treble sinusoidal function.
         double Treble_Sine_Function(double f1, double f2, double f3, double dt, double t, double T);
 
-        //This does the delaunay triangulation for the two dimensional case and creates the springs for the reservoir computer, not the radial spider web
+        //This does the delaunay triangulation for the two dimensional case and creates the springs for the random RNN, not the spider web
         void Delaunay_Triangulation_and_Spring_Creation();
         
         //Return which node has the input node
@@ -243,7 +245,6 @@ class Simulation
         void Create_EdgeNodeList();
 
         //After delaunay triangulation, how many connecting edges hence springs.
-        // Todo: Should the ouput be really double and not unsigned int?
         unsigned int Output_No_of_Edges();
 
         //This outputs the spring and node positions for the reservoir computer
@@ -318,7 +319,6 @@ class Simulation
 
         //Sorting two input numbers
         void Sort(int &a, int &b);
-
 
         //Remove duplicates from two dimensional vector.
         void Remove_Duplicates(vector<vector<double>> &x);

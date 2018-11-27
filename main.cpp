@@ -130,6 +130,15 @@ int main(int argc, char** argv)
     data.min_input_weight = -0.005 * 1;
     //This is the maximum value for the rand_in_range functio for the input weights
     data.max_input_weight = -0.005 * 1;
+    
+     //////////////////////////////////////////////////////////////////////////////////////////////////
+ //THIS SIMULATES THE  RANDOM DYNAMICAL RESERVOIR RNN (recurrent neural network), NOT THE SPIDER WEB
+ //////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    //This is the minimum value for the rand_in_range function for the input weights
+    data.min_input_weight = -1;
+    //This is the maximum value for the rand_in_range function for the input weights
+    data.max_input_weight = 1;
 
     //These are the minimum and maximum x andy value sof the nodes for the random dynamical reservoir RNN
     data.min_x_position = 0;
@@ -139,16 +148,16 @@ int main(int argc, char** argv)
 
 
     //These are the minimum and maximum values for the spring and damping coefficients
-    data.min_k3 = 50;
-    data.max_k3  = 50;
+    data.min_k3 = 10;
+    data.max_k3  = 100;
 
-    data.min_d3 = 50;
-    data.max_d3  =50;
+    data.min_d3 = 10;
+    data.max_d3  =100;
 
-    data.min_k1 = 100;
+    data.min_k1 = 1;
     data.max_k1  = 100;
 
-    data.min_d1 = 100;
+    data.min_d1 = 1;
     data.max_d1  = 100;
     
     //For nodes with identical masses, this is the value for the mass of each and every node
@@ -171,10 +180,8 @@ int main(int argc, char** argv)
     cout << "Initial Input is: "<< Input[0] << endl;
     
     
- //////////////////////////////////////////////////////////////////////////////////////////////////
- //THIS SIMULATES THE  RANDOM DYNAMICAL RESERVOIR RNN (recurrent neural network), NOT THE SPIDER WEB
- //////////////////////////////////////////////////////////////////////////////////////////////////
- //Simulation sim1(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+ //Default constructor for random RNN.
+ Simulation sim1(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
 
 //radius of the threads in the spider web
 double radius = 10.0;
@@ -229,7 +236,10 @@ data.max_d3  = 1;
 
 	springs_identical = false;
     bias_learning = true;
-	impulse_response_or_input_signal = true;
+	impulse_response_or_input_signal = false;
+	
+	 sim1.update(bias_learning, impulse_response_or_input_signal);
+	 sim1.output_LearningMatrix_and_MeanSquaredError();
 	
 ////////////////////////////////////////////////////////////////////////
 //THIS SIMULATES THE SPIDER WEB
@@ -237,7 +247,17 @@ data.max_d3  = 1;
 
 //This is the overloaded constructor for the simulation class
 //This initialises the spider web and loads the starting variables, the input and target signals into the Simulation object sim
- Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test, springs_identical, random_node_positions, mean, stdev);
+/*
+ vector<int> Fixed_Nodes;
+ Fixed_Nodes.push_back(no_of_points_per_round*(rounds-1));
+ Fixed_Nodes.push_back((no_of_points_per_round/2)+no_of_points_per_round*(rounds-1));
+ 
+ cout <<"Fixed nodes are: " << endl;
+ cout << Fixed_Nodes.at(0);
+ cout << endl;
+ cout << Fixed_Nodes.at(1);
+ cout << endl;
+ Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test, springs_identical, random_node_positions, mean, stdev, Fixed_Nodes);
 
  
 
@@ -262,16 +282,18 @@ cout << sim.return_thread_Number(4, 10) << endl;
 
   
 //This resets the simulation so that all positions of threads and nodes are what they were at time t=0.
-//sim.Reset_Simulation();
-////impulse_response_or_input_signal = true;
- //  sim.update(bias_learning, impulse_response_or_input_signal);
+sim.Reset_Simulation();
+impulse_response_or_input_signal = false;
+sim.update(bias_learning, impulse_response_or_input_signal);
    
 //This outputs the mean squared error and loads the Output vector and Target vector in the Simulatino Object RENAME THIS IT DOES NOT OUTPUT LEARNING MATRIX
-//sim.output_LearningMatrix_and_MeanSquaredError();
+sim.output_LearningMatrix_and_MeanSquaredError();
+
+sim.Output_For_Plot();
 
 //This outputs the output signal, target signal (to check if loaded in correctly) and the learning matrix.
 //sim.output_Output_Signal(str);
-  
+  */
   //This is to measure how long the code has taken in total to execute  
 auto end = std::chrono::high_resolution_clock::now();
 cout << "The time it took for the programme to run in total in milliseconds: ";

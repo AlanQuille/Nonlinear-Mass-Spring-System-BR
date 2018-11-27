@@ -68,7 +68,7 @@ private:
     // Make node globally fixed
 	void set_Fixed_Node();
 
-    //Show current position
+    //Show current position 
 	void print_Position();
 
     //Show x position of node

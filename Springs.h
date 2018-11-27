@@ -7,35 +7,41 @@ class Springs
 
     private:
 
-        double l0;  // resting length
-        double l;   // current length.
-        double x1 = 0;  // difference between current and resting lenght, i.e., x1 = l-l0
-        double x2 = 0; // Velocity of the spring relative to l0 (= dx1/dt)
+        //Resting length
+        double l0;  
+        //Current length
+        double l;  
+		
+		//Difference between current and resting length, i.e., x1 = l-l0 
+        double x1 = 0; 
+        //Velocity of the spring, (dx1/dt) so essentially (dl/dt) as l0 is fixed.
+        double x2 = 0;
 
         // spring constants
         // force from the spring stiffness based on x1 is
         // p = x1^3*k3 + x1*k1
         double k1;
         double k3;
+        
         // damping constants
         // force from the damping based on x2 (change of length over time)
         // q = x2^3*d3 + x3*d1
         double d1;
         double d3;
 
-        // Two nodes that are connected by this spring
+        //The numbers of the two nodes that are connected by this spring
         int nodea;
         int nodeb;
 
     public:
 
-        // Default constructor to load in spring and damping coefficeints
+        // Default constructor to load in spring and damping coefficeints, resting length of springs and node numbers.
         Springs(double k1, double k3, double d1, double d3, double l0, int nodea, int nodeb, double wout);
 
         //The equation to change the force due to the spring
         void get_Force(double &Fsum);
 
-        // get resting length l0
+        //return the resting length l0 which is the initial length of spring
         double return_Initial_Length();
 
         //return all springs to the original length l0.
@@ -44,7 +50,7 @@ class Springs
         //Make total force 0 for reset.
         void set_Force_0();
 
-        // Output current length of spring
+        //Output current length of spring
         void print_output();
 
         //Output first node number
@@ -52,9 +58,6 @@ class Springs
 
         //Output second node number
         int Nodeb();
-
-        //Output the output weight
-        double get_Output_Weight();
 
         //Output damping and spring coefficients.
         double get_k1();
