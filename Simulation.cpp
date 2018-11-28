@@ -82,7 +82,7 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
   this->num_input_nodes = (data.input_connectivity)*rounds*no_of_points_per_round;
 
   this->N = data.N;
-  //Step 2: The positions of the nodes were initialized and 20% of the nodes are connected to the input.
+  
   this->input_weight_smallest_value = data.min_input_weight;
   this->input_weight_largest_value = data.max_input_weight;
 
@@ -122,14 +122,6 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
   //Determine which nodes of the spider web are fixed.
   fixed_nodes = Fixed_Nodes;
   
-  cout <<"Fixed nodes" <<endl;
-    cout <<"Fixed nodes" <<endl;
-  
-  cout << fixed_nodes[0] << endl;
-  cout << fixed_nodes[1] << endl;
-  
- cout <<"Fixed nodes" <<endl;
-   cout <<"Fixed nodes" <<endl;
 
   //update(true);
   //Mean_Squared_Error = output_LearningMatrix_and_MeanSquaredError();
@@ -142,14 +134,17 @@ Simulation::Simulation(double radius, int rounds, int no_of_points_per_round, In
 
 void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_position, double smallest_y_position, double largest_y_position)
    {
-    // todo: still needed for debugging
-    ofstream fixed("fixednode.txt");
- 		ofstream Initialnodes("initial.txt");
+
+        //Create txt files for debugging to see what nodes are fixed.
+        ofstream fixed("fixednode.txt");
+     	ofstream Initialnodes("initial.txt");
 
 
+        //x and y positions of the nodes
  		double x;
  		double y;
 
+        //the max and min parameters for the random positions of the nodes.
  		double x1 =smallest_x_position;
  		double x0 =largest_x_position;
 
@@ -157,70 +152,77 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
      //for fixed nodes.
  		int j=0;
  		int k=0;
-
+ 		
+ 		
+      //for loop to initialise nodes and determine positions.
       for(int i=0; i<N; i++)
  		 {
-
+            
+             //Random positions of nodes.
  			 x=Uniform(smallest_x_position, largest_x_position);
  			 if(x1<x)
  			 {
  			  x1=x;
  				j=i;
  			}
+ 			 //Random positions of nodes
  			 y=Uniform(smallest_y_position, largest_y_position);
  			 if(x0>x)
  			 {
  				 x0=x;
  				 k=i;
  			 }
- 		   Nodes p(x, y);
- 			 Initialnodes <<x <<"," <<y << endl;
-      //The first input_connectivity percent of the nodes are marked as input nodes, and the
-        n.push_back(p);
+ 		    
+ 		    //create node object called p.
+ 		    Nodes p(x, y);
+ 			Initialnodes <<x <<"," <<y << endl;
+ 			
+            //The first input_connectivity percent of the nodes are marked as input nodes, and the
+            n.push_back(p);
  	   }
+ 	   
+         //output the fixed nodes to txt file.
+ 		fixed <<j << endl;
+ 		fixed <<k << endl;
 
- 		 fixed <<j << endl;
- 		 fixed <<k << endl;
-
-     //Test to see whether the reason why you're getting those 0 springs is because of fixed nodes.
-
- 		 n[j].set_Fixed_Node();
- 		 n[k].set_Fixed_Node();
+        //Test to see whether the reason why you're getting those 0 springs is because of fixed nodes.
+ 		n[j].set_Fixed_Node();
+ 		n[k].set_Fixed_Node();
  		//Just one node for test;
  		 //Fixed the leftmost and rightmost nodes.
    }
    
 
+    
    void Simulation::Initialize_Nodes_and_Springs(double radius, int rounds, int no_of_points_per_round, InitialDataValues &data, vector<int> &Fixed_Nodes)
    {
+   	 //The angle separating threads which connect the central node to the current node in the spider web
      double angle = ((2*M_PI)/no_of_points_per_round);
+     
+     //x and y positions of the node
      double x_position;
      double y_position;
 
+     //spring and damping coefficients
      double k1;
      double d1;
      double k3;
      double d3;
 
+     //x and y positions of nodes.
      double x0;
-   //  double x1;
-
      double y0;
-   //  double y1;
 
+     //length of threads.
      double l0;
-     double wout;
 
-     double random_factor_x = 0;
-     double random_factor_y = 0;
-
-     bool odd_even_check = 1;
-
-
+     //This variable determines the node numbers in the springs/threads
      int k =0;
      
      
+     //Determine random spring and damping coefficients
      //If the springs/threads are all identical, only do the spring and damping coefficients once.
+	 // identical is the random boolean variable to determine this, not here.
     k1 = Rand_In_Range_Exp(data.min_k1, data.max_k1);
     d1 = Rand_In_Range_Exp(data.min_d1, data.max_d1);
 
@@ -234,15 +236,16 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
     d3_identical = d3;
     
      
-
+    //This loop cycles through the rounds/circles and initialises the springs and nodes
     for(int j=0; j<rounds; j++)
     {
+      //x0 and y0, the position of the first node in the round (a round is a circle more or less)
       x0 = (j+1)*radius*cos((0));
       y0 = (j+1)*radius*sin((0));
 
       for(int i=0; i<no_of_points_per_round; i++)
       {
-         //So this
+         //x and y positions of the nodes on the circle/round
          x_position = (j+1)*radius*cos((i*angle));
          y_position = (j+1)*radius*sin((i*angle));
          
@@ -264,6 +267,7 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
          if(i>0)
          {
 
+          // identical is the random boolean variable to determine this, not here.
          if(!identical) k1 = Rand_In_Range_Exp(data.min_k1, data.max_k1);
          if(!identical) d1 = Rand_In_Range_Exp(data.min_d1, data.max_d1);
 
@@ -274,14 +278,13 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
          if(!identical) d3 = Rand_In_Range_Exp(data.min_d3, data.max_d3);
 
 
-      cout << k3 << endl;
-      cout << d3 << endl;
+         cout << k3 << endl;
+         cout << d3 << endl;
 
 
          l0 = Eucl_Dist(x0, y0, x_position, y_position);
-         wout = 0;
 
-         s.push_back(Springs(k1, d1, k3, d3, l0, k, k-1, wout));
+         s.push_back(Springs(k1, d1, k3, d3, l0, k, k-1));
          }
 
          //For radial pattern.
@@ -294,42 +297,9 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
          if(!identical) d3 = Rand_In_Range_Exp(data.min_d3, data.max_d3);
          cout << "d3 is: " << d3 << endl;
 
-      //   k3 = 0;
-      //   d3 = 0;
-
-      //   k1 = data.min_k1;
-      //   d1 = data.min_d1;
-
-
-         //k3 = 0;
-         //d3 = 0;
-        // k3 = data.max_k3;
-    //     d3 = data.max_d3;
-
-         //l0 = Eucl_Dist(x0, y0, x_position, y_position);
          l0 = radius;
-       //  wout = Uniform(data.w_out_initial, data.w_out_final);
-          wout = 0;
 
-/*
-         if(odd_even_check)
-         {
-         if(j%2==0 && i%2==0) s.push_back(Springs(k1, d1, k3, d3, l0, k, k-no_of_points_per_round, wout));
-         if(j%2==1 && i%2==1) s.push_back(Springs(k1, d1, k3, d3, l0, k, k-no_of_points_per_round, wout));
-         odd_even_check = false;
-         }
-
-         else
-         {
-         if(j%2==0 && i%2==1) s.push_back(Springs(k1, d1, k3, d3, l0, k, k-no_of_points_per_round, wout));
-         if(j%2==1 && i%2==0) s.push_back(Springs(k1, d1, k3, d3, l0, k, k-no_of_points_per_round, wout));
-      //   odd_even_check = true;
-         }
-
-
-*/
-
-         s.push_back(Springs(k1, d1, k3, d3, l0, k, k-no_of_points_per_round, wout));
+         s.push_back(Springs(k1, d1, k3, d3, l0, k, k-no_of_points_per_round));
 
 
 
@@ -358,13 +328,11 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
 
       l0 = Eucl_Dist(x0, y0, x_position, y_position);
       cout <<"l0 is: " <<l0 << endl;
-     // wout = Uniform(data.w_out_initial, data.w_out_final);
-     //Temporarily remove
-     wout = 0;
-
+      
+      //This is for the connecting threads between nodes which are not connected to the central node.
       if(no_of_points_per_round>2)
       {
-      s.push_back(Springs(k1, d1, k3, d3, l0, (k-no_of_points_per_round), k-1, wout));
+      s.push_back(Springs(k1, d1, k3, d3, l0, (k-no_of_points_per_round), k-1));
       }
     }
 
@@ -378,6 +346,7 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
     }
 
 
+
     int N = rounds * no_of_points_per_round + 1;
 
     int input_node_nums = 0;
@@ -389,16 +358,8 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
     int randomnum = 0;
     double win;
 
-    cout << "No of input nodes is: " << input_node_nums << endl;
-    cout << "No of input nodes is: " << input_node_nums << endl;
 
-
-
-    n[no_of_points_per_round*(rounds-1)].set_Fixed_Node();
-    n[(no_of_points_per_round/2)+no_of_points_per_round*(rounds-1)].set_Fixed_Node();
-
-
-
+    //Set fixed nodes of spider web
     for(int i =0; i<Fixed_Nodes.size(); i++)
     {
      	n[i].set_Fixed_Node();
@@ -461,9 +422,7 @@ void Simulation::Initialize_Nodes(double smallest_x_position, double largest_x_p
 
        l0 = Eucl_Dist(0, 0, n[i].get_x_Position(), n[i].get_y_Position());
 
-       wout = 0;
-
-       s.push_back(Springs(k1, d1, k3, d3, l0, n.size()-1, i, wout));
+       s.push_back(Springs(k1, d1, k3, d3, l0, n.size()-1, i));
 
      }
 
@@ -1305,7 +1264,7 @@ void Simulation::Initialize_Springs(InitialDataValues &data)
       //wout = Uniform(input_weight_smallest_value, input_weight_largest_value);
       wout = 0;
 
-      s.push_back(Springs(k1, d1, k3, d3, l0, arraysubscript1, arraysubscript2, wout));
+      s.push_back(Springs(k1, d1, k3, d3, l0, arraysubscript1, arraysubscript2));
       node_list.push_back(s[i].Nodea());
       node_list.push_back(s[i].Nodeb());
     //  Sort()

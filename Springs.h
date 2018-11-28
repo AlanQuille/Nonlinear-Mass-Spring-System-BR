@@ -36,7 +36,7 @@ class Springs
     public:
 
         // Default constructor to load in spring and damping coefficeints, resting length of springs and node numbers.
-        Springs(double k1, double k3, double d1, double d3, double l0, int nodea, int nodeb, double wout);
+        Springs(double k1, double k3, double d1, double d3, double l0, int nodea, int nodeb);
 
         //The equation to change the force due to the spring
         void get_Force(double &Fsum);
