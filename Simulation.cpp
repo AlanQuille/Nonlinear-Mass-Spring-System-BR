@@ -437,13 +437,17 @@ int Simulation::return_input_Node()
 
 void Simulation::Delaunay_Triangulation_and_Spring_Creation()
 {
-    //Why is that abs? Double check this.
-    //I think the delaunay triangulation needs to take in the absolute difference between largest and smallest.
+	
+	//Delaunay Triangulation connected node points and minimises the angle between the connecting lines.
+    //The delaunay triangulation needs to take in the absolute difference between largest and smallest, no negative values.
     DelaunayTriangulation DT(abs(largest_x_position-smallest_x_position), abs(largest_y_position-smallest_y_position));
 
+    //Input weight for the reservoir learning
     double win = 0;
+    //The number of nodes which are connecting nodes.
     int input_node_nums = (int)(input_connectivity*((int)N));
 
+    //Number of input nodes.
     cout << input_node_nums << endl;
 
     int randomnum;
@@ -468,21 +472,20 @@ void Simulation::Delaunay_Triangulation_and_Spring_Creation()
         randomnum = (int)Uniform(0, N);
       }
 
+      //The input node is created with input weight win, horizontal input force ux and vertical input force uy
       n[randomnum].init_Input_Node(ux, uy, win);
       num_of_input_nodes++;
 
       }
 
-
-
-
-
+      //Add points to the Delaunay triangulation so that connections can be made
       DT.AddPoint(Point(n[i].get_x_Position(),n[i].get_y_Position(),0));
 
     }
 
     cout <<"The total number of input nodes is: " << num_of_input_nodes << endl;
 
+    //This outputs the results from the Delaunay triangulation
     DT.print();
     Get_Triangles(DT);
 
@@ -494,7 +497,7 @@ void Simulation::Reset_Simulation()
 {
 	
 	
-  //Springs
+  //Set the springs back to the original length, velocity and acceleration.
   for(int i=0; i<s.size(); i++)
   {
     s[i].set_Original_Length();
@@ -502,8 +505,10 @@ void Simulation::Reset_Simulation()
     s[i].set_x1(0);
     s[i].set_x2(0);
 
+    //Option to set the force of the spring to 0 as well and print the position of the nodes of the springs.
    // s[i].set_Force_0();
-  //  n[s[i].Nodea()].print_position();
+    n[s[i].Nodea()].print_position();
+    n[s[i].Nodeb()].print_position();
 
   }
   
@@ -519,6 +524,8 @@ void Simulation::Reset_Simulation()
 
 void Simulation::update(bool bias_learning, bool impulse_response_or_input_signal)
 {
+	
+  //These are all temporary variables for the springs and nodes for the spring and damping coefficients, node numbers etc.
   double Fsum =0;
   double Fx_nodea =0;
   double Fy_nodea =0;
@@ -553,29 +560,9 @@ void Simulation::update(bool bias_learning, bool impulse_response_or_input_signa
 
   double theta =0;
   
+  //This is to determine whether the bias factor is added to the learning matrix
   this->bias_learning = bias_learning;
 
-  //Input
-  
-  //Global stability check. if l is nAN for instance it is automatically unstable. Default stability = true
- // bool stability = true;
- //Now moved to simulation.h
-
-
-  // Todo: still needed for debugging DEBUG
-  ofstream Node1("Node1.csv");
-  ofstream Node2("Node2.csv");
-  ofstream ForceVec("SampleForce.csv");
-
-  ofstream OutputPositionsx("NodePositionsx.csv");
-  ofstream OutputVelocitiesx("NodeVelocitiesx.csv");
-  ofstream OutputAccelerationsx("NodeAccelerationsx.csv");
-
-  ofstream OutputPositionsy("NodePositionsy.csv");
-  ofstream OutputVelocitiesy("NodeVelocitiesy.csv");
-  ofstream OutputAccelerationsy("NodeAccelerationsy.csv");
-  
-  ofstream InputSignal("InputSignal.csv");
 
   //Learning matrix for entire run, learning phase and testing phase.
   MatrixXd LearningMatrix(maxtimesteps, s.size());
@@ -602,19 +589,13 @@ void Simulation::update(bool bias_learning, bool impulse_response_or_input_signa
 
   double outputsignal = 0;
   
+  
 
   /////////////////////////////////
   //  SIMULATION LOOP
   /////////////////////////////////
-//<<<<<<< HEAD
-  //for(int i=0; i<maxtimesteps; i++)
-//=======
-
-//Inputs: Input SignalTarget Signal, nodes n, springs s
+//Inputs: Input Signal, Target Signal, nodes n, springs s
 //Outputs: LearningMatrix
-
-//For some reason the number of threads/webs is gone in simulation. I will save them again.
-
 number_of_threads_or_webs = s.size();
 cout << "The number of springs is: " << s.size() << endl;
 
@@ -622,46 +603,59 @@ bool wcheck = 0;
 
 double l0 =0;
 
+//This loop goes through every timesteps from t=0 to t=tmax
    for(int i=0; i<maxtimesteps; i++)
     {
   //      cout << "Time step " << i << endl;
         //
+        //This loads in the target signal vector into a temporary array for readability.
         TargetSignal(i) = Target_Signal[i];
         if(i>=wash_out_time && i<(wash_out_time+learning_time)) TargetSignal2(i-wash_out_time) = Target_Signal[i];
         if(i>=(wash_out_time+learning_time)) TargetSignal3(i-wash_out_time-learning_time) = Target_Signal[i];
 
+        //This loop goes through every spring
         for(int j=0;  j<s.size(); j++)
         {
+        	//Node numbers of springs
             nodea = s[j].Nodea();
             nodeb = s[j].Nodeb();
 
+
+            //positions of the nodes
             x0 = n[nodea].get_x_Position();
             x1 = n[nodeb].get_x_Position();
 
             y0 = n[nodea].get_y_Position();
             y1 = n[nodeb].get_y_Position();
 
+            //difference between x and y positions of the ndoes of the springs
             vector_x = x1 - x0;
             vector_y = y1 - y0;
 
+            //Euclidean distance between nodes of a spring
             l = sqrt(vector_x*vector_x + vector_y*vector_y);
 
+            //alpha is the angle between x axis and the spring
+            //beta is the angle between y axis and the spring
             alpha = vector_x/l;
             beta = vector_y/l;
 
-
+            //The learning matrix L of timesteps on the rows and springs on the columns
             LearningMatrix(i,j) = l;  // Todo: update is not needed for target signal
 
           //  cout << l << endl;
+            //Learning matrices for learning phase and testing phase, excluding wash out period.
             if(i>=wash_out_time && i<(wash_out_time+learning_time)) LearningMatrix2(i-wash_out_time, j) = l;
             if(i>=(wash_out_time+learning_time)) LearningMatrix3(i-wash_out_time-learning_time, j) = l;
 
+            //Spring and damping coefficients and initial length of spring
             k1 = s[j].get_k1();
             d1 = s[j].get_d1();
             k3 = s[j].get_k3();
             d3 = s[j].get_d3();
             l0 = s[j].return_Initial_Length();
 
+            //Output spring and damping coefficients at final step
             if(i==(maxtimesteps-1))
             {
             cout << "k1 is: " <<s[j].get_k1() << endl;
@@ -671,44 +665,40 @@ double l0 =0;
             cout << "d3 is: " <<s[j].get_d3()<< endl;
             }
 
-
+ 
+            //This is x1 in the differential equations for the springs
+			//difference between current length and initial length
             x1new = l - s[j].return_Initial_Length();
 
-
-
-
+            //This is the current x1
             x1spring = s[j].return_x1();
 
-
-        //    cout <<"x1spring is: " << x1spring << endl;
-      //      cout <<"x1new is: " << x1new << endl;
-
-            //cout << "For spring" <<" " <<j <<"x1new is : "<< x1new<< endl;
+            //This is the current x2, dx1/dt.
+            //It is merely a moment of the Euler's
             x2spring = ((x1new - x1spring)/dt);
-            //cout << "For spring" <<" " <<j <<"x2spring is : "<< x2spring<< endl;
 
+            //set x2 and x1 of the springs
             s[j].set_x2(x2spring);
             s[j].set_x1(x1new);
 
+            //This calculates the force on the spring as per differential equation
             Fsum =-k3*x1new*x1new*x1new - k1*x1new - d3*x2spring*x2spring*x2spring - d1*x2spring;
             
-          //  cout << Fsum << endl;
 
-
+            //Force on node in x and y directions
             Fx_nodeb = Fsum*alpha;
             Fx_nodea = -Fx_nodeb;
 
             Fy_nodeb = Fsum*beta;
             Fy_nodea = -Fy_nodeb;
 
+            //Input force on node in x and y directions
             n[nodea].input_Force(Fx_nodea, Fy_nodea);
             n[nodeb].input_Force(Fx_nodeb, Fy_nodeb);
             
             
-           // if(nodea == 9 || nodeb ==9) cout << l << endl;  
-
-
-
+ 
+            //Zero all forces and x1 and x2 at each step
             Fsum = 0;
             Fx_nodea =0;
             Fx_nodeb =0;
@@ -717,15 +707,8 @@ double l0 =0;
             x1new = 0;
             x2spring =0;
             
-            //isnan output
+            //If any length is NaN than the structure is of course not stable.
             if(isnan(l)) stability = false;
-             
-            
-            
-            //Sum_vector.at(j) = +l;
-            
-            
-          //  if(i<= half_time) Max_Bounded.at(i) = abs(l);
         }
 
 
@@ -753,16 +736,19 @@ double l0 =0;
        }
        
       
-
+      //These are the learning matrices for the entire simulation, for the learning and testing phases (LM = LearningMatrix, LM2 = LearningMatrix2 and LM3 = LearningMatrix3) respectively 
+      //These are saved in the Simulation object for referral or further use.
       LM = LearningMatrix;
       LM2 = LearningMatrix2;
       LM3 = LearningMatrix3;
       
+      //These are the target signals for the entire
       TS = TargetSignal;
       TS2 = TargetSignal2;
       TS3 = TargetSignal3;
       
-      //Check for stability if an impulse response is applied. If the input signal (not the impulse response) is applied, than perform Moore Penrose Pseudoinverse
+      //Check for stability if an impulse response is applied. 
+	  //If the input signal (not the impulse response) is applied, than perform Moore Penrose Pseudoinverse
       if(impulse_response_or_input_signal) stability_Check();
       if(!impulse_response_or_input_signal) Moore_Penrose_Pseudoinverse_and_Learning_Weights();
 }
@@ -770,6 +756,8 @@ double l0 =0;
 int Simulation::return_thread_Number(int nodea, int nodeb)
 {
 	int k=0;
+	
+	//This merely returns which thread or spring number corresponds to which node.
 	for(int i=0; i<s.size(); i++)
 	{
 		s[i].Nodea();
