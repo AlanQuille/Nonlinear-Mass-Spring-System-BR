@@ -507,8 +507,6 @@ void Simulation::Reset_Simulation()
 
     //Option to set the force of the spring to 0 as well and print the position of the nodes of the springs.
    // s[i].set_Force_0();
-    n[s[i].Nodea()].print_position();
-    n[s[i].Nodeb()].print_position();
 
   }
   
@@ -768,40 +766,44 @@ int Simulation::return_thread_Number(int nodea, int nodeb)
 		
 	}
 	
-	return k;
+	return k; 
 }
 
 
 void Simulation::stability_Check()
 {
+	
+	  //This code takes find the absolute value of the maximum value before the half way mark minus the absolute value of the maximum value afterwards. 
+	  //structure does not satisfy BIBO stability if the minimum coefficient is less than zero
+      //i.e., the impulse response does not settle down to a limit cycle (or steady state value) with a maximum less than
+      // or equal to the maximum value before the half way mark. The max of the limit cycle or steady state value is the maximum
+      //value after the half way mark.
+
 	   int half_time = maxtimesteps/2;
-	   
 	   MatrixXd Lee1(maxtimesteps, s.size());
-  
        MatrixXd Lee(half_time, s.size());
-       
        MatrixXd Le(half_time, s.size());
        
        
-       
+        //This is to rescale the matrix by the mean value by column as the learning matrix
+       //This is because the matrix might show little variation due to input force in absolute terms.
        MatrixXd S_A = LM.colwise().mean().replicate(maxtimesteps, 1);
-       
        Lee1 = LM - S_A;
        
-       
+       //Divide the rescaled learning matrix into blocks before the half way mark and afterwards
        Lee = Lee1.block(0, 0, half_time, s.size());
-       
        Le = Lee1.block(half_time, 0, half_time, s.size());
        
+       //Get the absolute value before and afterwards
        Lee =Lee.cwiseAbs();
        Le = Le.cwiseAbs();
        
+       //The minimum difference between the maximum coefficients of the columns of the learning matrices
        double minCoeff = (Lee.colwise().maxCoeff() - Le.colwise().maxCoeff()).minCoeff();
-       
        cout << "Minimum coefficient" <<" " <<  minCoeff << endl;
        
-       
        if(minCoeff<0 || isnan(minCoeff)) stability = false;
+       
        
        if(stability) cout <<"The structure is stable" << endl;
        else cout <<"The structure is not stable." << endl;
@@ -858,6 +860,7 @@ void Simulation::Moore_Penrose_Pseudoinverse_and_Learning_Weights()
 
 void Simulation::Moore_Penrose_Pseudoinverse(MatrixXd& L)
 {
+  //Alternate (slower) Moore Penrose Pseudoinverse
   L = L.completeOrthogonalDecomposition().pseudoInverse();
 }
 
@@ -900,11 +903,14 @@ double Simulation::output_LearningMatrix_and_MeanSquaredError()
 
       if(i>=(wash_out_time+learning_time))
       {
+      	//The target signal is pushed to a vector so MSE can be derived
         Test_Data.push_back(Target_Signal.at(i));
+        //The output signal is pushed to a vector so MSE can be derived
         Output_Signal.push_back(Output(i-wash_out_time-learning_time));
       }
 
   }
+  
   Mean_Squared_Error = MSE(Output_Signal, Test_Data);
 
   cout <<"The mean squared error of the output signal versus the target signal is: " << Mean_Squared_Error;
@@ -914,6 +920,7 @@ double Simulation::output_LearningMatrix_and_MeanSquaredError()
 
 void Simulation::output_Output_Signal(string& s)
 {
+  
   string str = s + "_" + "outputsignal.csv";
   ofstream learningweights("learningweights.csv"); learningweights.precision(15);
   ofstream targetsignal("targetsignal.csv");  targetsignal.precision(15);
@@ -935,6 +942,7 @@ void Simulation::output_Output_Signal(string& s)
      //for(int j = 0; j<s.size(); j++)
      for(int j = 0; j<number_of_threads_or_webs; j++)
      {
+     	//Output learning matrix to csv file
        learningmatrix << LM(i, j) <<",";
        //cout << LM(i,j) << endl;
        if(i>=wash_out_time && i<(wash_out_time+learning_time)) learningmatrix2 << LM2(i-wash_out_time, j) <<",";
@@ -943,15 +951,17 @@ void Simulation::output_Output_Signal(string& s)
 
      learningmatrix << endl;
      if(i>=wash_out_time && i<(wash_out_time+learning_time)) learningmatrix2 << endl;
+     //Output target signal to file
      if(i>=wash_out_time && i<(wash_out_time+learning_time)) targetsignal2 << Target_Signal.at(i) <<",";
      if(i>=(wash_out_time+learning_time)) learningmatrix3 << endl;
 
 
      if(i>=(wash_out_time+learning_time))
      {
+       //Output outputsignal to file
        outputsignal << Output(i-wash_out_time-learning_time);
        outputsignal << endl;
-
+       //Output target signal to file
        targetsignal << Target_Signal.at(i);
        targetsignal << endl;
        //(i-wash_out_time-learning_time) = Target_Signal.at(i);
@@ -960,7 +970,6 @@ void Simulation::output_Output_Signal(string& s)
  }
 
 }
-
 
 void Simulation::output_Learning_Matrix_CSVFile()
 {
@@ -998,6 +1007,7 @@ double MSEsum = 0;
 double MSE = 0;
 double Total;
 
+//This calculates the Mean Squared error
 for(int i =0; i<A.size(); i++)
 {
   MSEsum += (A[i]-Ahat[i])*(A[i]-Ahat[i]);
@@ -1014,6 +1024,7 @@ return MSE;
 
 double Simulation::Rand_In_Range_Exp(double min, double max)
 {
+  //This calculates random values from the exponential distribution
   double log10min = log10(min);
   double log10max = log10(max);
   double return_value = ((log10max-log10min)*Uniform(0,1))+log10min;
@@ -1022,8 +1033,10 @@ double Simulation::Rand_In_Range_Exp(double min, double max)
 
 double Simulation::Treble_Sine_Function(double f1, double f2, double f3, double dt, double t, double T)
 {
+	//This is the treble sinuosidal function 
 	return sin((2*M_PI*f1*dt*t)/T)*sin((2*M_PI*f2*dt*t)/T)*sin((2*M_PI*f3*dt*t)/T);
 }
+
 
 
 int Simulation::Random_Input_Nodes(int N)
@@ -1034,6 +1047,7 @@ int Simulation::Random_Input_Nodes(int N)
 
 double Simulation::generate_Gaussian_Noise(double mu, double sigma)
 {
+	//Standard algorithm to calculate a Gaussian random variable.
 	static const double epsilon = std::numeric_limits<double>::min();
 	static const double two_pi = 2.0*3.14159265358979323846;
 
@@ -1060,6 +1074,7 @@ double Simulation::generate_Gaussian_Noise(double mu, double sigma)
 
 double Simulation::Uniform(double M, double N)
 {
+  //random values from the uniform distribution
   return M + (rand() / ( RAND_MAX / (N-M) ) ) ;
 }
 
@@ -1067,6 +1082,7 @@ double Simulation::Uniform(double M, double N)
 
 double Simulation::Log_10_Uniform(double initial, double finalvalue)
 {
+  //random values from the log uniform distribution
   return exp(Uniform(initial, finalvalue)/(2.302585093 ));
 }
 
@@ -1086,12 +1102,14 @@ double Simulation::Spring_And_Damping_Coefficient_2(double initial, double final
 
 double Simulation::Eucl_Dist(double x1, double y1, double x2, double y2)
 {
+  //Euclidean distance
   return sqrt((y2-y1)*(y2-y1) + (x2-x1)*(x2-x1));
 }
 
 
 double Simulation::Angle(double x0, double x1, double y0, double y1)
 {
+  //return arctan
   return atan((y1-y0)/(x1-x0));
 }
 
@@ -1108,6 +1126,7 @@ double Simulation::Y_Comp(double vectorsum, double theta)
 
 void Simulation::Sort(int &a, int &b, int &c)
 {
+	//Sort three variables
     if(a>b)
   {
         int tmp = a;
@@ -1128,9 +1147,11 @@ void Simulation::Sort(int &a, int &b, int &c)
     }
 }
 
+
 void Simulation::Sort(int &a, int &b)
 {
-    if(a>b)
+    //Sort two variables
+	if(a>b)
   {
         int tmp = a;
         a = b;
@@ -1140,6 +1161,7 @@ void Simulation::Sort(int &a, int &b)
 
 void Simulation::Remove_Duplicates(vector<vector<double>> &x)
 {
+   //Remove duplicates from a vector of vectors (i.e. a nxn matrix in vector form)
    sort (x.begin(), x.end());
    int i=1;
    while(i<x.size())
@@ -1155,6 +1177,7 @@ void Simulation::Remove_Duplicates(vector<vector<double>> &x)
 
 void Simulation::Create_EdgeNodeList()
 {
+  //Creates a list of nodes corresponding to a particular edge in Delaunay Triangulation (thread or spring)
   for(int i=0; i<EdgeList.size(); i++)
   {
     EdgeNodeList.push_back(s[i].Nodea());
@@ -1163,8 +1186,10 @@ void Simulation::Create_EdgeNodeList()
   EdgeNodeList.erase( unique( EdgeNodeList.begin(), EdgeNodeList.end() ), EdgeNodeList.end() );
 }
 
+
 unsigned int Simulation::Output_No_of_Edges()
 {
+  //Return number of springs and threads
   return EdgeList.size();
 }
 
@@ -1180,8 +1205,8 @@ void Simulation::Initialize_Springs(InitialDataValues &data)
 {
   //cout <<"The number of edges for: " <<N << " mass points is: " << EdgeList.size() << endl;
   //cout <<"The number of unduplicated edges should be " << EdgeList.size() << endl;
+  
   //Spring and damping coefficients
-
   double k1 = 0;
   double d1 = 0;
   double k3 = 0;
@@ -1223,6 +1248,8 @@ void Simulation::Initialize_Springs(InitialDataValues &data)
 
       arraysubscript1 = EdgeList[i].at(0) - 4;
       arraysubscript2 = EdgeList[i].at(1) - 4;
+      
+      //the x and y positions of each edge
 
       x0 = n[arraysubscript1].get_x_Position();
       x1 = n[arraysubscript2].get_x_Position();
@@ -1282,7 +1309,7 @@ void Simulation::Get_Triangles(DelaunayTriangulation &Delaunay)
 
 
 
-  //	This takes the nodes of each triangle and parses them so only the relevant nodes a
+  //This takes the edges from the trianges of the Delaunay triangulation for the mass spring damper system
     for(auto e: Delaunay.triangles)
     {
       //cout <<"Node1:" <<get<0>(e) <<" " << "Node2:"<<" " <<get<1>(e)<< endl;
@@ -1341,6 +1368,9 @@ void Simulation::Get_Triangles(DelaunayTriangulation &Delaunay)
 
 void Simulation::Output_For_Plot()
 {
+  //This outputs the positions and the numbers of the nodes (+1 so the node numbers start at 0) 
+  //for the Matlab plot
+  
   string str;
   str = "s.csv";
  // if(i%10 == 0) str.erase(str.length()-4);
@@ -1386,24 +1416,29 @@ void Simulation::Output_For_Plot()
 
 Springs Simulation::Spring_Return(int i)
 {
+  //Return the spring object
   return s[i];
 }
 
 Nodes Simulation::Node_Return(int i)
 {
+  //return the node object
   return n[i];
 }
 
 unsigned int Simulation::Spring_List()
 {
+  //Return how many edges in the triangulation
   return EdgeList.size();
 }
 
 bool Simulation::Stability_return()
 {
+	//Return boolean variable for stability or not
 	return stability;
 }
 
+//return spring and damping coefficients
 double Simulation::return_k1()
 {
 	return k1_identical;
@@ -1411,6 +1446,7 @@ double Simulation::return_k1()
 
 double Simulation::return_k3()
 {
+	
 	return k3_identical;
 }
 

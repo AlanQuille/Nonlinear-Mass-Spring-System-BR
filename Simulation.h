@@ -223,7 +223,7 @@ class Simulation
         //this returns the thread number for the thread which has two particular nodes with node numbers nodea and nodeb. 
         int return_thread_Number(int nodea, int nodeb);
         
-        //Check stability of the spider web structure
+        //Check stability (BIBO stability) of the structure
         void stability_Check();
 
         //this is where the Moore Penrose pseudoinverse is done to get learning weights.
