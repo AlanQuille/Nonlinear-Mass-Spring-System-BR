@@ -5,6 +5,7 @@
 #include <fstream>
 #include <chrono>
 #include <iomanip>
+#include <typeinfo>
 #include "Simulation.cpp"
 #include "Eigen/Dense"
 #include "Eigen/QR"
@@ -25,8 +26,8 @@ unsigned long long rdtsc()
 int main(int argc, char** argv)
 {
 
-   //Start the clock to measure how long the code takes to execute
-   auto begin = std::chrono::high_resolution_clock::now();
+    //Start the clock to measure how long the code takes to execute
+    auto begin = std::chrono::high_resolution_clock::now();
 
 
     //data structure with the input values
@@ -131,10 +132,6 @@ int main(int argc, char** argv)
     //This is the maximum value for the rand_in_range functio for the input weights
     data.max_input_weight = -0.005 * 1;
     
-     //////////////////////////////////////////////////////////////////////////////////////////////////
- //THIS SIMULATES THE  RANDOM DYNAMICAL RESERVOIR RNN (recurrent neural network), NOT THE SPIDER WEB
- //////////////////////////////////////////////////////////////////////////////////////////////////
-    
     //This is the minimum value for the rand_in_range function for the input weights
     data.min_input_weight = -1;
     //This is the maximum value for the rand_in_range function for the input weights
@@ -164,6 +161,15 @@ int main(int argc, char** argv)
     data.mass_of_nodes = 1;
     //This is the scaling factor for the r
     data.scaling_factor = 0.1;
+    
+    //radius of the threads in the spider web
+    double radius = 10.0;
+    //number of spirals in the web
+    int rounds = 2;
+    // int rounds = 24;
+    //Number of nodes (connection points between threads in the web) per spiral
+    int no_of_points_per_round= 5;
+
 
 
     //The time step in this case it is 0.001, 1 ms.
@@ -179,126 +185,110 @@ int main(int argc, char** argv)
     //The first value of the input signal
     cout << "Initial Input is: "<< Input[0] << endl;
     
-    
- //Default constructor for random RNN.
- Simulation sim1(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
-
-//radius of the threads in the spider web
-double radius = 10.0;
-//number of spirals in the web
-int rounds = 2;
-//  int rounds = 24;
-//Number of nodes (connection points between threads in the web) per spiral
-int no_of_points_per_round= 5;
-
-//This is to name the spider web
-string str = "1";
-  
-vector<double> range_d1_d3_list;
-double best_range_d1_d3;
-
-double a = 100;
-
-
-//Minimum value of spring coefficient for rand_in_range function
-data.min_k1 = 1;
-//Minimum value of spring coefficient for rand_in_range function
-data.max_k1  = 1;
-
-//Minimum value of spring coefficient for rand_in_range function
-data.min_k3 = 1;
-//Minimum value of spring coefficient for rand_in_range function
-data.max_k3  = 1;
-
-//Minimum value of spring coefficient for rand_in_range function
-data.min_d1 = 1;
-//Minimum value of spring coefficient for rand_in_range function
-data.max_d1  = 1;
-
-//Minimum value of spring coefficient for rand_in_range function
-data.min_d3 = 1;
-//Minimum value of spring coefficient for rand_in_range function
-data.max_d3  = 1;
-  
-
-//This determines if the springs have identical spring and damping coefficients
-    bool springs_identical = false;
-//This determines if the bias column (all 1's) for linear regression is appended to teh learning matrix
-    bool bias_learning = true;
-//This determines if the input signal is a unit impulse at time = or the input signal Input
-	bool impulse_response_or_input_signal = false;
-//This determines if there is a random factor (in this case a random Gaussian variable) added to the node positions in the spider web so the web is slightly randomly shaken
-	bool random_node_positions = false;
-	
-//This is the mean and standard deviation of the random Gaussian variable added to the node positions
-	double mean =0;
-	double stdev = 0;
-
-	springs_identical = false;
-    bias_learning = true;
-	impulse_response_or_input_signal = false;
-	
-	 sim1.update(bias_learning, impulse_response_or_input_signal);
-	 sim1.output_LearningMatrix_and_MeanSquaredError();
-	
-////////////////////////////////////////////////////////////////////////
-//THIS SIMULATES THE SPIDER WEB
-//////////////////////////////////////////////////////////////////////
-
-//This is the overloaded constructor for the simulation class
-//This initialises the spider web and loads the starting variables, the input and target signals into the Simulation object sim
-/*
- vector<int> Fixed_Nodes;
- Fixed_Nodes.push_back(no_of_points_per_round*(rounds-1));
- Fixed_Nodes.push_back((no_of_points_per_round/2)+no_of_points_per_round*(rounds-1));
- 
- cout <<"Fixed nodes are: " << endl;
- cout << Fixed_Nodes.at(0);
- cout << endl;
- cout << Fixed_Nodes.at(1);
- cout << endl;
- Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test, springs_identical, random_node_positions, mean, stdev, Fixed_Nodes);
-
- 
-
-//This function carries out the simulation in time. 
-//The parameters bias_learning and impulse_response_or_input_signal determines whether bias learning is on and whether the input signal is an impulse respnse.
- sim.update(bias_learning, impulse_response_or_input_signal);
- 
- 
-//the return_thread_Number returns the number of the thread that has two particular nodes with certain node numbers
-cout << sim.return_thread_Number(0, 1) << endl;
-cout << sim.return_thread_Number(1, 2) << endl;
-cout << sim.return_thread_Number(2, 3) << endl;
-cout << sim.return_thread_Number(3, 4) << endl;
-cout << sim.return_thread_Number(4, 0) << endl;
-cout << sim.return_thread_Number(0, 10) << endl;
-cout << sim.return_thread_Number(1, 10) << endl;
-cout << sim.return_thread_Number(2, 10) << endl;
-cout << sim.return_thread_Number(3, 10) << endl;
-cout << sim.return_thread_Number(4, 10) << endl;
- 
-
-
-  
-//This resets the simulation so that all positions of threads and nodes are what they were at time t=0.
-sim.Reset_Simulation();
-impulse_response_or_input_signal = false;
-sim.update(bias_learning, impulse_response_or_input_signal);
+    //This determines if the springs have identical spring and damping coefficients
+   bool springs_identical = false;
+   //This determines if the bias column (all 1's) for linear regression is appended to teh learning matrix
+   bool bias_learning = true;
+   //This determines if the input signal is a unit impulse at time = or the input signal Input
+   bool impulse_response_or_input_signal = false;
+   //This determines if there is a random factor (in this case a random Gaussian variable) added to the node positions in the spider web so the web is slightly randomly shaken
+   bool random_node_positions = false;
    
-//This outputs the mean squared error and loads the Output vector and Target vector in the Simulatino Object RENAME THIS IT DOES NOT OUTPUT LEARNING MATRIX
-sim.output_LearningMatrix_and_MeanSquaredError();
+    //This is the mean and standard deviation of the random Gaussian variable added to the node positions
+   double mean =0;
+   double stdev = 0;
 
-sim.Output_For_Plot();
+    //This is the fixed nodes vector which manually takes in which nodes are fixed for the spider web
+    vector<int> Fixed_Nodes;
+    
+    //Determine whether the random RNN or spider web is simulated."
+    bool RNN_or_spider_web;
+    cout <<"Do you want to simulate the random RNN or the spider web? Type 1 for the RNN and 0 for the spider web"<< endl;
+    cin >> RNN_or_spider_web;
 
-//This outputs the output signal, target signal (to check if loaded in correctly) and the learning matrix.
-//sim.output_Output_Signal(str);
-  */
+    if(RNN_or_spider_web)
+    {	
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+    //THIS SIMULATES THE  RANDOM DYNAMICAL RESERVOIR RNN (recurrent neural network), NOT THE SPIDER WEB
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+    //Default constructor for random RNN.
+    Simulation sim1(data, Input, Volterra, wash_out_time, learning_time, learning_time_test);
+
+   //This is to name the spider web
+   string str = "1";
+  
+   vector<double> range_d1_d3_list;
+   double best_range_d1_d3;
+
+   double a = 100;
+
+
+   //False = springs not identical.
+   springs_identical = false;
+   //True = Bias regression column is in learning matrix
+   bias_learning = true;
+   //False = not the impulse response, the input signal (Input_Signal)
+   impulse_response_or_input_signal = false;
+   //There is no extra randomness in the node positions.
+   random_node_positions = false;
+	
+   springs_identical = false;
+   bias_learning = true;
+   impulse_response_or_input_signal = false;
+	
+   //This executes the simulation in real time.
+   sim1.update(bias_learning, impulse_response_or_input_signal);
+   
+   //This outputs the mean squared error
+   sim1.output_MeanSquaredError();
+   //This outputs the node graph for plotting in Matlab (default Matlab file plotdata2.m)
+   sim1.Output_For_Plot();
+   //This outputs the output signal, target signal (to check if loaded in correctly) and the learning matrix , (learning matrix plotted in plotdata.m)
+   sim1.output_Output_Signal(str);
+   }  
+   else
+   {
+   ////////////////////////////////////////////////////////////////////////
+   //THIS SIMULATES THE SPIDER WEB
+   //////////////////////////////////////////////////////////////////////
+   Fixed_Nodes.push_back(no_of_points_per_round*(rounds-1));
+   Fixed_Nodes.push_back((no_of_points_per_round/2)+no_of_points_per_round*(rounds-1));
+ 
+   //This initialises the spider web and loads the starting variables, the input and target signals into the Simulation object sim
+   //This is the overloaded constructor for the simulation class
+   Simulation sim(radius, rounds, no_of_points_per_round, data, Input, Volterra, wash_out_time, learning_time, learning_time_test, springs_identical, random_node_positions, mean, stdev, Fixed_Nodes);
+
+
+   //This function carries out the simulation in time. 
+   //The parameters bias_learning and impulse_response_or_input_signal determines whether bias learning is on and whether the input signal is an impulse respnse.
+   sim.update(bias_learning, impulse_response_or_input_signal);
+ 
+   //the return_thread_Number returns the number of the thread that has two particular nodes with certain node numbers
+   cout << sim.return_thread_Number(0, 1) << endl;
+
+   //This resets the simulation so that all positions of threads and nodes are what they were at time t=0.
+   sim.Reset_Simulation();
+   impulse_response_or_input_signal = false;
+   sim.update(bias_learning, impulse_response_or_input_signal);
+   
+   //This outputs the mean squared error and loads the Output vector and Target vector in the Simulatino Object RENAME THIS IT DOES NOT OUTPUT LEARNING MATRIX
+   sim.output_MeanSquaredError();
+
+   //This outputs the node graph
+   sim.Output_For_Plot();
+
+   //This outputs the output signal, target signal (to check if loaded in correctly) and the learning matrix.
+   //sim.output_Output_Signal(str);
+  
   //This is to measure how long the code has taken in total to execute  
-auto end = std::chrono::high_resolution_clock::now();
-cout << "The time it took for the programme to run in total in milliseconds: ";
-std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << "ms";
+   }
+   
+   //End timer
+   auto end = std::chrono::high_resolution_clock::now();
+   cout << "The time it took for the programme to run in total in milliseconds: ";
+   std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << "ms";
 
-return 0;
+   //Terminate programme.
+   return 0;
 }
 

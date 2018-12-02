@@ -272,7 +272,7 @@ class Simulation
         MatrixXd& Return_Learning_Matrix();
 
         //Return Output Signal after learning phase and the mean squared error.
-        double output_LearningMatrix_and_MeanSquaredError();
+        double output_MeanSquaredError();
 
         //Return output signal on its own, for MSE test.
         void output_Output_Signal(string& s);

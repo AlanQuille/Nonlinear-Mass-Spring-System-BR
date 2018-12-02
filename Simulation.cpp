@@ -892,7 +892,7 @@ void Simulation::Populate_Learning_Weights(VectorXd& L)
 // Btw. any graphical output (even to the terminal) slows the process down a lot
 // However, you could have every 1000 points and update message to show the use the simualtion is still going
 // Btw. it is good to have a functionality to switch off any of these things by the user
-double Simulation::output_LearningMatrix_and_MeanSquaredError()
+double Simulation::output_MeanSquaredError()
 {                       
   vector<double> Output_Signal;
   vector<double> Test_Data;
